@@ -294,7 +294,11 @@ const state = {
   activeOrder: null,
   paymentBusy: false,
   paypalSdkPromise: null,
-  paypalInstance: null
+  paypalInstance: null,
+  legal: {
+    termsAccepted: false,
+    instantDeliveryAccepted: false
+  }
 };
 
 
@@ -339,20 +343,33 @@ async function loadApiData() {
 }
 
 function checkoutClientNonce() {
-  const existing = safeStorageGet("minekube-store-checkout-nonce", "");
+  const existing = safeStorageGet("minekube-store-checkout-nonce-v2", "");
   if (existing) return existing;
   const value = globalThis.crypto?.randomUUID?.() || `web-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  safeStorageSet("minekube-store-checkout-nonce", value);
+  safeStorageSet("minekube-store-checkout-nonce-v2", value);
   return value;
 }
 
 function clearCheckoutNonce() {
-  try { localStorage.removeItem("minekube-store-checkout-nonce"); } catch {}
+  try { localStorage.removeItem("minekube-store-checkout-nonce-v2"); } catch {}
 }
 
 function resetPendingCheckout() {
   state.activeOrder = null;
+  state.legal.termsAccepted = false;
+  state.legal.instantDeliveryAccepted = false;
   clearCheckoutNonce();
+}
+
+function legalAcceptanceReady() {
+  return Boolean(state.legal.termsAccepted && state.legal.instantDeliveryAccepted);
+}
+
+function legalVersions() {
+  return {
+    termsVersion: state.apiConfig?.legal?.termsVersion || "2026-07-24",
+    privacyVersion: state.apiConfig?.legal?.privacyVersion || "2026-07-24"
+  };
 }
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
@@ -811,22 +828,45 @@ function renderCheckout() {
   } else if (state.checkoutStep === 3) {
     const mode = state.apiConfig?.paypalMode || "offline";
     const unavailable = !state.apiConfig?.paypalEnabled;
+    const legalReady = legalAcceptanceReady();
     body.innerHTML = `
       <div class="checkout-panel paypal-checkout-panel">
-        <h3>3. Zaplacení přes PayPal</h3>
+        <h3>3. Souhlasy a zaplacení přes PayPal</h3>
         <p>${mode === "sandbox" ? "Testovací režim Sandbox – nepoužívá skutečné peníze." : mode === "mock" ? "Lokální vývojový režim – platba se pouze simuluje." : "Po schválení platby PayPal Minekube API ověří částku a připraví odměny pro server."}</p>
+
+        <div class="legal-consent-box" aria-label="Povinná potvrzení objednávky">
+          <label class="legal-consent-row">
+            <input type="checkbox" data-legal-terms ${state.legal.termsAccepted ? "checked" : ""}>
+            <span class="legal-checkbox-mark" aria-hidden="true">${svgIcon("check")}</span>
+            <span>
+              Souhlasím s <a href="terms.html" target="_blank" rel="noopener">obchodními podmínkami</a>,
+              potvrzuji správnost Minecraft nicku <strong>${state.player}</strong> a beru na vědomí
+              <a href="privacy.html" target="_blank" rel="noopener">zásady ochrany osobních údajů</a>.
+            </span>
+          </label>
+          <label class="legal-consent-row legal-consent-critical">
+            <input type="checkbox" data-legal-instant ${state.legal.instantDeliveryAccepted ? "checked" : ""}>
+            <span class="legal-checkbox-mark" aria-hidden="true">${svgIcon("check")}</span>
+            <span>
+              Výslovně souhlasím s okamžitým dodáním digitálního obsahu před uplynutím 14denní lhůty
+              a beru na vědomí, že jeho okamžitým dodáním ztrácím právo od smlouvy odstoupit.
+            </span>
+          </label>
+          <small>Obě políčka musíš zaškrtnout sám. Store jejich verzi a čas potvrzení uloží k objednávce.</small>
+        </div>
+
         <div class="payment-notice ${unavailable ? "payment-error" : ""}">
           <strong>${unavailable ? "Platební API není dostupné." : `MINEKUBE PAYMENT CHANNEL // ${mode.toUpperCase()}`}</strong>
-          <span id="paymentStatus">${unavailable ? "Spusť store-api a zkontroluj store-config.js." : "Připravuji zabezpečené platební tlačítko…"}</span>
+          <span id="paymentStatus">${unavailable ? "Spusť store-api a zkontroluj store-config.js." : legalReady ? "Připravuji zabezpečené platební tlačítko…" : "Nejdřív potvrď obě povinná políčka výše."}</span>
         </div>
         <div class="checkout-summary-total"><span>Celkem k úhradě</span><strong>${money(totals.total)}</strong></div>
-        <div class="paypal-button-shell" id="paypalButtonShell">
+        <div class="paypal-button-shell ${legalReady ? "" : "is-locked"}" id="paypalButtonShell" ${legalReady ? "" : "hidden"}>
           ${mode === "mock" ? '<button class="place-order-button" type="button" data-start-mock-payment>Simulovat úspěšnou Sandbox platbu</button>' : '<paypal-button id="minekubePayPalButton" type="pay" hidden></paypal-button>'}
         </div>
-        <small class="payment-legal">Platba se vytvoří pouze pro produkty a cenu potvrzené Minekube API.</small>
+        <small class="payment-legal">Kliknutím na PayPal potvrzuješ objednávku zavazující k platbě. Platba se vytvoří pouze pro produkty, cenu a právní souhlasy potvrzené Minekube API.</small>
       </div>
       <div class="checkout-nav"><button class="secondary" type="button" data-checkout-back ${state.paymentBusy ? "disabled" : ""}>Zpět na souhrn</button></div>`;
-    if (!unavailable) queueMicrotask(setupPaymentUi);
+    if (!unavailable && legalReady) queueMicrotask(setupPaymentUi);
   } else {
     const order = state.activeOrder;
     const status = order?.status || "UNKNOWN";
@@ -862,13 +902,24 @@ function humanOrderStatus(status) {
 }
 
 async function createInternalOrder() {
+  if (!legalAcceptanceReady()) {
+    throw new Error("Nejdřív potvrď obchodní podmínky a okamžité dodání digitálního obsahu.");
+  }
   if (state.activeOrder?.publicId && !state.activeOrder.paidAt) return state.activeOrder;
+  const versions = legalVersions();
   const payload = await apiRequest("/api/orders", {
     method: "POST",
     body: JSON.stringify({
       playerName: state.player,
       couponCode: state.coupon?.code || null,
       clientNonce: checkoutClientNonce(),
+      legalAcceptance: {
+        termsAccepted: true,
+        instantDeliveryAccepted: true,
+        playerNameConfirmed: true,
+        termsVersion: versions.termsVersion,
+        privacyVersion: versions.privacyVersion
+      },
       items: cartEntries().map(({ product, quantity }) => ({ productId: product.id, quantity }))
     })
   });
@@ -1332,6 +1383,18 @@ function bindEvents() {
     const closeButton = event.target.closest("[data-close-modal]");
     if (closeButton) {
       closeModal(closeButton.closest(".store-modal-shell"));
+    }
+  });
+
+  document.addEventListener("change", event => {
+    if (event.target.matches("[data-legal-terms]")) {
+      state.legal.termsAccepted = event.target.checked;
+      renderCheckout();
+      return;
+    }
+    if (event.target.matches("[data-legal-instant]")) {
+      state.legal.instantDeliveryAccepted = event.target.checked;
+      renderCheckout();
     }
   });
 
