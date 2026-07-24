@@ -21,7 +21,7 @@ const iconPaths = {
   wallet: '<path d="M4 6h13a2 2 0 0 1 2 2v10H4a2 2 0 0 1-2-2V6h2Z"></path><path d="M4 6V4h11v2M15 11h6v4h-6a2 2 0 0 1 0-4Z"></path>'
 };
 
-const products = [
+let products = [
   {
     id: "vip-30",
     name: "VIP Rank",
@@ -289,9 +289,71 @@ const state = {
   player: "",
   coupon: null,
   checkoutStep: 1,
-  payment: "card"
+  payment: "paypal",
+  apiConfig: null,
+  activeOrder: null,
+  paymentBusy: false,
+  paypalSdkPromise: null,
+  paypalInstance: null
 };
 
+
+const STORE_CONFIG = window.MINEKUBE_STORE_CONFIG || {};
+const API_BASE_URL = String(STORE_CONFIG.apiBaseUrl || "http://localhost:8787").replace(/\/$/, "");
+
+async function apiRequest(path, options = {}) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    signal: options.signal || AbortSignal.timeout(10000),
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(payload?.error?.message || `API chyba ${response.status}`);
+    error.code = payload?.error?.code || "API_ERROR";
+    error.requestId = payload?.error?.requestId || null;
+    throw error;
+  }
+  return payload;
+}
+
+async function loadApiData() {
+  try {
+    const [configPayload, productPayload] = await Promise.all([
+      apiRequest("/api/config"),
+      apiRequest("/api/products")
+    ]);
+    state.apiConfig = configPayload;
+    if (Array.isArray(productPayload.products) && productPayload.products.length) {
+      products = productPayload.products;
+    }
+    document.documentElement.dataset.storeApi = "online";
+  } catch (error) {
+    console.warn("Minekube Store API není dostupné, používám vestavěný katalog.", error);
+    state.apiConfig = { paypalMode: "offline", paypalEnabled: false };
+    document.documentElement.dataset.storeApi = "offline";
+  }
+}
+
+function checkoutClientNonce() {
+  const existing = safeStorageGet("minekube-store-checkout-nonce", "");
+  if (existing) return existing;
+  const value = globalThis.crypto?.randomUUID?.() || `web-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  safeStorageSet("minekube-store-checkout-nonce", value);
+  return value;
+}
+
+function clearCheckoutNonce() {
+  try { localStorage.removeItem("minekube-store-checkout-nonce"); } catch {}
+}
+
+function resetPendingCheckout() {
+  state.activeOrder = null;
+  clearCheckoutNonce();
+}
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
@@ -361,11 +423,14 @@ function persistCart() {
 }
 
 function money(value) {
+  const normalized = Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+  const hasHalere = Math.abs(normalized - Math.round(normalized)) > 0.000001;
   return new Intl.NumberFormat("cs-CZ", {
     style: "currency",
     currency: "CZK",
-    maximumFractionDigits: 0
-  }).format(value);
+    minimumFractionDigits: hasHalere ? 2 : 0,
+    maximumFractionDigits: 2
+  }).format(normalized);
 }
 
 function svgIcon(name, className = "") {
@@ -493,6 +558,7 @@ function addToCart(id, quantity = 1) {
   if (!product) return;
   const current = state.cart.get(id) || 0;
   state.cart.set(id, Math.min(product.maxQty, current + quantity));
+  resetPendingCheckout();
   persistCart();
   renderCart();
   renderProducts();
@@ -503,6 +569,7 @@ function addToCart(id, quantity = 1) {
 function removeFromCart(id) {
   const product = getProduct(id);
   state.cart.delete(id);
+  resetPendingCheckout();
   persistCart();
   renderCart();
   renderProducts();
@@ -518,6 +585,7 @@ function changeQuantity(id, delta) {
     return;
   }
   state.cart.set(id, Math.min(product.maxQty, next));
+  resetPendingCheckout();
   persistCart();
   renderCart();
 }
@@ -529,8 +597,9 @@ function cartEntries() {
 function calculateTotals() {
   const subtotal = cartEntries().reduce((sum, { product, quantity }) => sum + product.price * quantity, 0);
   const discountRate = state.coupon?.rate || 0;
-  const discount = Math.round(subtotal * discountRate);
-  return { subtotal, discount, total: Math.max(0, subtotal - discount) };
+  const discount = Math.round((subtotal * discountRate + Number.EPSILON) * 100) / 100;
+  const total = Math.round((Math.max(0, subtotal - discount) + Number.EPSILON) * 100) / 100;
+  return { subtotal, discount, total };
 }
 
 function renderCart() {
@@ -690,6 +759,7 @@ function validatePlayerInput() {
 
 function savePlayer(value) {
   state.player = value.trim();
+  resetPendingCheckout();
   safeStorageSet("minekube-store-player", state.player);
   renderPlayerUI();
   closeModal(playerModal);
@@ -709,7 +779,7 @@ function openCheckout() {
 
 function renderCheckout() {
   $$('[data-step-indicator]').forEach(indicator => {
-    indicator.classList.toggle("active", Number(indicator.dataset.stepIndicator) <= state.checkoutStep);
+    indicator.classList.toggle("active", Number(indicator.dataset.stepIndicator) <= Math.min(state.checkoutStep, 3));
   });
 
   const body = $("#checkoutBody");
@@ -719,7 +789,7 @@ function renderCheckout() {
     body.innerHTML = `
       <div class="checkout-panel">
         <h3>1. Zkontroluj cílového hráče</h3>
-        <p>Produkt bude po dokončení objednávky přiřazen přesně tomuto Minecraft účtu.</p>
+        <p>Produkt bude po dokončení objednávky přiřazen přesně tomuto premium Minecraft účtu.</p>
         <div class="checkout-player-card">
           <div class="mini-avatar"><span>${initials(state.player)}</span></div>
           <div><small>MINECRAFT ÚČET</small><strong>${state.player || "Není nastavený"}</strong></div>
@@ -731,7 +801,7 @@ function renderCheckout() {
     body.innerHTML = `
       <div class="checkout-panel">
         <h3>2. Souhrn objednávky</h3>
-        <p>Zkontroluj produkty, množství a cílový Minecraft účet.</p>
+        <p>Cenu vždy znovu vypočítá Minekube API. Úpravou webu ji nelze změnit.</p>
         <div class="checkout-summary-list">
           ${cartEntries().map(({ product, quantity }) => `<div class="checkout-summary-item"><span>${svgIcon(product.icon)}</span><div><small>${quantity}× ${product.categoryLabel}</small><strong>${product.name}</strong></div><b>${money(product.price * quantity)}</b></div>`).join("")}
         </div>
@@ -739,36 +809,236 @@ function renderCheckout() {
       </div>
       <div class="checkout-nav"><button class="secondary" type="button" data-checkout-back>Zpět</button><button class="primary" type="button" data-checkout-next>Pokračovat k platbě</button></div>`;
   } else if (state.checkoutStep === 3) {
+    const mode = state.apiConfig?.paypalMode || "offline";
+    const unavailable = !state.apiConfig?.paypalEnabled;
     body.innerHTML = `
-      <div class="checkout-panel">
-        <h3>3. Vyber způsob platby</h3>
-        <p>Platební možnosti jsou připravené pro následné propojení s vybranou platební bránou.</p>
-        <div class="payment-grid">
-          <button class="payment-option ${state.payment === "card" ? "active" : ""}" type="button" data-payment="card">${svgIcon("card")}<span>Platební karta</span></button>
-          <button class="payment-option ${state.payment === "bank" ? "active" : ""}" type="button" data-payment="bank">${svgIcon("bank")}<span>Bankovní převod</span></button>
-          <button class="payment-option ${state.payment === "wallet" ? "active" : ""}" type="button" data-payment="wallet">${svgIcon("wallet")}<span>Digitální peněženka</span></button>
+      <div class="checkout-panel paypal-checkout-panel">
+        <h3>3. Zaplacení přes PayPal</h3>
+        <p>${mode === "sandbox" ? "Testovací režim Sandbox – nepoužívá skutečné peníze." : mode === "mock" ? "Lokální vývojový režim – platba se pouze simuluje." : "Po schválení platby PayPal Minekube API ověří částku a připraví odměny pro server."}</p>
+        <div class="payment-notice ${unavailable ? "payment-error" : ""}">
+          <strong>${unavailable ? "Platební API není dostupné." : `MINEKUBE PAYMENT CHANNEL // ${mode.toUpperCase()}`}</strong>
+          <span id="paymentStatus">${unavailable ? "Spusť store-api a zkontroluj store-config.js." : "Připravuji zabezpečené platební tlačítko…"}</span>
         </div>
-        <div class="payment-notice"><strong>Store frontend je připravený.</strong> Tlačítko níže nyní vytvoří ukázkovou objednávku; ostré zaplacení připojíme v další fázi.</div>
         <div class="checkout-summary-total"><span>Celkem k úhradě</span><strong>${money(totals.total)}</strong></div>
-        <button class="place-order-button" type="button" data-place-order>Vytvořit ukázkovou objednávku</button>
+        <div class="paypal-button-shell" id="paypalButtonShell">
+          ${mode === "mock" ? '<button class="place-order-button" type="button" data-start-mock-payment>Simulovat úspěšnou Sandbox platbu</button>' : '<paypal-button id="minekubePayPalButton" type="pay" hidden></paypal-button>'}
+        </div>
+        <small class="payment-legal">Platba se vytvoří pouze pro produkty a cenu potvrzené Minekube API.</small>
       </div>
-      <div class="checkout-nav"><button class="secondary" type="button" data-checkout-back>Zpět na souhrn</button></div>`;
+      <div class="checkout-nav"><button class="secondary" type="button" data-checkout-back ${state.paymentBusy ? "disabled" : ""}>Zpět na souhrn</button></div>`;
+    if (!unavailable) queueMicrotask(setupPaymentUi);
   } else {
-    const orderId = `MK-${new Date().getFullYear()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    const order = state.activeOrder;
+    const status = order?.status || "UNKNOWN";
+    const delivered = status === "DELIVERED";
+    const waiting = ["WAITING_FOR_PLAYER", "QUEUED", "DELIVERING", "PAID"].includes(status);
     body.innerHTML = `
-      <div class="checkout-success">
-        <span>${svgIcon("check")}</span>
-        <h3>Objednávka je připravená</h3>
-        <p>Ukázková objednávka pro hráče <strong>${state.player}</strong> byla sestavena. Po připojení platebního backendu tady bude následovat skutečné zaplacení a automatické doručení.</p>
-        <b>${orderId}</b>
+      <div class="checkout-success ${delivered ? "is-delivered" : ""}">
+        <span>${svgIcon(delivered ? "check" : "shield")}</span>
+        <h3>${delivered ? "Objednávka byla doručena" : "Platba byla potvrzena"}</h3>
+        <p>${waiting ? `Objednávka pro hráče <strong>${state.player}</strong> je bezpečně uložená. Odměny budou doručeny po synchronizaci s Minekube Network.` : `Aktuální stav objednávky: <strong>${status}</strong>.`}</p>
+        <b>${order?.publicId || "Objednávka"}</b>
+        <div class="order-status-line"><i></i><span>${humanOrderStatus(status)}</span></div>
+        <button type="button" data-refresh-order>Obnovit stav</button>
         <button type="button" data-checkout-finish>Zavřít objednávku</button>
       </div>`;
   }
 }
 
-function completeDemoOrder() {
+function humanOrderStatus(status) {
+  const labels = {
+    CREATED: "Objednávka vytvořena",
+    PAYPAL_CREATED: "Čeká na schválení v PayPalu",
+    WAITING_FOR_PLAYER: "Čeká na první připojení hráče",
+    PAID: "Platba potvrzena",
+    QUEUED: "Odměny čekají ve frontě",
+    DELIVERING: "Server právě doručuje odměny",
+    DELIVERED: "Všechny odměny byly doručeny",
+    DELIVERY_FAILED: "Část doručení vyžaduje zásah administrátora",
+    PAYMENT_FAILED: "Platba nebyla dokončena",
+    REFUNDED: "Platba byla vrácena"
+  };
+  return labels[status] || status;
+}
+
+async function createInternalOrder() {
+  if (state.activeOrder?.publicId && !state.activeOrder.paidAt) return state.activeOrder;
+  const payload = await apiRequest("/api/orders", {
+    method: "POST",
+    body: JSON.stringify({
+      playerName: state.player,
+      couponCode: state.coupon?.code || null,
+      clientNonce: checkoutClientNonce(),
+      items: cartEntries().map(({ product, quantity }) => ({ productId: product.id, quantity }))
+    })
+  });
+  state.activeOrder = payload.order;
+  safeStorageSet("minekube-store-last-order", state.activeOrder.publicId);
+  return state.activeOrder;
+}
+
+async function ensurePayPalOrder() {
+  const order = await createInternalOrder();
+  if (order.paypalOrderId) return order.paypalOrderId;
+  const payload = await apiRequest(`/api/orders/${encodeURIComponent(order.publicId)}/paypal`, { method: "POST", body: "{}" });
+  state.activeOrder = payload.order;
+  return payload.paypalOrderId;
+}
+
+async function captureActiveOrder() {
+  const payload = await apiRequest(`/api/orders/${encodeURIComponent(state.activeOrder.publicId)}/paypal/capture`, { method: "POST", body: "{}" });
+  state.activeOrder = payload.order;
+  clearCheckoutNonce();
+  state.cart.clear();
+  state.coupon = null;
+  persistCart();
+  renderCart();
   state.checkoutStep = 4;
   renderCheckout();
+  startOrderPolling();
+}
+
+async function setupPaymentUi() {
+  const status = $("#paymentStatus");
+  if (!status || state.paymentBusy) return;
+  if (state.apiConfig?.paypalMode === "mock") {
+    status.textContent = "Lokální simulace je připravená.";
+    return;
+  }
+  try {
+    state.paymentBusy = true;
+    status.textContent = "Navazuji zabezpečené spojení s PayPal Sandboxem…";
+    const sdkConfig = await apiRequest("/api/paypal/client-token", { method: "POST", body: "{}" });
+    await loadPayPalSdk(sdkConfig.sdkUrl);
+    const sdkInstance = await window.paypal.createInstance({
+      clientId: sdkConfig.clientId,
+      components: ["paypal-payments"],
+      pageType: "checkout"
+    });
+    state.paypalInstance = sdkInstance;
+    const methods = await sdkInstance.findEligibleMethods({ currencyCode: "CZK" });
+    if (!methods.isEligible("paypal")) throw new Error("PayPal není pro tento prohlížeč dostupný.");
+    const session = sdkInstance.createPayPalOneTimePaymentSession({
+      async onApprove() {
+        try {
+          status.textContent = "Platba schválena. Ověřuji částku na serveru…";
+          await captureActiveOrder();
+        } catch (error) {
+          console.error(error);
+          state.paymentBusy = false;
+          status.textContent = error.message || "Platbu se nepodařilo serverově ověřit.";
+        }
+      },
+      onCancel() {
+        state.paymentBusy = false;
+        status.textContent = "Platba byla zrušena. Můžeš ji zkusit znovu.";
+      },
+      onError(error) {
+        console.error(error);
+        state.paymentBusy = false;
+        status.textContent = "PayPal platbu nedokončil. Zkus to znovu.";
+      }
+    });
+    const button = $("#minekubePayPalButton");
+    if (!button) return;
+
+    button.hidden = false;
+    if (!button.dataset.bound) {
+      button.dataset.bound = "true";
+      button.addEventListener("click", async () => {
+        try {
+          state.paymentBusy = true;
+          status.textContent = "Otevírám zabezpečené okno PayPal…";
+
+          // PayPal Web SDK v6 expects a create-order FUNCTION as the second
+          // argument. The SDK calls it and expects a Promise resolving to an
+          // object shaped exactly as { orderId: "PAYPAL_ORDER_ID" }.
+          const createOrderOnServer = async () => {
+            const orderId = await ensurePayPalOrder();
+            if (typeof orderId !== "string" || !orderId.trim()) {
+              throw new Error("PayPal vrátil neplatné ID objednávky.");
+            }
+            return { orderId: orderId.trim() };
+          };
+
+          // The second argument must be the INVOKED create-order Promise.
+          // It resolves to the exact object required by PayPal: { orderId: string }.
+          await session.start(
+            { presentationMode: "auto" },
+            createOrderOnServer()
+          );
+        } catch (error) {
+          console.error(error);
+          state.paymentBusy = false;
+          status.textContent = error.message || "Platbu se nepodařilo zahájit.";
+        }
+      });
+    }
+    status.textContent = "PayPal Sandbox je připravený.";
+    state.paymentBusy = false;
+  } catch (error) {
+    console.error(error);
+    state.paymentBusy = false;
+    status.textContent = error.message || "PayPal tlačítko se nepodařilo připravit.";
+  }
+}
+
+function loadPayPalSdk(src) {
+  if (window.paypal?.createInstance) return Promise.resolve();
+  if (state.paypalSdkPromise) return state.paypalSdkPromise;
+  state.paypalSdkPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error("PayPal SDK se nepodařilo načíst."));
+    document.head.appendChild(script);
+  });
+  return state.paypalSdkPromise;
+}
+
+async function startMockPayment() {
+  if (state.paymentBusy) return;
+  const status = $("#paymentStatus");
+  try {
+    state.paymentBusy = true;
+    if (status) status.textContent = "Vytvářím lokální testovací objednávku…";
+    await ensurePayPalOrder();
+    if (status) status.textContent = "Simuluji potvrzení platby…";
+    await captureActiveOrder();
+  } catch (error) {
+    console.error(error);
+    if (status) status.textContent = error.message || "Testovací platba selhala.";
+  } finally {
+    state.paymentBusy = false;
+  }
+}
+
+async function refreshActiveOrder() {
+  if (!state.activeOrder?.publicId) return;
+  try {
+    const payload = await apiRequest(`/api/orders/${encodeURIComponent(state.activeOrder.publicId)}`);
+    state.activeOrder = payload.order;
+    renderCheckout();
+  } catch (error) {
+    showToast("Stav nelze načíst", error.message);
+  }
+}
+
+function startOrderPolling() {
+  const orderId = state.activeOrder?.publicId;
+  if (!orderId) return;
+  let attempts = 0;
+  const timer = setInterval(async () => {
+    attempts += 1;
+    if (!state.activeOrder || state.activeOrder.publicId !== orderId || attempts > 60) return clearInterval(timer);
+    try {
+      const payload = await apiRequest(`/api/orders/${encodeURIComponent(orderId)}`);
+      state.activeOrder = payload.order;
+      if (state.checkoutStep === 4) renderCheckout();
+      if (["DELIVERED", "DELIVERY_FAILED", "REFUNDED"].includes(state.activeOrder.status)) clearInterval(timer);
+    } catch {}
+  }, 5000);
 }
 
 function applyCoupon() {
@@ -784,12 +1054,14 @@ function applyCoupon() {
   }
   if (!coupons[code]) {
     state.coupon = null;
+    resetPendingCheckout();
     couponMessage.className = "coupon-message error";
     couponMessage.textContent = "Tento kód neexistuje nebo už není aktivní.";
     renderCart();
     return;
   }
   state.coupon = coupons[code];
+  resetPendingCheckout();
   couponMessage.className = "coupon-message";
   couponMessage.textContent = `Kód ${code} byl použit: sleva ${Math.round(state.coupon.rate * 100)} %.`;
   renderCart();
@@ -1044,8 +1316,12 @@ function bindEvents() {
       openCart();
       return;
     }
-    if (event.target.closest("[data-place-order]")) {
-      completeDemoOrder();
+    if (event.target.closest("[data-start-mock-payment]")) {
+      startMockPayment();
+      return;
+    }
+    if (event.target.closest("[data-refresh-order]")) {
+      refreshActiveOrder();
       return;
     }
     if (event.target.closest("[data-checkout-finish]")) {
@@ -1123,8 +1399,9 @@ function bindEvents() {
   });
 }
 
-function init() {
+async function init() {
   hydrateState();
+  await loadApiData();
   initTheme();
   initLoader();
   initMobileNavigation();

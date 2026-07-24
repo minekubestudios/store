@@ -14580,3 +14580,71 @@ body.mk-transitioning { overflow:hidden !important; }
 .store-page .future-loader-particles i:nth-child(10) {
   background: #ffb31f;
 }
+
+/* Minekube Commerce API / PayPal integration */
+.paypal-checkout-panel .payment-notice {
+  display: grid;
+  gap: 6px;
+}
+.paypal-checkout-panel .payment-notice span {
+  color: var(--text-muted, #bdb6c9);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+.paypal-checkout-panel .payment-notice.payment-error {
+  border-color: rgba(255, 87, 87, .42);
+  background: rgba(255, 63, 63, .08);
+}
+.paypal-button-shell {
+  min-height: 54px;
+  display: grid;
+  place-items: stretch;
+  margin-top: 16px;
+}
+.paypal-button-shell paypal-button {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+}
+.payment-legal {
+  display: block;
+  margin-top: 12px;
+  color: var(--text-muted, #9892a4);
+  text-align: center;
+  line-height: 1.5;
+}
+.order-status-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 13px;
+  margin: 8px auto 16px;
+  border: 1px solid rgba(255, 190, 45, .24);
+  border-radius: 999px;
+  background: rgba(255, 190, 45, .08);
+  color: #f6d681;
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .035em;
+}
+.order-status-line i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+  animation: store-status-pulse 1.4s ease-in-out infinite;
+}
+.checkout-success [data-refresh-order] {
+  margin-right: 8px;
+  background: transparent;
+  color: #f6d681;
+  border: 1px solid rgba(255, 190, 45, .35);
+}
+html[data-store-api="offline"] .store-status-line b::after {
+  content: " // API OFFLINE";
+  color: #ff6b6b;
+}
+@keyframes store-status-pulse {
+  50% { opacity: .35; transform: scale(.75); }
+}
