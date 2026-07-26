@@ -4,12 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Oficiální Minekube Network Store — ranky, klíče, MineCoins, kosmetika a komunitní balíčky.">
-  <meta name="theme-color" content="#03030f">
+  <meta name="theme-color" content="#090714">
   <title>Minekube Network Store</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="overwatch-store.css">
 </head>
-<body class="future-loading store-page">
+<body class="future-loading store-page" data-store-view="all">
   <div class="noise" aria-hidden="true"></div>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"><span></span></div>
 
@@ -32,7 +33,7 @@
         </span>
       </div>
       <div class="future-loader-copy">
-        <span class="loader-kicker"><i></i> MINEKUBE // STORE BOOT</span>
+        <span class="loader-kicker"><i></i> MINEKUBE // SPOUŠTĚNÍ OBCHODU</span>
         <strong>Inicializace Minekube Store</strong>
         <div class="loader-progress" aria-hidden="true"><span id="loaderProgressBar"></span></div>
         <div class="loader-meta">
@@ -63,11 +64,11 @@
         </span>
       </div>
       <div class="mk-transition-copy">
-        <span class="mk-transition-kicker"><i></i> MINEKUBE // STORE LINK</span>
+        <span class="mk-transition-kicker"><i></i> MINEKUBE // PŘECHOD OBCHODU</span>
         <strong id="pageTransitionTitle">KATALOG</strong>
         <small id="pageTransitionStatus">Načítám vybranou kategorii</small>
         <div class="mk-transition-progress"><span></span></div>
-        <div class="mk-transition-meta"><span>SECURE STORE CHANNEL</span><b id="pageTransitionCode">MK-S01</b></div>
+        <div class="mk-transition-meta"><span>ZABEZPEČENÝ KANÁL OBCHODU</span><b id="pageTransitionCode">MK-S01</b></div>
       </div>
     </div>
     <div class="mk-transition-scanlines"></div>
@@ -87,12 +88,12 @@
         </span>
         <span>
           <strong>Minekube</strong>
-          <small>NETWORK STORE</small>
+          <small>SÍŤOVÝ OBCHOD</small>
         </span>
       </a>
 
       <nav class="desktop-nav store-desktop-nav" aria-label="Hlavní navigace Store">
-        <a class="active" href="#store-home" data-nav-section="store-home">Store</a>
+        <a class="active" href="#store-home" data-nav-section="store-home">Obchod</a>
         <a href="#catalog" data-nav-section="catalog" data-category-link="ranks">Ranky</a>
         <a href="#catalog" data-nav-section="catalog" data-category-link="keys">Klíče</a>
         <a href="#catalog" data-nav-section="catalog" data-category-link="currency">MineCoins</a>
@@ -100,6 +101,17 @@
       </nav>
 
       <div class="header-actions store-header-actions">
+        <div class="ow-wallet" aria-label="Přehled měn a účtu">
+          <button class="ow-wallet-item ow-wallet-prisms" type="button" data-category-link="mythic" aria-label="Zobrazit sekci Mythic">
+            <span class="ow-currency-gem" aria-hidden="true"></span><b>0</b><small>Mythic</small>
+          </button>
+          <button class="ow-wallet-item ow-wallet-coins" type="button" data-category-link="currency" aria-label="Zobrazit MineCoins">
+            <span class="ow-currency-coin" aria-hidden="true">M</span><b>503</b><small>MineCoins</small>
+          </button>
+          <button class="ow-player-chip" id="owPlayerChip" type="button" aria-label="Nastavit Minecraft účet">
+            <span>?</span><strong>HRÁČ</strong>
+          </button>
+        </div>
         <a class="store-home-link" href="../" aria-label="Zpět na hlavní web Minekube Studios">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path><path d="M9 12h11"></path></svg>
           <span>Hlavní web</span>
@@ -123,7 +135,7 @@
     </div>
 
     <nav class="mobile-nav store-mobile-nav" id="mobileNav" aria-label="Mobilní navigace Store">
-      <a class="active" href="#store-home">Store</a>
+      <a class="active" href="#store-home">Obchod</a>
       <a href="#catalog" data-category-link="ranks">Ranky</a>
       <a href="#catalog" data-category-link="keys">Klíče</a>
       <a href="#catalog" data-category-link="currency">MineCoins</a>
@@ -132,6 +144,8 @@
     </nav>
   </header>
 
+  <div class="ow-game-nav-shell" id="gameTabsMount" aria-label="Kategorie obchodu"></div>
+
   <main>
     <section class="store-hero" id="store-home" aria-labelledby="storeTitle">
       <div class="store-hero-backdrop" aria-hidden="true">
@@ -139,8 +153,8 @@
         <span class="store-hero-aurora store-hero-aurora-magenta"></span>
         <span class="store-hero-grid"></span>
         <span class="store-hero-horizon"></span>
-        <span class="store-hero-data store-hero-data-a">01001101 // STORE</span>
-        <span class="store-hero-data store-hero-data-b">NETWORK CORE // ONLINE</span>
+        <span class="store-hero-data store-hero-data-a">01001101 // OBCHOD</span>
+        <span class="store-hero-data store-hero-data-b">JÁDRO SÍTĚ // ONLINE</span>
         <span class="store-hero-comet store-hero-comet-a"></span>
         <span class="store-hero-comet store-hero-comet-b"></span>
         <i class="store-star s1"></i><i class="store-star s2"></i><i class="store-star s3"></i><i class="store-star s4"></i><i class="store-star s5"></i><i class="store-star s6"></i>
@@ -149,20 +163,20 @@
       <div class="store-hero-shell">
         <div class="store-hero-copy">
           <div class="store-status-line">
-            <span><i></i> MINEKUBE NETWORK</span>
-            <b>STORE ONLINE</b>
+            <span><i></i> SÍŤ MINEKUBE</span>
+            <b>OBCHOD ONLINE</b>
           </div>
           <div class="store-heading-wrap">
-            <span class="store-heading-ghost" aria-hidden="true">STORE</span>
-            <h1 id="storeTitle">Vylepši svůj svět.<span>Podpoř Minekube Network.</span></h1>
+            <span class="store-heading-ghost" aria-hidden="true">OBCHOD</span>
+            <h1 id="storeTitle">OBCHOD MINEKUBE<span>Vylepši svůj svět.</span></h1>
           </div>
-          <p class="store-hero-lead">Vyber si rank, klíče, MineCoins nebo speciální balíček. Všechny produkty jsou navržené přímo pro Minekube Network a po propojení se serverem se doručí automaticky na tvůj Minecraft účet.</p>
+          <p class="store-hero-lead">Procházej aktuální nabídku jako v herním klientu. Vyber rank, klíče, MineCoins, kosmetiku nebo balíček a nech vše automaticky doručit na svůj Minecraft účet.</p>
 
           <div class="store-hero-actions">
             <a class="store-primary-action" href="#catalog">
               <span class="store-action-aura" aria-hidden="true"></span>
               <span class="store-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path><path d="m9.5 14 2 2 3.5-4"></path></svg></span>
-              <span><small>VSTOUPIT DO KATALOGU</small><strong>Prohlédnout produkty</strong></span>
+              <span><small>VSTOUPIT DO OBCHODU</small><strong>Prohlédnout produkty</strong></span>
               <svg class="store-action-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
             </a>
             <button class="store-secondary-action" id="openPlayerPanel" type="button">
@@ -173,25 +187,25 @@
 
           <div class="store-trust-row" aria-label="Vlastnosti Minekube Store">
             <div><span class="trust-icon"><svg viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 4.4-2.7 7.8-7 10-4.3-2.2-7-5.6-7-10V6l7-3Z"></path><path d="m8.5 12 2.2 2.2 4.8-5"></path></svg></span><span><small>DORUČENÍ</small><strong>Automaticky ve hře</strong></span></div>
-            <div><span class="trust-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 7h14M7 7l-3 5h6L7 7ZM17 7l-3 5h6l-3-5Z"></path></svg></span><span><small>FAIR PLAY</small><strong>Výhody pro komunitu</strong></span></div>
+            <div><span class="trust-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 7h14M7 7l-3 5h6L7 7ZM17 7l-3 5h6l-3-5Z"></path></svg></span><span><small>FÉROVÉ HRANÍ</small><strong>Výhody pro komunitu</strong></span></div>
             <div><span class="trust-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"></path><path d="M3 4h18v3H3zM9 11h6"></path></svg></span><span><small>HISTORIE</small><strong>Přehled objednávek</strong></span></div>
           </div>
         </div>
 
         <div class="store-hero-console" aria-label="Minekube Store systém">
           <span class="console-corner c-tl"></span><span class="console-corner c-tr"></span><span class="console-corner c-bl"></span><span class="console-corner c-br"></span>
-          <div class="console-topbar"><span><i></i> MINEKUBE STORE CORE</span><b>LIVE</b></div>
+          <div class="console-topbar"><span><i></i> MINEKUBE JÁDRO OBCHODU</span><b>AKTIVNÍ</b></div>
           <div class="store-reactor" aria-hidden="true">
             <span class="reactor-orbit ro-a"></span><span class="reactor-orbit ro-b"></span><span class="reactor-orbit ro-c"></span>
             <span class="reactor-node rn-1"></span><span class="reactor-node rn-2"></span><span class="reactor-node rn-3"></span>
-            <div class="reactor-cube"><i class="rc-top"></i><i class="rc-left"></i><i class="rc-right"></i><b>STORE</b></div>
+            <div class="reactor-cube"><i class="rc-top"></i><i class="rc-left"></i><i class="rc-right"></i><b>OBCHOD</b></div>
           </div>
           <div class="console-products">
             <button type="button" data-quick-category="ranks"><span><svg viewBox="0 0 24 24"><path d="m12 3 2.6 5.2 5.7.8-4.1 4 1 5.7-5.2-2.7-5.2 2.7 1-5.7-4.1-4 5.7-.8L12 3Z"></path></svg></span><b>RANKY</b><small>VIP • MVP • ELITE</small></button>
-            <button type="button" data-quick-category="keys"><span><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"></circle><path d="m11 12 8-8M15 8l2 2M17 6l2 2"></path></svg></span><b>KLÍČE</b><small>CRATE REWARDS</small></button>
-            <button type="button" data-quick-category="currency"><span><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"></ellipse><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"></path></svg></span><b>MINECOINS</b><small>NETWORK CURRENCY</small></button>
+            <button type="button" data-quick-category="keys"><span><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"></circle><path d="m11 12 8-8M15 8l2 2M17 6l2 2"></path></svg></span><b>KLÍČE</b><small>ODMĚNY Z BEDEN</small></button>
+            <button type="button" data-quick-category="currency"><span><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"></ellipse><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"></path></svg></span><b>MINECOINS</b><small>SÍŤOVÁ MĚNA</small></button>
           </div>
-          <div class="console-footer"><span><i></i> DELIVERY ENGINE READY</span><b>MK-SHOP 1.0</b></div>
+          <div class="console-footer"><span><i></i> DORUČOVACÍ SYSTÉM PŘIPRAVEN</span><b>MK-SHOP 1.0</b></div>
         </div>
       </div>
 
@@ -203,13 +217,13 @@
       </div>
     </section>
 
-    <section class="store-promo-section" aria-label="Aktuální nabídka">
+    <section class="store-promo-section" aria-label="Doporučená nabídka">
       <div class="store-wide-container">
         <article class="store-promo-card">
           <span class="promo-ambient" aria-hidden="true"></span>
-          <div class="promo-badge"><i></i> LAUNCH OFFER</div>
+          <div class="promo-badge"><i></i> STARTOVACÍ NABÍDKA</div>
           <div class="promo-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8M2 8h20v4H2zM12 8v12M12 8H7.5A2.5 2.5 0 1 1 10 5.5L12 8ZM12 8h4.5A2.5 2.5 0 1 0 14 5.5L12 8Z"></path></svg></div>
-          <div class="promo-copy"><small>OMEZENÁ STARTOVACÍ NABÍDKA</small><h2>Začni s balíčkem <span>Network Starter</span></h2><p>VIP na 30 dní, 5 Vote klíčů a 2 500 MineCoins v jednom balíčku.</p></div>
+          <div class="promo-copy"><small>OMEZENÁ STARTOVACÍ NABÍDKA</small><h2>Začni s balíčkem <span>Startovací balíček</span></h2><p>VIP na 30 dní, 5 Vote klíčů a 2 500 MineCoins v jednom balíčku.</p></div>
           <div class="promo-price"><small>UŠETŘÍŠ 30 %</small><del>289 Kč</del><strong>199 Kč</strong></div>
           <button class="promo-button" type="button" data-add-product="starter-bundle"><span>Přidat balíček</span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
         </article>
@@ -219,17 +233,18 @@
     <section class="store-catalog" id="catalog" aria-labelledby="catalogTitle">
       <div class="store-wide-container">
         <div class="store-section-heading">
-          <div><span class="section-kicker"><i></i> MINEKUBE PRODUCT MATRIX</span><h2 id="catalogTitle">Vyber si svoje <span>vylepšení</span></h2><p>Procházej všechny produkty nebo si zobraz pouze kategorii, která tě zajímá.</p></div>
+          <div><span class="section-kicker"><i></i> KATALOG MINEKUBE</span><h2 id="catalogTitle">Vyber si svoje <span>vylepšení</span></h2><p>Procházej všechny produkty nebo si zobraz pouze kategorii, která tě zajímá.</p></div>
           <div class="catalog-result-display"><small>NALEZENO</small><strong id="resultCount">0</strong><span>produktů</span></div>
         </div>
 
         <div class="store-category-tabs" id="categoryTabs" role="tablist" aria-label="Kategorie produktů">
-          <button class="active" type="button" data-category="all" role="tab" aria-selected="true"><svg viewBox="0 0 24 24"><path d="m12 3 8 4.5-8 4.5-8-4.5L12 3Z"></path><path d="m4 12 8 4.5 8-4.5M4 16.5 12 21l8-4.5"></path></svg><span><small>VŠECHNY</small><strong>Produkty</strong></span><b data-category-count="all">0</b></button>
-          <button type="button" data-category="ranks" role="tab" aria-selected="false"><svg viewBox="0 0 24 24"><path d="m12 3 2.6 5.2 5.7.8-4.1 4 1 5.7-5.2-2.7-5.2 2.7 1-5.7-4.1-4 5.7-.8L12 3Z"></path></svg><span><small>TRVALÉ I ČASOVÉ</small><strong>Ranky</strong></span><b data-category-count="ranks">0</b></button>
-          <button type="button" data-category="keys" role="tab" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"></circle><path d="m11 12 8-8M15 8l2 2M17 6l2 2"></path></svg><span><small>CRATE REWARDS</small><strong>Klíče</strong></span><b data-category-count="keys">0</b></button>
-          <button type="button" data-category="currency" role="tab" aria-selected="false"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"></ellipse><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"></path></svg><span><small>SERVEROVÁ MĚNA</small><strong>MineCoins</strong></span><b data-category-count="currency">0</b></button>
-          <button type="button" data-category="bundles" role="tab" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8M2 8h20v4H2zM12 8v12M12 8H7.5A2.5 2.5 0 1 1 10 5.5L12 8ZM12 8h4.5A2.5 2.5 0 1 0 14 5.5L12 8Z"></path></svg><span><small>NEJVÝHODNĚJŠÍ</small><strong>Balíčky</strong></span><b data-category-count="bundles">0</b></button>
-          <button type="button" data-category="cosmetics" role="tab" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M12 3 5 7v10l7 4 7-4V7l-7-4Z"></path><path d="m5 7 7 4 7-4M12 11v10"></path></svg><span><small>VZHLED A EFEKTY</small><strong>Kosmetika</strong></span><b data-category-count="cosmetics">0</b></button>
+          <button class="active" type="button" data-category="all" role="tab" aria-selected="true"><span class="ow-tab-icon">◆</span><span><small>HLAVNÍ NABÍDKA</small><strong>Doporučené</strong></span><b data-category-count="all">0</b></button>
+          <button class="mythic-tab" type="button" data-category="mythic" role="tab" aria-selected="false"><span class="ow-tab-icon mythic-gem">▽</span><span><small>NEJVZÁCNĚJŠÍ</small><strong>Mythic</strong></span><b data-category-count="mythic">0</b></button>
+          <button type="button" data-category="ranks" role="tab" aria-selected="false"><span class="ow-tab-icon">★</span><span><small>TRVALÉ I ČASOVÉ</small><strong>Ranky</strong></span><b data-category-count="ranks">0</b></button>
+          <button type="button" data-category="keys" role="tab" aria-selected="false"><span class="ow-tab-icon">⚿</span><span><small>ODMĚNY Z BEDEN</small><strong>Klíče</strong></span><b data-category-count="keys">0</b></button>
+          <button type="button" data-category="currency" role="tab" aria-selected="false"><span class="ow-tab-icon">M</span><span><small>SERVEROVÁ MĚNA</small><strong>MineCoins</strong></span><b data-category-count="currency">0</b></button>
+          <button type="button" data-category="bundles" role="tab" aria-selected="false"><span class="ow-tab-icon">▣</span><span><small>NEJVÝHODNĚJŠÍ</small><strong>Balíčky</strong></span><b data-category-count="bundles">0</b></button>
+          <button type="button" data-category="cosmetics" role="tab" aria-selected="false"><span class="ow-tab-icon">✦</span><span><small>VZHLED A EFEKTY</small><strong>Kosmetika</strong></span><b data-category-count="cosmetics">0</b></button>
         </div>
 
         <div class="catalog-toolbar">
@@ -279,7 +294,7 @@
     <section class="store-rank-compare" id="rank-compare" aria-labelledby="compareTitle">
       <div class="store-wide-container">
         <div class="store-section-heading compact">
-          <div><span class="section-kicker"><i></i> RANK MATRIX</span><h2 id="compareTitle">Porovnej si <span>ranky</span></h2><p>Každý vyšší rank obsahuje vše z předchozí úrovně a přidává další výhody.</p></div>
+          <div><span class="section-kicker"><i></i> POROVNÁNÍ RANKŮ</span><h2 id="compareTitle">Porovnej si <span>ranky</span></h2><p>Každý vyšší rank obsahuje vše z předchozí úrovně a přidává další výhody.</p></div>
         </div>
         <div class="rank-table-wrap">
           <table class="rank-table">
@@ -300,7 +315,7 @@
     <section class="store-how" aria-labelledby="howTitle">
       <div class="store-wide-container">
         <div class="store-section-heading centered compact">
-          <div><span class="section-kicker"><i></i> DELIVERY PROTOCOL</span><h2 id="howTitle">Jak nákup <span>funguje</span></h2><p>Tři rychlé kroky a produkt je připravený pro tvůj Minekube účet.</p></div>
+          <div><span class="section-kicker"><i></i> PRŮBĚH DORUČENÍ</span><h2 id="howTitle">Jak nákup <span>funguje</span></h2><p>Tři rychlé kroky a produkt je připravený pro tvůj Minekube účet.</p></div>
         </div>
         <div class="store-steps">
           <article><span class="step-number">01</span><div class="step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg></div><h3>Zadej Minecraft nick</h3><p>Nastav přesné jméno účtu, na který se má objednávka doručit.</p><span class="step-line"></span></article>
@@ -312,7 +327,7 @@
 
     <section class="store-faq" id="faq" aria-labelledby="faqTitle">
       <div class="store-wide-container faq-layout">
-        <div class="faq-intro"><span class="section-kicker"><i></i> SUPPORT DATABASE</span><h2 id="faqTitle">Časté <span>otázky</span></h2><p>Vše důležité před nákupem na jednom místě.</p><div class="faq-support-card"><span><svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0M4 13v5h4v-5H4ZM16 13v5h4v-5h-4ZM16 20h-4"></path></svg></span><div><small>POTŘEBUJEŠ POMOC?</small><strong>Minekube Support</strong><p>Napiš nám na Discordu a společně problém vyřešíme.</p></div></div></div>
+        <div class="faq-intro"><span class="section-kicker"><i></i> DATABÁZE PODPORY</span><h2 id="faqTitle">Časté <span>otázky</span></h2><p>Vše důležité před nákupem na jednom místě.</p><div class="faq-support-card"><span><svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0M4 13v5h4v-5H4ZM16 13v5h4v-5h-4ZM16 20h-4"></path></svg></span><div><small>POTŘEBUJEŠ POMOC?</small><strong>Minekube Support</strong><p>Napiš nám na Discordu a společně problém vyřešíme.</p></div></div></div>
         <div class="faq-list" id="faqList">
           <article class="faq-item open"><button type="button" aria-expanded="true"><span>Jak rychle dostanu zakoupený produkt?</span><i></i></button><div class="faq-answer"><p>Po budoucím propojení obchodu se serverovým pluginem proběhne doručení automaticky. Pokud budeš offline, objednávka počká na tvé další připojení.</p></div></article>
           <article class="faq-item"><button type="button" aria-expanded="false"><span>Musím být při nákupu online na serveru?</span><i></i></button><div class="faq-answer"><p>Ne. Důležité je pouze správně zadat Minecraft jméno. Produkt se může doručit při tvém dalším přihlášení.</p></div></article>
@@ -329,13 +344,13 @@
       <div class="footer-brand">
         <a class="brand" href="#store-home">
           <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 3 43 13.5v21L24 45 5 34.5v-21L24 3Z"></path><path class="mark-top" d="m24 3 19 10.5L24 24 5 13.5 24 3Z"></path><path class="mark-left" d="M24 24v21L5 34.5v-21L24 24Z"></path><path class="mark-right" d="M24 24 43 13.5v21L24 45V24Z"></path><path class="mark-core" d="m14 18 10 5.5L34 18v11l-10 5.5L14 29V18Z"></path></svg></span>
-          <span><strong>Minekube</strong><small>NETWORK STORE</small></span>
+          <span><strong>Minekube</strong><small>SÍŤOVÝ OBCHOD</small></span>
         </a>
         <p>Oficiální obchod Minekube Network. Produkty vytvořené pro naši CZ/SK Minecraft komunitu.</p>
       </div>
-      <div class="footer-links"><strong>Store</strong><a href="#catalog">Všechny produkty</a><a href="#catalog" data-category-link="ranks">Ranky</a><a href="#catalog" data-category-link="keys">Klíče</a><a href="#catalog" data-category-link="currency">MineCoins</a></div>
+      <div class="footer-links"><strong>Obchod</strong><a href="#catalog">Všechny produkty</a><a href="#catalog" data-category-link="ranks">Ranky</a><a href="#catalog" data-category-link="keys">Klíče</a><a href="#catalog" data-category-link="currency">MineCoins</a></div>
       <div class="footer-links"><strong>Minekube</strong><a href="../">Hlavní web</a><a href="#faq">Nápověda</a><a href="#rank-compare">Porovnání ranků</a><a href="#store-home">Stav sítě</a></div>
-      <div class="footer-status"><strong>NETWORK STATUS</strong><span><i></i> Všechny systémy online</span><small>play.minekube.cz</small></div>
+      <div class="footer-status"><strong>STAV SÍTĚ</strong><span><i></i> Všechny systémy online</span><small>play.minekube.cz</small></div>
     </div>
     <div class="store-wide-container footer-bottom">
       <span>© <span id="currentYear"></span> Minekube Network. Všechna práva vyhrazena.</span>
@@ -350,7 +365,7 @@
   <div class="store-overlay" id="storeOverlay" aria-hidden="true"></div>
 
   <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Nákupní košík">
-    <div class="cart-drawer-head"><div><span><i></i> MINEKUBE CHECKOUT</span><h2>Tvůj košík</h2></div><button id="closeCart" type="button" aria-label="Zavřít košík"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+    <div class="cart-drawer-head"><div><span><i></i> OBJEDNÁVKA MINEKUBE</span><h2>Tvůj košík</h2></div><button id="closeCart" type="button" aria-label="Zavřít košík"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
     <div class="cart-player-summary" id="cartPlayerSummary"><div class="mini-avatar"><span>?</span></div><div><small>CÍLOVÝ HRÁČ</small><strong>Není nastavený</strong></div><button type="button" id="cartSetPlayer">Nastavit</button></div>
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-empty" id="cartEmpty"><span><svg viewBox="0 0 24 24"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"></path><circle cx="10" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle></svg></span><h3>Košík je zatím prázdný</h3><p>Vyber si produkt z katalogu a přidej ho sem.</p><button type="button" id="browseProducts">Prohlédnout produkty</button></div>
@@ -373,14 +388,14 @@
     <div class="store-modal player-modal-card">
       <button class="store-modal-close" type="button" data-close-modal aria-label="Zavřít nastavení hráče"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
       <div class="player-modal-visual"><span class="pm-orbit a"></span><span class="pm-orbit b"></span><div class="pm-avatar" id="playerModalAvatar"><span>?</span></div></div>
-      <div class="player-modal-copy"><span class="modal-kicker"><i></i> PLAYER IDENTIFICATION</span><h2 id="playerModalTitle">Kam máme doručit <span>objednávku?</span></h2><p>Zadej přesný Minecraft nick cílového hráče. Může to být tvůj účet nebo účet kamaráda.</p><form id="playerForm"><label for="playerName">Minecraft nick</label><div class="player-input-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg><input id="playerName" name="playerName" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" placeholder="Např. RadekCZ" autocomplete="off" required><span id="playerInputState"></span></div><small class="player-form-hint">Povolené jsou písmena, čísla a podtržítko. Délka 3–16 znaků.</small><div class="player-form-error" id="playerFormError" role="alert"></div><button class="save-player-button" type="submit"><span>Uložit Minecraft účet</span><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg></button></form></div>
+      <div class="player-modal-copy"><span class="modal-kicker"><i></i> IDENTIFIKACE HRÁČE</span><h2 id="playerModalTitle">Kam máme doručit <span>objednávku?</span></h2><p>Zadej přesný Minecraft nick cílového hráče. Může to být tvůj účet nebo účet kamaráda.</p><form id="playerForm"><label for="playerName">Minecraft nick</label><div class="player-input-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg><input id="playerName" name="playerName" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" placeholder="Např. RadekCZ" autocomplete="off" required><span id="playerInputState"></span></div><small class="player-form-hint">Povolené jsou písmena, čísla a podtržítko. Délka 3–16 znaků.</small><div class="player-form-error" id="playerFormError" role="alert"></div><button class="save-player-button" type="submit"><span>Uložit Minecraft účet</span><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg></button></form></div>
     </div>
   </div>
 
   <div class="store-modal-shell" id="checkoutModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
     <div class="store-modal checkout-modal-card">
       <button class="store-modal-close" type="button" data-close-modal aria-label="Zavřít objednávku"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
-      <div class="checkout-head"><span class="modal-kicker"><i></i> ORDER PROTOCOL</span><h2 id="checkoutTitle">Dokončení <span>objednávky</span></h2><div class="checkout-steps"><span class="active" data-step-indicator="1"><b>1</b> Hráč</span><i></i><span data-step-indicator="2"><b>2</b> Souhrn</span><i></i><span data-step-indicator="3"><b>3</b> Platba</span></div></div>
+      <div class="checkout-head"><span class="modal-kicker"><i></i> PRŮBĚH OBJEDNÁVKY</span><h2 id="checkoutTitle">Dokončení <span>objednávky</span></h2><div class="checkout-steps"><span class="active" data-step-indicator="1"><b>1</b> Hráč</span><i></i><span data-step-indicator="2"><b>2</b> Souhrn</span><i></i><span data-step-indicator="3"><b>3</b> Platba</span></div></div>
       <div class="checkout-body" id="checkoutBody"></div>
     </div>
   </div>

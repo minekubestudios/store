@@ -24,14 +24,14 @@ const iconPaths = {
 let products = [
   {
     id: "vip-30",
-    name: "VIP Rank",
+    name: "Rank VIP",
     code: "VIP // 30D",
     category: "ranks",
     categoryLabel: "RANK • 30 DNÍ",
     badge: "COMMUNITY",
     icon: "crown",
-    accent: "#72f4ff",
-    accentRgb: "114,244,255",
+    accent: "#ffbd29",
+    accentRgb: "255,189,41",
     price: 99,
     oldPrice: 129,
     sale: 23,
@@ -43,14 +43,14 @@ let products = [
   },
   {
     id: "mvp-30",
-    name: "MVP Rank",
+    name: "Rank MVP",
     code: "MVP // 30D",
     category: "ranks",
     categoryLabel: "RANK • 30 DNÍ",
-    badge: "POPULAR",
+    badge: "OBLÍBENÉ",
     icon: "star",
-    accent: "#ff55dc",
-    accentRgb: "255,85,220",
+    accent: "#ff5bac",
+    accentRgb: "255,91,172",
     price: 199,
     oldPrice: null,
     sale: 0,
@@ -62,14 +62,14 @@ let products = [
   },
   {
     id: "elite-30",
-    name: "ELITE Rank",
+    name: "Rank ELITE",
     code: "ELITE // 30D",
     category: "ranks",
     categoryLabel: "RANK • 30 DNÍ",
-    badge: "ULTIMATE",
+    badge: "NEJVYŠŠÍ",
     icon: "crystal",
-    accent: "#9568ff",
-    accentRgb: "149,104,255",
+    accent: "#ca6cff",
+    accentRgb: "202,108,255",
     price: 299,
     oldPrice: 349,
     sale: 14,
@@ -85,10 +85,10 @@ let products = [
     code: "VIP // LIFE",
     category: "ranks",
     categoryLabel: "RANK • TRVALÝ",
-    badge: "LIFETIME",
+    badge: "NAVŽDY",
     icon: "shield",
-    accent: "#72f4ff",
-    accentRgb: "114,244,255",
+    accent: "#ffe46f",
+    accentRgb: "255,228,111",
     price: 699,
     oldPrice: 799,
     sale: 13,
@@ -104,10 +104,10 @@ let products = [
     code: "KEY // VOTE 05",
     category: "keys",
     categoryLabel: "KLÍČE • VOTE",
-    badge: "QUICK DROP",
+    badge: "RYCHLÁ ODMĚNA",
     icon: "key",
-    accent: "#72f4ff",
-    accentRgb: "114,244,255",
+    accent: "#ffb31f",
+    accentRgb: "255,179,31",
     price: 49,
     oldPrice: null,
     sale: 0,
@@ -123,10 +123,10 @@ let products = [
     code: "KEY // EPIC 03",
     category: "keys",
     categoryLabel: "KLÍČE • EPIC",
-    badge: "EPIC DROP",
+    badge: "EPICKÁ ODMĚNA",
     icon: "keys",
-    accent: "#ff55dc",
-    accentRgb: "255,85,220",
+    accent: "#ff5cab",
+    accentRgb: "255,92,171",
     price: 89,
     oldPrice: 109,
     sale: 18,
@@ -142,10 +142,10 @@ let products = [
     code: "KEY // LEGEND",
     category: "keys",
     categoryLabel: "KLÍČ • LEGENDARY",
-    badge: "RARE",
+    badge: "VZÁCNÉ",
     icon: "crystal",
-    accent: "#9568ff",
-    accentRgb: "149,104,255",
+    accent: "#c86cff",
+    accentRgb: "200,108,255",
     price: 79,
     oldPrice: null,
     sale: 0,
@@ -161,10 +161,10 @@ let products = [
     code: "COIN // 2.5K",
     category: "currency",
     categoryLabel: "MĚNA • MINECOINS",
-    badge: "CURRENCY",
+    badge: "MĚNA",
     icon: "coins",
-    accent: "#72f4ff",
-    accentRgb: "114,244,255",
+    accent: "#ffd55b",
+    accentRgb: "255,213,91",
     price: 79,
     oldPrice: null,
     sale: 0,
@@ -180,10 +180,10 @@ let products = [
     code: "COIN // 7K",
     category: "currency",
     categoryLabel: "MĚNA • MINECOINS",
-    badge: "BEST VALUE",
+    badge: "NEJVÝHODNĚJŠÍ",
     icon: "coins",
-    accent: "#9568ff",
-    accentRgb: "149,104,255",
+    accent: "#ff9f1b",
+    accentRgb: "255,159,27",
     price: 169,
     oldPrice: 219,
     sale: 23,
@@ -195,14 +195,14 @@ let products = [
   },
   {
     id: "starter-bundle",
-    name: "Network Starter",
+    name: "Startovací balíček",
     code: "BUNDLE // START",
     category: "bundles",
     categoryLabel: "BALÍČEK • STARTER",
-    badge: "LAUNCH OFFER",
+    badge: "STARTOVACÍ NABÍDKA",
     icon: "gift",
-    accent: "#72f4ff",
-    accentRgb: "114,244,255",
+    accent: "#ffbf2d",
+    accentRgb: "255,191,45",
     price: 199,
     oldPrice: 289,
     sale: 30,
@@ -214,14 +214,14 @@ let products = [
   },
   {
     id: "warrior-bundle",
-    name: "Network Warrior",
+    name: "Válečnický balíček",
     code: "BUNDLE // WARRIOR",
     category: "bundles",
     categoryLabel: "BALÍČEK • WARRIOR",
-    badge: "POWER PACK",
+    badge: "SILNÝ BALÍČEK",
     icon: "sword",
-    accent: "#ff55dc",
-    accentRgb: "255,85,220",
+    accent: "#ff613f",
+    accentRgb: "255,97,63",
     price: 349,
     oldPrice: 449,
     sale: 22,
@@ -233,14 +233,14 @@ let products = [
   },
   {
     id: "particle-pack",
-    name: "Particle Collection",
+    name: "Kolekce částic",
     code: "COSMETIC // FX",
     category: "cosmetics",
     categoryLabel: "KOSMETIKA • EFEKTY",
-    badge: "VISUAL FX",
+    badge: "VIZUÁLNÍ EFEKTY",
     icon: "particles",
-    accent: "#ff55dc",
-    accentRgb: "255,85,220",
+    accent: "#ff5fae",
+    accentRgb: "255,95,174",
     price: 129,
     oldPrice: null,
     sale: 0,
@@ -252,14 +252,14 @@ let products = [
   },
   {
     id: "pet-pack",
-    name: "Companion Pack",
+    name: "Balíček společníků",
     code: "COSMETIC // PET",
     category: "cosmetics",
     categoryLabel: "KOSMETIKA • PETI",
-    badge: "COMPANIONS",
+    badge: "SPOLEČNÍCI",
     icon: "pet",
-    accent: "#9568ff",
-    accentRgb: "149,104,255",
+    accent: "#bd76ff",
+    accentRgb: "189,118,255",
     price: 159,
     oldPrice: 199,
     sale: 20,
@@ -272,7 +272,8 @@ let products = [
 ];
 
 const categoryNames = {
-  all: "Všechny produkty",
+  all: "Doporučené",
+  mythic: "Mythic",
   ranks: "Ranky",
   keys: "Klíče",
   currency: "MineCoins",
@@ -466,40 +467,55 @@ function getProduct(id) {
   return products.find(product => product.id === id);
 }
 
+function isMythicProduct(product) {
+  return ["elite-30", "legendary-key", "particle-pack", "pet-pack", "mvp-30"].includes(product?.id);
+}
+
+function productVisualLabel(product) {
+  if (product.category === "ranks") return "RANK";
+  if (product.category === "keys") return "KLÍČ";
+  if (product.category === "currency") return "MĚNA";
+  if (product.category === "bundles") return "BALÍČEK";
+  return "KOSMETIKA";
+}
+
 function createProductCard(product, index) {
   const inCart = state.cart.has(product.id);
+  const mythic = isMythicProduct(product);
+  const layoutClass = state.category === "all"
+    ? (index === 0 ? "is-showcase" : index < 3 ? "is-wide" : "is-standard")
+    : "is-standard";
   return `
-    <article class="store-product-card is-entering" data-product-id="${product.id}" style="--product-accent:${product.accent};--product-accent-rgb:${product.accentRgb};--delay:${Math.min(index * 45, 360)}ms">
+    <article class="store-product-card ${layoutClass} ${mythic ? "is-mythic-product" : ""} is-entering" data-product-id="${product.id}" data-product-category="${product.category}" style="--product-accent:${product.accent};--product-accent-rgb:${product.accentRgb};--delay:${Math.min(index * 45, 360)}ms">
       <div class="product-visual">
+        <div class="ow-product-grid" aria-hidden="true"></div>
+        <div class="ow-product-rays" aria-hidden="true"></div>
         <div class="product-card-topline">
           <span class="product-badge"><i></i>${product.badge}</span>
           ${product.sale ? `<span class="product-discount">−${product.sale} %</span>` : ""}
         </div>
         <div class="product-emblem">
+          <span class="product-emblem-shadow">${svgIcon(product.icon)}</span>
           ${svgIcon(product.icon)}
-          <strong>${product.code.split(" // ")[0]}</strong>
+          <strong>${productVisualLabel(product)}</strong>
         </div>
-        <div class="product-data-strip"><span><i></i> MINEKUBE NETWORK</span><b>${product.code}</b></div>
+        <div class="product-data-strip"><span>${product.categoryLabel}</span><b>${product.code}</b></div>
       </div>
       <div class="product-content">
         <div class="product-category-label"><span>${product.categoryLabel}</span><b>MK-${String(products.indexOf(product) + 1).padStart(2, "0")}</b></div>
         <h3>${product.name}</h3>
         <p>${product.description}</p>
-        <ul class="product-feature-list">
-          ${product.features.slice(0, 3).map(feature => `<li>${svgIcon("check")}<span>${feature}</span></li>`).join("")}
-        </ul>
-        <div class="product-price-row">
+        <div class="ow-card-footer">
           <div class="product-price"><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${money(product.oldPrice)}</del>` : ""}</div>
-          <small>${product.category === "ranks" ? "za rank" : "jednorázově"}</small>
-        </div>
-        <div class="product-actions">
-          <button class="add-to-cart-button ${inCart ? "is-added" : ""}" type="button" data-add-product="${product.id}">
-            ${svgIcon(inCart ? "check" : "cart")}
-            <span>${inCart ? "V košíku" : "Přidat do košíku"}</span>
-          </button>
-          <button class="product-detail-button" type="button" data-product-detail="${product.id}" aria-label="Detail produktu ${product.name}" title="Detail produktu">
-            ${svgIcon("info")}
-          </button>
+          <div class="product-actions">
+            <button class="add-to-cart-button ${inCart ? "is-added" : ""}" type="button" data-add-product="${product.id}">
+              ${svgIcon(inCart ? "check" : "cart")}
+              <span>${inCart ? "V košíku" : "Koupit"}</span>
+            </button>
+            <button class="product-detail-button" type="button" data-product-detail="${product.id}" aria-label="Detail produktu ${product.name}" title="Detail produktu">
+              ${svgIcon("info")}
+            </button>
+          </div>
         </div>
       </div>
     </article>`;
@@ -508,7 +524,7 @@ function createProductCard(product, index) {
 function filteredProducts() {
   const query = state.search.trim().toLocaleLowerCase("cs");
   const result = products.filter(product => {
-    const categoryMatch = state.category === "all" || product.category === state.category;
+    const categoryMatch = state.category === "all" || (state.category === "mythic" ? isMythicProduct(product) : product.category === state.category);
     const saleMatch = !state.saleOnly || product.sale > 0;
     const haystack = `${product.name} ${product.description} ${product.categoryLabel} ${product.features.join(" ")} ${product.tags.join(" ")}`.toLocaleLowerCase("cs");
     const queryMatch = !query || haystack.includes(query);
@@ -528,7 +544,7 @@ function filteredProducts() {
 function updateCategoryCounts() {
   $$('[data-category-count]').forEach(node => {
     const category = node.dataset.categoryCount;
-    node.textContent = category === "all" ? products.length : products.filter(product => product.category === category).length;
+    node.textContent = category === "all" ? products.length : category === "mythic" ? products.filter(isMythicProduct).length : products.filter(product => product.category === category).length;
   });
 }
 
@@ -545,6 +561,21 @@ function setCategory(category, { scroll = false, transition = false } = {}) {
   if (!categoryNames[category]) category = "all";
   const perform = () => {
     state.category = category;
+    document.body.dataset.storeView = category;
+    const titles = {
+      all: ["Doporučená nabídka", "Vybrané produkty a nejlepší balíčky pro Minekube Network."],
+      mythic: ["Mythic kolekce", "Nejvzácnější ranky, efekty a odměny v neonově-galaktické edici."],
+      ranks: ["Ranky", "Časové i trvalé úrovně se síťovými výhodami."],
+      keys: ["Klíče", "Odemkni bedny a získej hodnotné serverové odměny."],
+      currency: ["MineCoins", "Serverová měna pro kosmetiku, služby a komunitní obsah."],
+      bundles: ["Balíčky", "Zvýhodněné kombinace několika produktů v jednom."],
+      cosmetics: ["Kosmetika", "Částice, peti a vizuální efekty pro tvůj účet."]
+    };
+    const current = titles[category] || titles.all;
+    const title = document.querySelector("#catalogTitle");
+    const copy = document.querySelector(".store-section-heading > div > p");
+    if (title) title.innerHTML = `${current[0]} <span>${category === "mythic" ? "// NEON" : "// MINEKUBE"}</span>`;
+    if (copy) copy.textContent = current[1];
     $$('[data-category]', categoryTabs).forEach(button => {
       const active = button.dataset.category === category;
       button.classList.toggle("active", active);
@@ -668,6 +699,12 @@ function renderPlayerUI() {
     $("button", summary).textContent = name ? "Změnit" : "Nastavit";
   }
 
+  const chip = $("#owPlayerChip");
+  if (chip) {
+    $("span", chip).textContent = avatarText;
+    $("strong", chip).textContent = name || "HRÁČ";
+  }
+
   const setButton = $("#setPlayerButton span");
   if (setButton) setButton.textContent = name ? "Změnit hráče" : "Nastavit hráče";
 }
@@ -738,7 +775,7 @@ function openProductDetail(id) {
     <div class="product-modal-layout" style="--modal-accent-rgb:${product.accentRgb}">
       <div class="product-modal-visual" style="--modal-accent-rgb:${product.accentRgb}">
         <div class="product-modal-emblem">${svgIcon(product.icon)}<strong>${product.code.split(" // ")[0]}</strong></div>
-        <small>MINEKUBE PRODUCT // ${product.code}</small>
+        <small>PRODUKT MINEKUBE // ${product.code}</small>
       </div>
       <div class="product-modal-copy" style="--modal-accent-rgb:${product.accentRgb}">
         <span class="modal-kicker"><i></i>${product.categoryLabel}</span>
@@ -856,7 +893,7 @@ function renderCheckout() {
         </div>
 
         <div class="payment-notice ${unavailable ? "payment-error" : ""}">
-          <strong>${unavailable ? "Platební API není dostupné." : `MINEKUBE PAYMENT CHANNEL // ${mode.toUpperCase()}`}</strong>
+          <strong>${unavailable ? "Platební API není dostupné." : `PLATEBNÍ KANÁL MINEKUBE // ${mode.toUpperCase()}`}</strong>
           <span id="paymentStatus">${unavailable ? "Spusť store-api a zkontroluj store-config.js." : legalReady ? "Připravuji zabezpečené platební tlačítko…" : "Nejdřív potvrď obě povinná políčka výše."}</span>
         </div>
         <div class="checkout-summary-total"><span>Celkem k úhradě</span><strong>${money(totals.total)}</strong></div>
@@ -1149,12 +1186,13 @@ function playPageTransition(category, callback) {
     return;
   }
   const configs = {
-    all: ["KATALOG", "Načítám všechny produkty", "MK-S01", "#72f4ff", "114,244,255"],
-    ranks: ["RANKY", "Synchronizuji rank matrix", "MK-S02", "#72f4ff", "114,244,255"],
-    keys: ["KLÍČE", "Otevírám crate databázi", "MK-S03", "#ff55dc", "255,85,220"],
-    currency: ["MINECOINS", "Načítám síťovou měnu", "MK-S04", "#9568ff", "149,104,255"],
-    bundles: ["BALÍČKY", "Sestavuji zvýhodněné nabídky", "MK-S05", "#ff55dc", "255,85,220"],
-    cosmetics: ["KOSMETIKA", "Aktivuji visual FX katalog", "MK-S06", "#9568ff", "149,104,255"]
+    all: ["DOPORUČENÉ", "Načítám hlavní nabídku", "MK-S01", "#ffb31f", "255,179,31"],
+    mythic: ["MYTHIC", "Otevírám neonovou kolekci", "MK-M01", "#25f5ff", "37,245,255"],
+    ranks: ["RANKY", "Načítám porovnání ranků", "MK-S02", "#ffbd29", "255,189,41"],
+    keys: ["KLÍČE", "Otevírám crate databázi", "MK-S03", "#ff5bac", "255,91,172"],
+    currency: ["MINECOINS", "Načítám síťovou měnu", "MK-S04", "#ff9f1b", "255,159,27"],
+    bundles: ["BALÍČKY", "Sestavuji zvýhodněné nabídky", "MK-S05", "#ff6b51", "255,107,81"],
+    cosmetics: ["KOSMETIKA", "Aktivuji visual FX katalog", "MK-S06", "#c96cff", "201,108,255"]
   };
   const config = configs[category] || configs.all;
   $("#pageTransitionTitle").textContent = config[0];
@@ -1224,6 +1262,12 @@ function initTheme() {
     else root.dataset.theme = "light";
     safeStorageSet("minekube-store-theme", next);
   });
+}
+
+function initGameClientShell() {
+  const mount = document.querySelector("#gameTabsMount");
+  if (mount && categoryTabs && categoryTabs.parentElement !== mount) mount.appendChild(categoryTabs);
+  document.querySelector("#owPlayerChip")?.addEventListener("click", openPlayerEditor);
 }
 
 function initMobileNavigation() {
@@ -1467,6 +1511,7 @@ async function init() {
   await loadApiData();
   initTheme();
   initLoader();
+  initGameClientShell();
   initMobileNavigation();
   initScrollExperience();
   updateCategoryCounts();
