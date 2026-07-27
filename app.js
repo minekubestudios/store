@@ -271,6 +271,258 @@ let products = [
   }
 ];
 
+
+
+const currencyPurchaseProducts = [
+  {
+    id: "premium-coins-500",
+    name: "500 Premium Coins",
+    code: "PREMIUM // 500",
+    category: "currency",
+    categoryLabel: "MĚNA • PREMIUM COINS",
+    badge: "PRÉMIOVÁ MĚNA",
+    icon: "coins",
+    accent: "#ffd21c",
+    accentRgb: "255,210,28",
+    price: 126,
+    oldPrice: null,
+    sale: 0,
+    featured: 200,
+    maxQty: 10,
+    description: "Balíček 500 Premium Coins pro nákupy kosmetiky, služeb a prémiového obsahu.",
+    features: ["500 Premium Coins", "Okamžité připsání", "Bez expirace", "Celá síť"],
+    tags: ["500 coinů", "Premium", "Měna"],
+    currencyType: "premium",
+    currencyAmount: 500,
+    bonusLabel: "",
+    artTier: 1,
+    currencyOnly: true
+  },
+  {
+    id: "premium-coins-1000",
+    name: "1 000 Premium Coins",
+    code: "PREMIUM // 1K",
+    category: "currency",
+    categoryLabel: "MĚNA • PREMIUM COINS",
+    badge: "PRÉMIOVÁ MĚNA",
+    icon: "coins",
+    accent: "#ffd21c",
+    accentRgb: "255,210,28",
+    price: 249,
+    oldPrice: null,
+    sale: 0,
+    featured: 201,
+    maxQty: 10,
+    description: "Balíček 1 000 Premium Coins pro nákupy kosmetiky, služeb a prémiového obsahu.",
+    features: ["1 000 Premium Coins", "Okamžité připsání", "Bez expirace", "Celá síť"],
+    tags: ["1 000 coinů", "Premium", "Měna"],
+    currencyType: "premium",
+    currencyAmount: 1000,
+    bonusLabel: "",
+    artTier: 2,
+    currencyOnly: true
+  },
+  {
+    id: "premium-coins-2200",
+    name: "2 200 Premium Coins",
+    code: "PREMIUM // 2.2K",
+    category: "currency",
+    categoryLabel: "MĚNA • PREMIUM COINS",
+    badge: "10% BONUS",
+    icon: "coins",
+    accent: "#ffd21c",
+    accentRgb: "255,210,28",
+    price: 499,
+    oldPrice: null,
+    sale: 0,
+    featured: 202,
+    maxQty: 10,
+    description: "Balíček 2 200 Premium Coins včetně 10% bonusu.",
+    features: ["2 200 Premium Coins", "10% bonus", "Okamžité připsání", "Bez expirace"],
+    tags: ["2 200 coinů", "10% bonus", "Premium"],
+    currencyType: "premium",
+    currencyAmount: 2200,
+    bonusLabel: "10% BONUS",
+    artTier: 3,
+    currencyOnly: true
+  },
+  {
+    id: "premium-coins-4500",
+    name: "4 500 Premium Coins",
+    code: "PREMIUM // 4.5K",
+    category: "currency",
+    categoryLabel: "MĚNA • PREMIUM COINS",
+    badge: "12% BONUS",
+    icon: "coins",
+    accent: "#ffd21c",
+    accentRgb: "255,210,28",
+    price: 997,
+    oldPrice: null,
+    sale: 0,
+    featured: 203,
+    maxQty: 10,
+    description: "Balíček 4 500 Premium Coins včetně 12% bonusu.",
+    features: ["4 500 Premium Coins", "12% bonus", "Okamžité připsání", "Bez expirace"],
+    tags: ["4 500 coinů", "12% bonus", "Premium"],
+    currencyType: "premium",
+    currencyAmount: 4500,
+    bonusLabel: "12% BONUS",
+    artTier: 4,
+    currencyOnly: true
+  },
+  {
+    id: "premium-coins-6900",
+    name: "6 900 Premium Coins",
+    code: "PREMIUM // 6.9K",
+    category: "currency",
+    categoryLabel: "MĚNA • PREMIUM COINS",
+    badge: "15% BONUS",
+    icon: "coins",
+    accent: "#ffd21c",
+    accentRgb: "255,210,28",
+    price: 1496,
+    oldPrice: null,
+    sale: 0,
+    featured: 204,
+    maxQty: 10,
+    description: "Balíček 6 900 Premium Coins včetně 15% bonusu.",
+    features: ["6 900 Premium Coins", "15% bonus", "Okamžité připsání", "Bez expirace"],
+    tags: ["6 900 coinů", "15% bonus", "Premium"],
+    currencyType: "premium",
+    currencyAmount: 6900,
+    bonusLabel: "15% BONUS",
+    artTier: 5,
+    currencyOnly: true
+  },
+  {
+    id: "premium-coins-11800",
+    name: "11 800 Premium Coins",
+    code: "PREMIUM // 11.8K",
+    category: "currency",
+    categoryLabel: "MĚNA • PREMIUM COINS",
+    badge: "18% BONUS",
+    icon: "coins",
+    accent: "#ffd21c",
+    accentRgb: "255,210,28",
+    price: 2493,
+    oldPrice: null,
+    sale: 0,
+    featured: 205,
+    maxQty: 10,
+    description: "Největší balíček 11 800 Premium Coins včetně 18% bonusu.",
+    features: ["11 800 Premium Coins", "18% bonus", "Okamžité připsání", "Bez expirace"],
+    tags: ["11 800 coinů", "18% bonus", "Premium"],
+    currencyType: "premium",
+    currencyAmount: 11800,
+    bonusLabel: "18% BONUS",
+    artTier: 6,
+    currencyOnly: true
+  },
+  {
+    id: "mythic-prisms-10",
+    name: "10 Mythic Prisms",
+    code: "MYTHIC // 10",
+    category: "mythic-currency",
+    categoryLabel: "MĚNA • MYTHIC PRISMS",
+    badge: "MYTHIC MĚNA",
+    icon: "crystal",
+    accent: "#25f5ff",
+    accentRgb: "37,245,255",
+    price: 249,
+    oldPrice: null,
+    sale: 0,
+    featured: 210,
+    maxQty: 10,
+    description: "Balíček 10 Mythic Prisms pro nejvzácnější Mythic nabídku.",
+    features: ["10 Mythic Prisms", "Mythic nabídka", "Okamžité připsání", "Bez expirace"],
+    tags: ["10 prismů", "Mythic", "Měna"],
+    currencyType: "mythic",
+    currencyAmount: 10,
+    bonusLabel: "",
+    artTier: 1,
+    currencyOnly: true
+  },
+  {
+    id: "mythic-prisms-30",
+    name: "30 Mythic Prisms",
+    code: "MYTHIC // 30",
+    category: "mythic-currency",
+    categoryLabel: "MĚNA • MYTHIC PRISMS",
+    badge: "20% BONUS",
+    icon: "crystal",
+    accent: "#25f5ff",
+    accentRgb: "37,245,255",
+    price: 622,
+    oldPrice: null,
+    sale: 0,
+    featured: 211,
+    maxQty: 10,
+    description: "Balíček 30 Mythic Prisms včetně 20% bonusu.",
+    features: ["30 Mythic Prisms", "20% bonus", "Mythic nabídka", "Bez expirace"],
+    tags: ["30 prismů", "20% bonus", "Mythic"],
+    currencyType: "mythic",
+    currencyAmount: 30,
+    bonusLabel: "20% BONUS",
+    artTier: 2,
+    currencyOnly: true
+  },
+  {
+    id: "mythic-prisms-50",
+    name: "50 Mythic Prisms",
+    code: "MYTHIC // 50",
+    category: "mythic-currency",
+    categoryLabel: "MĚNA • MYTHIC PRISMS",
+    badge: "25% BONUS",
+    icon: "crystal",
+    accent: "#25f5ff",
+    accentRgb: "37,245,255",
+    price: 997,
+    oldPrice: null,
+    sale: 0,
+    featured: 212,
+    maxQty: 10,
+    description: "Balíček 50 Mythic Prisms včetně 25% bonusu.",
+    features: ["50 Mythic Prisms", "25% bonus", "Mythic nabídka", "Bez expirace"],
+    tags: ["50 prismů", "25% bonus", "Mythic"],
+    currencyType: "mythic",
+    currencyAmount: 50,
+    bonusLabel: "25% BONUS",
+    artTier: 3,
+    currencyOnly: true
+  },
+  {
+    id: "mythic-prisms-100",
+    name: "100 Mythic Prisms",
+    code: "MYTHIC // 100",
+    category: "mythic-currency",
+    categoryLabel: "MĚNA • MYTHIC PRISMS",
+    badge: "33% BONUS",
+    icon: "crystal",
+    accent: "#25f5ff",
+    accentRgb: "37,245,255",
+    price: 1870,
+    oldPrice: null,
+    sale: 0,
+    featured: 213,
+    maxQty: 10,
+    description: "Největší balíček 100 Mythic Prisms včetně 33% bonusu.",
+    features: ["100 Mythic Prisms", "33% bonus", "Mythic nabídka", "Bez expirace"],
+    tags: ["100 prismů", "33% bonus", "Mythic"],
+    currencyType: "mythic",
+    currencyAmount: 100,
+    bonusLabel: "33% BONUS",
+    artTier: 4,
+    currencyOnly: true
+  }
+];
+
+function mergeCurrencyPurchaseProducts(catalog) {
+  const base = Array.isArray(catalog) ? catalog.filter(product => !product?.currencyOnly && !currencyPurchaseProducts.some(pack => pack.id === product?.id)) : [];
+  return [...base, ...currencyPurchaseProducts];
+}
+
+products = mergeCurrencyPurchaseProducts(products);
+
 const categoryNames = {
   all: "Doporučené",
   mythic: "Mythic",
@@ -333,7 +585,7 @@ async function loadApiData() {
     ]);
     state.apiConfig = configPayload;
     if (Array.isArray(productPayload.products) && productPayload.products.length) {
-      products = productPayload.products;
+      products = mergeCurrencyPurchaseProducts(productPayload.products);
     }
     document.documentElement.dataset.storeApi = "online";
   } catch (error) {
@@ -471,7 +723,7 @@ function getProduct(id) {
 }
 
 function isMythicProduct(product) {
-  return ["elite-30", "legendary-key", "particle-pack", "pet-pack", "mvp-30"].includes(product?.id);
+  return product?.currencyType === "mythic" || ["elite-30", "legendary-key", "particle-pack", "pet-pack", "mvp-30"].includes(product?.id);
 }
 
 function productVisualLabel(product) {
@@ -527,6 +779,7 @@ function createProductCard(product, index) {
 function filteredProducts() {
   const query = state.search.trim().toLocaleLowerCase("cs");
   const result = products.filter(product => {
+    if (product.currencyOnly) return false;
     const categoryMatch = state.category === "all" || (state.category === "mythic" ? isMythicProduct(product) : product.category === state.category);
     const saleMatch = !state.saleOnly || product.sale > 0;
     const haystack = `${product.name} ${product.description} ${product.categoryLabel} ${product.features.join(" ")} ${product.tags.join(" ")}`.toLocaleLowerCase("cs");
@@ -547,7 +800,8 @@ function filteredProducts() {
 function updateCategoryCounts() {
   $$('[data-category-count]').forEach(node => {
     const category = node.dataset.categoryCount;
-    node.textContent = category === "all" ? products.length : category === "mythic" ? products.filter(isMythicProduct).length : products.filter(product => product.category === category).length;
+    const visibleProducts = products.filter(product => !product.currencyOnly);
+    node.textContent = category === "all" ? visibleProducts.length : category === "mythic" ? visibleProducts.filter(isMythicProduct).length : visibleProducts.filter(product => product.category === category).length;
   });
 }
 
@@ -605,43 +859,62 @@ function resetCatalog() {
 }
 
 function currencyProductSet(type) {
-  if (type === "premium") {
-    const premium = products.filter(product => product.category === "currency");
-    return premium.length ? premium : products.filter(product => product.category === "bundles").slice(0, 4);
-  }
-  const mythic = products.filter(isMythicProduct);
-  return mythic.length ? mythic : products.filter(product => ["ranks", "keys", "cosmetics"].includes(product.category)).slice(0, 5);
+  return products
+    .filter(product => product.currencyType === type)
+    .sort((a, b) => Number(a.currencyAmount) - Number(b.currencyAmount));
 }
 
 function currencyAmountLabel(product, type) {
-  if (type === "premium") {
-    const amount = product.name.match(/[\d\s]+/)?.[0]?.trim();
-    return amount ? `${amount} Premium Coins` : product.name;
-  }
-  return product.name;
+  const formatted = new Intl.NumberFormat("cs-CZ").format(product.currencyAmount || 0);
+  return type === "premium" ? `${formatted}` : `${formatted}`;
 }
 
-function currencyPackBonus(product, index, type) {
-  if (product.sale) return `${product.sale}% ZVÝHODNĚNÍ`;
-  if (type === "premium" && index > 0) return `${10 + index * 5}% BONUS`;
-  return index === 0 ? "ZÁKLADNÍ BALÍČEK" : "MYTHIC EDICE";
+function currencyPackBonus(product) {
+  return String(product.bonusLabel || "").trim();
+}
+
+function createCurrencyPackArtwork(product, type) {
+  const tier = Math.max(1, Number(product.artTier) || 1);
+  const pieces = Array.from({ length: tier }, (_, index) => `<i class="currency-art-piece p${index + 1}"></i>`).join("");
+  if (type === "premium") {
+    return `
+      <span class="currency-art-scene premium-scene tier-${tier}">
+        <i class="premium-coin-emblem"><b>M</b></i>
+        <span class="premium-coin-pile">${pieces}</span>
+        ${tier >= 3 ? '<i class="premium-vault-box box-a"></i>' : ''}
+        ${tier >= 4 ? '<i class="premium-vault-box box-b"></i>' : ''}
+        ${tier >= 5 ? '<i class="premium-vault-box box-c"></i>' : ''}
+        <i class="currency-art-ground"></i>
+      </span>`;
+  }
+  return `
+    <span class="currency-art-scene mythic-scene tier-${tier}">
+      <i class="mythic-prism-emblem"><b></b><em></em></i>
+      <span class="mythic-prism-pile">${pieces}</span>
+      ${tier >= 2 ? '<i class="mythic-vault-box box-a"></i>' : ''}
+      ${tier >= 3 ? '<i class="mythic-vault-box box-b"></i>' : ''}
+      ${tier >= 4 ? '<i class="mythic-vault-box box-c"></i>' : ''}
+      <i class="currency-art-ground"></i>
+    </span>`;
 }
 
 function createCurrencyPackCard(product, index, type) {
   const isPremium = type === "premium";
   const themeClass = isPremium ? "is-premium" : "is-mythic";
   const label = currencyAmountLabel(product, type);
+  const bonus = currencyPackBonus(product);
   return `
-    <button class="currency-pack-card ${themeClass}" type="button" data-currency-pack="${product.id}" style="--pack-accent:${product.accent};--pack-accent-rgb:${product.accentRgb};--pack-delay:${Math.min(index * 75, 375)}ms">
+    <button class="currency-pack-card ${themeClass} tier-${product.artTier}" type="button" data-currency-pack="${product.id}" style="--pack-accent:${product.accent};--pack-accent-rgb:${product.accentRgb};--pack-delay:${Math.min(index * 75, 375)}ms">
       <span class="currency-pack-art">
         <i class="currency-pack-pattern" aria-hidden="true"></i>
         <i class="currency-pack-glow" aria-hidden="true"></i>
-        <span class="currency-pack-main-icon">${svgIcon(product.icon)}</span>
-        <span class="currency-pack-currency-icon">${isPremium ? '<i class="ow-currency-coin">M</i>' : '<i class="ow-currency-gem"></i>'}</span>
+        ${createCurrencyPackArtwork(product, type)}
       </span>
-      <span class="currency-pack-bonus">${currencyPackBonus(product, index, type)}</span>
-      <span class="currency-pack-copy"><strong>${label}</strong><small>${product.description}</small><b>${money(product.price)}</b></span>
-      <span class="currency-pack-buy">PŘIDAT DO KOŠÍKU <i>→</i></span>
+      ${bonus ? `<span class="currency-pack-bonus">${bonus}</span>` : ""}
+      <span class="currency-pack-copy">
+        <strong>${isPremium ? '<i class="ow-currency-coin">M</i>' : '<i class="ow-currency-gem"></i>'}<span>${label}</span></strong>
+        <b>${money(product.price)}</b>
+      </span>
     </button>`;
 }
 
@@ -652,15 +925,21 @@ function renderCurrencyPacks(type) {
   const kicker = $("#currencyPacksKicker");
   const description = $("#currencyPacksDescription");
   const balance = $("#currencyPacksBalance");
+  const footerCopy = $(".currency-packs-footer > span");
   currencyPacksModal.dataset.currencyType = type;
-  title.textContent = premium ? "Koupit Premium Coins" : "Mythic Prisms";
-  kicker.textContent = premium ? "BALÍČKY PRÉMIOVÉ MĚNY" : "MYTHIC OBCHOD";
+  title.textContent = premium ? "Koupit Premium Coins" : "Koupit Mythic Prisms";
+  kicker.textContent = premium ? "PRÉMIOVÁ MĚNA" : "MYTHIC MĚNA";
   description.textContent = premium
-    ? "Vyber množství Premium Coins. Po kliknutí se balíček přidá do košíku."
-    : "Vyber jeden z nejvzácnějších Mythic balíčků. Po kliknutí se přidá do košíku.";
+    ? "Vyber přesný balíček Premium Coins. Kliknutím jej přidáš do košíku."
+    : "Vyber přesný balíček Mythic Prisms. Kliknutím jej přidáš do košíku.";
   balance.innerHTML = premium
     ? '<i class="ow-currency-coin">M</i><strong>503</strong><small>PREMIUM COINS</small>'
     : '<i class="ow-currency-gem"></i><strong>0</strong><small>MYTHIC PRISMS</small>';
+  if (footerCopy) {
+    footerCopy.textContent = premium
+      ? "Po výběru se balíček automaticky přidá do košíku a košík se otevře."
+      : "80 Mythic Prisms lze získat dokončením Premium Battle Passu.";
+  }
   currencyPacksGrid.innerHTML = items.map((product, index) => createCurrencyPackCard(product, index, type)).join("");
 }
 
