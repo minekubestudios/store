@@ -36,7 +36,3 @@ https://minekubestudios.github.io/store/
 ## Poznámka k integraci
 
 Tato verze obsahuje kompletní store frontend. Ostrá platba, databáze objednávek a automatické doručení na Minecraft server se připojí v navazující backendové a pluginové fázi.
-
-## Připravená aktualizace Store API – měnové balíčky
-
-Přesný serverový katalog Premium Coins a Mythic Prisms je přiložen ve složce `BACKEND-UPDATE`. Produktová ID, ceny a množství odpovídají měnovým obrazovkám ve frontendu.

@@ -425,7 +425,7 @@ const currencyPurchaseProducts = [
     category: "mythic-currency",
     categoryLabel: "MĚNA • MYTHIC PRISMS",
     badge: "MYTHIC MĚNA",
-    icon: "crystal",
+    icon: "mythicPrism",
     accent: "#25f5ff",
     accentRgb: "37,245,255",
     price: 249,
@@ -449,7 +449,7 @@ const currencyPurchaseProducts = [
     category: "mythic-currency",
     categoryLabel: "MĚNA • MYTHIC PRISMS",
     badge: "20% BONUS",
-    icon: "crystal",
+    icon: "mythicPrism",
     accent: "#25f5ff",
     accentRgb: "37,245,255",
     price: 622,
@@ -473,7 +473,7 @@ const currencyPurchaseProducts = [
     category: "mythic-currency",
     categoryLabel: "MĚNA • MYTHIC PRISMS",
     badge: "25% BONUS",
-    icon: "crystal",
+    icon: "mythicPrism",
     accent: "#25f5ff",
     accentRgb: "37,245,255",
     price: 997,
@@ -497,7 +497,7 @@ const currencyPurchaseProducts = [
     category: "mythic-currency",
     categoryLabel: "MĚNA • MYTHIC PRISMS",
     badge: "33% BONUS",
-    icon: "crystal",
+    icon: "mythicPrism",
     accent: "#25f5ff",
     accentRgb: "37,245,255",
     price: 1870,
@@ -707,6 +707,11 @@ function money(value) {
 }
 
 function svgIcon(name, className = "") {
+  if (name === "coins" || name === "mythicPrism") {
+    const fileName = name === "coins" ? "coins-icon.png" : "prims-icon.png";
+    const currencyClass = name === "coins" ? "is-coins" : "is-prims";
+    return `<img class="currency-product-icon ${currencyClass} ${className}" src="assets/${fileName}" alt="" aria-hidden="true">`;
+  }
   return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true">${iconPaths[name] || iconPaths.star}</svg>`;
 }
 
