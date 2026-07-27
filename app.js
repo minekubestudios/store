@@ -399,6 +399,9 @@ const couponMessage = $("#couponMessage");
 const playerModal = $("#playerModal");
 const productModal = $("#productModal");
 const checkoutModal = $("#checkoutModal");
+const currencySelectModal = $("#currencySelectModal");
+const currencyPacksModal = $("#currencyPacksModal");
+const currencyPacksGrid = $("#currencyPacksGrid");
 const playerNameInput = $("#playerName");
 const playerInputWrap = playerNameInput?.closest(".player-input-wrap");
 const playerFormError = $("#playerFormError");
@@ -599,6 +602,78 @@ function resetCatalog() {
   productSort.value = "featured";
   saleFilter.setAttribute("aria-pressed", "false");
   setCategory("all");
+}
+
+function currencyProductSet(type) {
+  if (type === "premium") {
+    const premium = products.filter(product => product.category === "currency");
+    return premium.length ? premium : products.filter(product => product.category === "bundles").slice(0, 4);
+  }
+  const mythic = products.filter(isMythicProduct);
+  return mythic.length ? mythic : products.filter(product => ["ranks", "keys", "cosmetics"].includes(product.category)).slice(0, 5);
+}
+
+function currencyAmountLabel(product, type) {
+  if (type === "premium") {
+    const amount = product.name.match(/[\d\s]+/)?.[0]?.trim();
+    return amount ? `${amount} Premium Coins` : product.name;
+  }
+  return product.name;
+}
+
+function currencyPackBonus(product, index, type) {
+  if (product.sale) return `${product.sale}% ZVÝHODNĚNÍ`;
+  if (type === "premium" && index > 0) return `${10 + index * 5}% BONUS`;
+  return index === 0 ? "ZÁKLADNÍ BALÍČEK" : "MYTHIC EDICE";
+}
+
+function createCurrencyPackCard(product, index, type) {
+  const isPremium = type === "premium";
+  const themeClass = isPremium ? "is-premium" : "is-mythic";
+  const label = currencyAmountLabel(product, type);
+  return `
+    <button class="currency-pack-card ${themeClass}" type="button" data-currency-pack="${product.id}" style="--pack-accent:${product.accent};--pack-accent-rgb:${product.accentRgb};--pack-delay:${Math.min(index * 75, 375)}ms">
+      <span class="currency-pack-art">
+        <i class="currency-pack-pattern" aria-hidden="true"></i>
+        <i class="currency-pack-glow" aria-hidden="true"></i>
+        <span class="currency-pack-main-icon">${svgIcon(product.icon)}</span>
+        <span class="currency-pack-currency-icon">${isPremium ? '<i class="ow-currency-coin">M</i>' : '<i class="ow-currency-gem"></i>'}</span>
+      </span>
+      <span class="currency-pack-bonus">${currencyPackBonus(product, index, type)}</span>
+      <span class="currency-pack-copy"><strong>${label}</strong><small>${product.description}</small><b>${money(product.price)}</b></span>
+      <span class="currency-pack-buy">PŘIDAT DO KOŠÍKU <i>→</i></span>
+    </button>`;
+}
+
+function renderCurrencyPacks(type) {
+  const items = currencyProductSet(type);
+  const premium = type === "premium";
+  const title = $("#currencyPacksTitle");
+  const kicker = $("#currencyPacksKicker");
+  const description = $("#currencyPacksDescription");
+  const balance = $("#currencyPacksBalance");
+  currencyPacksModal.dataset.currencyType = type;
+  title.textContent = premium ? "Koupit Premium Coins" : "Mythic Prisms";
+  kicker.textContent = premium ? "BALÍČKY PRÉMIOVÉ MĚNY" : "MYTHIC OBCHOD";
+  description.textContent = premium
+    ? "Vyber množství Premium Coins. Po kliknutí se balíček přidá do košíku."
+    : "Vyber jeden z nejvzácnějších Mythic balíčků. Po kliknutí se přidá do košíku.";
+  balance.innerHTML = premium
+    ? '<i class="ow-currency-coin">M</i><strong>503</strong><small>PREMIUM COINS</small>'
+    : '<i class="ow-currency-gem"></i><strong>0</strong><small>MYTHIC PRISMS</small>';
+  currencyPacksGrid.innerHTML = items.map((product, index) => createCurrencyPackCard(product, index, type)).join("");
+}
+
+function openCurrencySelector() {
+  closeCart({ restoreFocus: false });
+  closeModal(currencyPacksModal, { restoreFocus: false });
+  openModal(currencySelectModal);
+}
+
+function openCurrencyPacks(type) {
+  renderCurrencyPacks(type);
+  closeModal(currencySelectModal, { restoreFocus: false });
+  openModal(currencyPacksModal);
 }
 
 function addToCart(id, quantity = 1) {
@@ -1345,6 +1420,27 @@ function bindEvents() {
   $("#resetCatalog").addEventListener("click", resetCatalog);
 
   document.addEventListener("click", event => {
+    const currencyChoice = event.target.closest("[data-currency-choice]");
+    if (currencyChoice) {
+      openCurrencyPacks(currencyChoice.dataset.currencyChoice);
+      return;
+    }
+
+    const currencyBack = event.target.closest("[data-currency-back]");
+    if (currencyBack) {
+      closeModal(currencyPacksModal, { restoreFocus: false });
+      openModal(currencySelectModal);
+      return;
+    }
+
+    const currencyPack = event.target.closest("[data-currency-pack]");
+    if (currencyPack) {
+      addToCart(currencyPack.dataset.currencyPack);
+      closeModal(currencyPacksModal, { restoreFocus: false });
+      setTimeout(openCart, 120);
+      return;
+    }
+
     const addButton = event.target.closest("[data-add-product]");
     if (addButton) {
       addToCart(addButton.dataset.addProduct);
@@ -1442,6 +1538,13 @@ function bindEvents() {
     }
   });
 
+  $("#currencyHubButton")?.addEventListener("click", openCurrencySelector);
+  $("#mobileCurrencyButton")?.addEventListener("click", () => {
+    $("#mobileNav")?.classList.remove("open");
+    $("#menuButton")?.classList.remove("open");
+    $("#menuButton")?.setAttribute("aria-expanded", "false");
+    openCurrencySelector();
+  });
   cartButton.addEventListener("click", openCart);
   $("#closeCart").addEventListener("click", () => closeCart());
   $("#browseProducts").addEventListener("click", () => {

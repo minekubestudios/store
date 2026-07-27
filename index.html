@@ -101,17 +101,31 @@
       </nav>
 
       <div class="header-actions store-header-actions">
-        <div class="ow-wallet" aria-label="Přehled měn a účtu">
-          <button class="ow-wallet-item ow-wallet-prisms" type="button" data-category-link="mythic" aria-label="Zobrazit sekci Mythic">
-            <span class="ow-currency-gem" aria-hidden="true"></span><b>0</b><small>Mythic</small>
+        <div class="ow-currency-hub-wrap">
+          <button class="ow-currency-hub" id="currencyHubButton" type="button" aria-label="Otevřít nákup herních měn" aria-haspopup="dialog">
+            <span class="ow-currency-hub-segment is-mythic">
+              <span class="ow-currency-gem" aria-hidden="true"></span>
+              <span class="ow-currency-hub-copy"><b>0</b><small>Mythic Prisms</small></span>
+            </span>
+            <i class="ow-currency-hub-divider" aria-hidden="true"></i>
+            <span class="ow-currency-hub-segment is-premium">
+              <span class="ow-currency-coin" aria-hidden="true">M</span>
+              <span class="ow-currency-hub-copy"><b>503</b><small>Premium Coins</small></span>
+            </span>
+            <svg class="ow-currency-hub-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
           </button>
-          <button class="ow-wallet-item ow-wallet-coins" type="button" data-category-link="currency" aria-label="Zobrazit MineCoins">
-            <span class="ow-currency-coin" aria-hidden="true">M</span><b>503</b><small>MineCoins</small>
-          </button>
-          <button class="ow-player-chip" id="owPlayerChip" type="button" aria-label="Nastavit Minecraft účet">
-            <span>?</span><strong>HRÁČ</strong>
-          </button>
+          <div class="ow-currency-tooltip" role="tooltip" aria-hidden="true">
+            <div class="ow-currency-tooltip-head"><span class="ow-currency-gem" aria-hidden="true"></span><strong>MYTHIC PRISMS</strong><b>0</b></div>
+            <p>Nejvzácnější měna pro Mythic nabídku, exkluzivní ranky, efekty a speciální odměny.</p>
+            <div class="ow-currency-tooltip-separator"></div>
+            <div class="ow-currency-tooltip-head premium"><span class="ow-currency-coin" aria-hidden="true">M</span><strong>PREMIUM COINS</strong><b>503</b></div>
+            <p>Prémiová měna pro kosmetiku, balíčky, klíče a další obsah v obchodě Minekube.</p>
+            <span class="ow-currency-tooltip-action">Kliknutím otevřeš výběr měny a balíčků.</span>
+          </div>
         </div>
+        <button class="ow-player-chip" id="owPlayerChip" type="button" aria-label="Nastavit Minecraft účet">
+          <span>?</span><strong>HRÁČ</strong>
+        </button>
         <a class="store-home-link" href="../" aria-label="Zpět na hlavní web Minekube Studios">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path><path d="M9 12h11"></path></svg>
           <span>Hlavní web</span>
@@ -139,6 +153,7 @@
       <a href="#catalog" data-category-link="ranks">Ranky</a>
       <a href="#catalog" data-category-link="keys">Klíče</a>
       <a href="#catalog" data-category-link="currency">MineCoins</a>
+      <button class="mobile-currency-button" id="mobileCurrencyButton" type="button"><span class="ow-currency-gem"></span><strong>Mythic Prisms</strong><i></i><span class="ow-currency-coin">M</span><strong>Premium Coins</strong></button>
       <a href="#faq">Nápověda</a>
       <a href="../">Hlavní web</a>
     </nav>
@@ -397,6 +412,47 @@
       <button class="store-modal-close" type="button" data-close-modal aria-label="Zavřít objednávku"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
       <div class="checkout-head"><span class="modal-kicker"><i></i> PRŮBĚH OBJEDNÁVKY</span><h2 id="checkoutTitle">Dokončení <span>objednávky</span></h2><div class="checkout-steps"><span class="active" data-step-indicator="1"><b>1</b> Hráč</span><i></i><span data-step-indicator="2"><b>2</b> Souhrn</span><i></i><span data-step-indicator="3"><b>3</b> Platba</span></div></div>
       <div class="checkout-body" id="checkoutBody"></div>
+    </div>
+  </div>
+
+  <div class="store-modal-shell currency-screen currency-select-screen" id="currencySelectModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="currencySelectTitle">
+    <div class="currency-screen-backdrop" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="currency-screen-panel">
+      <button class="currency-screen-close" type="button" data-close-modal aria-label="Zavřít výběr měny"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
+      <header class="currency-screen-header">
+        <span class="currency-screen-kicker">NÁKUP HERNÍ MĚNY</span>
+        <h2 id="currencySelectTitle">Vyber měnu k nákupu</h2>
+        <p class="currency-current-balance"><strong>Aktuální zůstatek:</strong><span class="mythic"><i class="ow-currency-gem"></i>0</span><em></em><span class="premium"><i class="ow-currency-coin">M</i>503</span></p>
+      </header>
+      <div class="currency-choice-grid">
+        <button class="currency-choice-card is-mythic" type="button" data-currency-choice="mythic">
+          <span class="currency-choice-energy" aria-hidden="true"></span>
+          <span class="currency-choice-symbol"><i class="ow-currency-gem"></i></span>
+          <span class="currency-choice-copy"><strong>Mythic Prisms</strong><p>Nejvzácnější Mythic produkty, efekty, ranky a odměny.</p><small>OTEVŘÍT MYTHIC NABÍDKU</small></span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+        <button class="currency-choice-card is-premium" type="button" data-currency-choice="premium">
+          <span class="currency-choice-energy" aria-hidden="true"></span>
+          <span class="currency-choice-symbol"><i class="ow-currency-coin">M</i></span>
+          <span class="currency-choice-copy"><strong>Premium Coins</strong><p>Prémiové MineCoins pro kosmetiku, služby a obsah obchodu.</p><small>OTEVŘÍT BALÍČKY COINŮ</small></span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+      </div>
+      <button class="currency-screen-cancel" type="button" data-close-modal>Zrušit</button>
+    </div>
+  </div>
+
+  <div class="store-modal-shell currency-screen currency-packs-screen" id="currencyPacksModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="currencyPacksTitle">
+    <div class="currency-screen-backdrop" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="currency-screen-panel currency-packs-panel">
+      <button class="currency-screen-close" type="button" data-close-modal aria-label="Zavřít nabídku balíčků"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
+      <header class="currency-packs-header">
+        <button class="currency-back-button" type="button" data-currency-back><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg><span>Zpět na výběr měny</span></button>
+        <div><span class="currency-screen-kicker" id="currencyPacksKicker">MYTHIC NABÍDKA</span><h2 id="currencyPacksTitle">Vyber balíček</h2><p id="currencyPacksDescription">Kliknutím na balíček jej okamžitě přidáš do košíku.</p></div>
+        <div class="currency-packs-balance" id="currencyPacksBalance"></div>
+      </header>
+      <div class="currency-packs-grid" id="currencyPacksGrid"></div>
+      <footer class="currency-packs-footer"><span>Po výběru se balíček přidá do košíku a košík se automaticky otevře.</span><button class="currency-screen-cancel" type="button" data-close-modal>Zrušit</button></footer>
     </div>
   </div>
 
