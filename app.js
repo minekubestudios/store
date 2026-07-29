@@ -742,40 +742,38 @@ function productVisualLabel(product) {
 function createProductCard(product, index) {
   const inCart = state.cart.has(product.id);
   const mythic = isMythicProduct(product);
-  const layoutClass = state.category === "all"
-    ? (index === 0 ? "is-showcase" : index < 3 ? "is-wide" : "is-standard")
-    : "is-standard";
   return `
-    <article class="store-product-card ${layoutClass} ${mythic ? "is-mythic-product" : ""} is-entering" data-product-id="${product.id}" data-product-category="${product.category}" style="--product-accent:${product.accent};--product-accent-rgb:${product.accentRgb};--delay:${Math.min(index * 45, 360)}ms">
+    <article class="store-product-card ${mythic ? "is-mythic-product" : ""} is-entering" data-product-id="${product.id}" data-product-category="${product.category}" style="--product-accent:${product.accent};--product-accent-rgb:${product.accentRgb};--delay:${Math.min(index * 45, 360)}ms">
       <div class="product-visual">
-        <div class="ow-product-grid" aria-hidden="true"></div>
-        <div class="ow-product-rays" aria-hidden="true"></div>
         <div class="product-card-topline">
           <span class="product-badge"><i></i>${product.badge}</span>
           ${product.sale ? `<span class="product-discount">−${product.sale} %</span>` : ""}
         </div>
         <div class="product-emblem">
-          <span class="product-emblem-shadow">${svgIcon(product.icon)}</span>
           ${svgIcon(product.icon)}
-          <strong>${productVisualLabel(product)}</strong>
+          <strong>${product.code.split(" // ")[0]}</strong>
         </div>
-        <div class="product-data-strip"><span>${product.categoryLabel}</span><b>${product.code}</b></div>
+        <div class="product-data-strip"><span><i></i> MINEKUBE NETWORK</span><b>${product.code}</b></div>
       </div>
       <div class="product-content">
         <div class="product-category-label"><span>${product.categoryLabel}</span><b>MK-${String(products.indexOf(product) + 1).padStart(2, "0")}</b></div>
         <h3>${product.name}</h3>
         <p>${product.description}</p>
-        <div class="ow-card-footer">
+        <ul class="product-feature-list">
+          ${product.features.slice(0, 3).map(feature => `<li>${svgIcon("check")}<span>${feature}</span></li>`).join("")}
+        </ul>
+        <div class="product-price-row">
           <div class="product-price"><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${money(product.oldPrice)}</del>` : ""}</div>
-          <div class="product-actions">
-            <button class="add-to-cart-button ${inCart ? "is-added" : ""}" type="button" data-add-product="${product.id}">
-              ${svgIcon(inCart ? "check" : "cart")}
-              <span>${inCart ? "V košíku" : "Koupit"}</span>
-            </button>
-            <button class="product-detail-button" type="button" data-product-detail="${product.id}" aria-label="Detail produktu ${product.name}" title="Detail produktu">
-              ${svgIcon("info")}
-            </button>
-          </div>
+          <small>${product.category === "ranks" ? "za rank" : "jednorázově"}</small>
+        </div>
+        <div class="product-actions">
+          <button class="add-to-cart-button ${inCart ? "is-added" : ""}" type="button" data-add-product="${product.id}">
+            ${svgIcon(inCart ? "check" : "cart")}
+            <span>${inCart ? "V košíku" : "Přidat do košíku"}</span>
+          </button>
+          <button class="product-detail-button" type="button" data-product-detail="${product.id}" aria-label="Detail produktu ${product.name}" title="Detail produktu">
+            ${svgIcon("info")}
+          </button>
         </div>
       </div>
     </article>`;
@@ -1627,8 +1625,6 @@ function initTheme() {
 }
 
 function initGameClientShell() {
-  const mount = document.querySelector("#gameTabsMount");
-  if (mount && categoryTabs && categoryTabs.parentElement !== mount) mount.appendChild(categoryTabs);
   document.querySelector("#owPlayerChip")?.addEventListener("click", openPlayerEditor);
 }
 
