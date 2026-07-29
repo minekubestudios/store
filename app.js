@@ -1357,8 +1357,11 @@ async function setupPaymentUi() {
     status.textContent = "Navazuji zabezpečené spojení s PayPal Sandboxem…";
     const sdkConfig = await apiRequest("/api/paypal/client-token", { method: "POST", body: "{}" });
     await loadPayPalSdk(sdkConfig.sdkUrl);
+    if (!sdkConfig.clientToken) {
+      throw new Error("Minekube API nevrátilo browser-safe PayPal client token.");
+    }
     const sdkInstance = await window.paypal.createInstance({
-      clientId: sdkConfig.clientId,
+      clientToken: sdkConfig.clientToken,
       components: ["paypal-payments"],
       pageType: "checkout"
     });
