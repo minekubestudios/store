@@ -1,67 +1,60 @@
 "use strict";
 
-/*
- * Minekube Store — hub herních měn
- * ---------------------------------
- * Vizuálně navazuje na tlačítko STORE z hlavního webu: vnitřní vesmír,
- * mlhoviny, blesky, orbity a 3D naklánění podle pohybu myši.
- *
- * Prostřední "+" otevírá dobití měny. Je to <span role="button">, protože
- * hub sám je <button> a vnořený button není platné HTML.
- */
-
+/* Minekube Store — profesionální Currency Hub VFX */
 (function () {
   const PLUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>';
 
-  const SPARKS = '<span class="mk-hub-sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>';
+  const SPARKS = '<span class="mk-hub-sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>';
 
   const BOLT = `
     <span class="mk-hub-bolt" aria-hidden="true">
       <svg viewBox="0 0 100 100">
-        <path d="M50 6 44 34l12-6-8 26 14-10-16 38"></path>
-        <path d="M50 6 58 30l-13-4 10 24-15-8 14 44"></path>
-        <path d="M14 50h22M64 50h22M22 22l14 14M78 22 64 36M22 78l14-14M78 78 64 64"></path>
+        <path d="M50 8 44 35l12-7-8 25 14-9-16 38"></path>
+        <path d="M16 50h20M64 50h20M24 24l13 13M76 24 63 37M24 76l13-13M76 76 63 63"></path>
       </svg>
     </span>`;
 
-  /* Blesky žijí MIMO tělo hubu. Hub má 3D transform (perspective +
-     preserve-3d), který potomky vtahuje do 3D kontextu a SVG výboje
-     se pak vykreslují pod jeho neprůhledným pozadím. */
-  const LIGHTNING = `
-    <span class="mk-hub-lightning" aria-hidden="true">
-      <span class="mk-hub-side mk-hub-side-mythic">
-        <svg class="mk-bolt-1" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-glow"   d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-mid"    d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-core"   d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
-        </svg>
-        <svg class="mk-bolt-2" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-glow"   d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-mid"    d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-core"   d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
-        </svg>
-        <svg class="mk-bolt-3" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-thread" d="M148 46C120 30 104 66 78 48 52 30 40 74 10 56"></path>
-        </svg>
+  /* Zrcadlově přesné SVG oblouky. VFX leží mimo samotné tlačítko,
+     takže nepřekrývá text ani ikony. */
+  const VFX = `
+    <span class="mk-hub-vfx" aria-hidden="true">
+      <span class="mk-hub-side-glow is-left"></span>
+      <span class="mk-hub-side-glow is-right"></span>
+      <span class="mk-hub-lightning">
+        <span class="mk-hub-side mk-hub-side-mythic">
+          <svg class="mk-bolt-1" viewBox="0 0 180 80" preserveAspectRatio="none">
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-glow" d="M174 40 C151 25 139 53 117 37 S82 24 64 41 S31 57 6 40"></path>
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-mid" d="M174 40 C151 25 139 53 117 37 S82 24 64 41 S31 57 6 40"></path>
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-core" d="M174 40 C151 25 139 53 117 37 S82 24 64 41 S31 57 6 40"></path>
+          </svg>
+          <svg class="mk-bolt-2" viewBox="0 0 180 80" preserveAspectRatio="none">
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-glow" d="M174 40 C151 55 139 27 117 43 S82 56 64 39 S31 23 6 40"></path>
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-mid" d="M174 40 C151 55 139 27 117 43 S82 56 64 39 S31 23 6 40"></path>
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-core" d="M174 40 C151 55 139 27 117 43 S82 56 64 39 S31 23 6 40"></path>
+          </svg>
+          <svg class="mk-bolt-3" viewBox="0 0 180 80" preserveAspectRatio="none">
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-thread" d="M174 40 C150 39 139 55 116 42 S82 26 62 40 S30 50 6 40"></path>
+          </svg>
+        </span>
+        <span class="mk-hub-side mk-hub-side-premium">
+          <svg class="mk-bolt-1" viewBox="0 0 180 80" preserveAspectRatio="none">
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-glow" d="M6 40 C29 25 41 53 63 37 S98 24 116 41 S149 57 174 40"></path>
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-mid" d="M6 40 C29 25 41 53 63 37 S98 24 116 41 S149 57 174 40"></path>
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-core" d="M6 40 C29 25 41 53 63 37 S98 24 116 41 S149 57 174 40"></path>
+          </svg>
+          <svg class="mk-bolt-2" viewBox="0 0 180 80" preserveAspectRatio="none">
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-glow" d="M6 40 C29 55 41 27 63 43 S98 56 116 39 S149 23 174 40"></path>
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-mid" d="M6 40 C29 55 41 27 63 43 S98 56 116 39 S149 23 174 40"></path>
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-core" d="M6 40 C29 55 41 27 63 43 S98 56 116 39 S149 23 174 40"></path>
+          </svg>
+          <svg class="mk-bolt-3" viewBox="0 0 180 80" preserveAspectRatio="none">
+            <path vector-effect="non-scaling-stroke" class="mk-bolt-thread" d="M6 40 C30 39 41 55 64 42 S98 26 118 40 S150 50 174 40"></path>
+          </svg>
+        </span>
       </span>
-      <span class="mk-hub-side mk-hub-side-premium">
-        <svg class="mk-bolt-1" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-glow"   d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-mid"    d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-core"   d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
-        </svg>
-        <svg class="mk-bolt-2" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-glow"   d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-mid"    d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-core"   d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
-        </svg>
-        <svg class="mk-bolt-3" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path vector-effect="non-scaling-stroke" class="mk-bolt-thread" d="M12 46C40 30 56 66 82 48 108 30 120 74 150 56"></path>
-        </svg>
-      </span>
+      <span class="mk-hub-particles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
     </span>`;
 
-  /* Vrstvy pozadí. Čistě dekorativní, proto aria-hidden. */
   const LAYERS = `
     <span class="mk-hub-universe" aria-hidden="true">
       <span class="mk-hub-nebula mk-hub-nebula-a"></span>
@@ -71,121 +64,103 @@
       <span class="mk-hub-stars"></span>
       <span class="mk-hub-scan"></span>
     </span>
-    <span class="mk-hub-core mk-hub-core-mythic" aria-hidden="true"></span>
-    <span class="mk-hub-core mk-hub-core-premium" aria-hidden="true"></span>
-    <span class="mk-hub-orbits" aria-hidden="true"><i></i><i></i><i></i></span>
-    <span class="mk-hub-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
     <span class="mk-hub-wave" aria-hidden="true"></span>
     <span class="mk-hub-pulse" aria-hidden="true"><i></i><i></i></span>`;
 
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-  /** Krátce rozsvítí zůstatky, ať je vidět, že se něco děje. */
   function flashBalances(hub) {
-    (hub || document).querySelectorAll(".ow-currency-hub-segment").forEach((segment, index) => {
-      setTimeout(() => {
+    hub?.querySelectorAll(".ow-currency-hub-segment").forEach((segment, index) => {
+      window.setTimeout(() => {
         segment.classList.add("is-flash");
-        setTimeout(() => segment.classList.remove("is-flash"), 420);
-      }, index * 90);
+        window.setTimeout(() => segment.classList.remove("is-flash"), 440);
+      }, index * 75);
     });
   }
 
-  function trigger(button, hub) {
-    button.classList.remove("is-charged");
-    hub?.classList.remove("is-charged");
-    // Restart animace – bez přečtení offsetWidth by se nespustila znovu.
-    void button.offsetWidth;
-    button.classList.add("is-charged");
-    hub?.classList.add("is-charged");
+  function animateHub(hub, plus) {
+    const wrap = hub?.closest(".ow-currency-hub-wrap");
+    [hub, plus, wrap].forEach(node => node?.classList.remove("is-charged"));
+    if (hub) void hub.offsetWidth;
+    [hub, plus, wrap].forEach(node => node?.classList.add("is-charged"));
     flashBalances(hub);
 
-    setTimeout(() => {
-      button.classList.remove("is-charged");
-      hub?.classList.remove("is-charged");
-    }, 640);
-
-    setTimeout(() => {
-      const selector = document.querySelector("#currencySelectModal");
-      if (typeof window.mkOpenCurrencyTopup === "function") window.mkOpenCurrencyTopup();
-      else if (typeof window.mkOpenModal === "function" && selector) window.mkOpenModal(selector);
-    }, 160);
+    window.setTimeout(() => {
+      [hub, plus, wrap].forEach(node => node?.classList.remove("is-charged"));
+    }, 760);
   }
 
-  function build({ mobile = false } = {}) {
-    const button = document.createElement("span");
-    button.className = `mk-hub-plus${mobile ? " is-mobile" : ""}`;
-    button.setAttribute("role", "button");
-    button.setAttribute("tabindex", "0");
-    button.setAttribute("aria-label", "Dobít herní měnu");
-    button.setAttribute("title", "Dobít herní měnu");
-    button.innerHTML = `${PLUS}${BOLT}`;
+  function openCurrencySelector() {
+    const modal = document.querySelector("#currencySelectModal");
+    if (typeof window.mkOpenCurrencyTopup === "function") {
+      window.mkOpenCurrencyTopup();
+    } else if (typeof window.mkOpenModal === "function" && modal) {
+      window.mkOpenModal(modal);
+    }
+  }
+
+  function buildPlus({ mobile = false } = {}) {
+    const plus = document.createElement("span");
+    plus.className = `mk-hub-plus${mobile ? " is-mobile" : ""}`;
+    plus.setAttribute("role", "button");
+    plus.setAttribute("tabindex", "0");
+    plus.setAttribute("aria-label", "Dobít herní měnu");
+    plus.setAttribute("title", "Dobít herní měnu");
+    plus.innerHTML = `${PLUS}${BOLT}`;
 
     const activate = event => {
       event.preventDefault();
       event.stopPropagation();
-      trigger(button, button.closest(".ow-currency-hub"));
+      const hub = plus.closest(".ow-currency-hub");
+      animateHub(hub, plus);
+      window.setTimeout(openCurrencySelector, 220);
     };
 
-    button.addEventListener("click", activate);
-    button.addEventListener("keydown", event => {
+    plus.addEventListener("click", activate);
+    plus.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") activate(event);
     });
-
-    return button;
-  }
-
-  /** 3D naklánění a světelný bod sledující kurzor – jako na hlavním webu. */
-  function bindTilt(hub) {
-    if (reducedMotion.matches) return;
-
-    hub.addEventListener("pointermove", event => {
-      const rect = hub.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = (event.clientY - rect.top) / rect.height;
-      hub.style.setProperty("--hub-x", `${x * 100}%`);
-      hub.style.setProperty("--hub-y", `${y * 100}%`);
-      hub.style.setProperty("--hub-tilt-x", `${(y - .5) * -8}deg`);
-      hub.style.setProperty("--hub-tilt-y", `${(x - .5) * 10}deg`);
-    });
-
-    hub.addEventListener("pointerleave", () => {
-      hub.style.setProperty("--hub-x", "50%");
-      hub.style.setProperty("--hub-y", "50%");
-      hub.style.setProperty("--hub-tilt-x", "0deg");
-      hub.style.setProperty("--hub-tilt-y", "0deg");
-    });
+    return plus;
   }
 
   function mount() {
     const hub = document.querySelector("#currencyHubButton");
     if (hub && !hub.querySelector(".mk-hub-universe")) {
       hub.insertAdjacentHTML("afterbegin", LAYERS);
-      bindTilt(hub);
     }
 
     const wrap = hub?.closest(".ow-currency-hub-wrap");
-    if (wrap && !wrap.querySelector(".mk-hub-lightning")) {
-      // Vkládáme ZA tlačítko, ne před něj – hub tvoří vlastní vykreslovací
-      // vrstvu (3D transform) a cokoli před ním v DOM by překryl.
-      hub.insertAdjacentHTML("afterend", LIGHTNING);
+    if (wrap && !wrap.querySelector(".mk-hub-vfx")) {
+      hub.insertAdjacentHTML("afterend", VFX);
     }
 
     const divider = hub?.querySelector(".ow-currency-hub-divider");
     if (divider && !hub.querySelector(".mk-hub-plus")) {
-      const plus = build();
+      const plus = buildPlus();
       divider.replaceWith(plus);
       plus.insertAdjacentHTML("afterend", SPARKS);
     }
 
-    // Mobil – tlačítko vpravo v pruhu s měnami.
+    /* Tlačítko jako celek: nejdřív se ukáže krátký pulz, potom se otevře
+       stávající obrazovka měn. StopImmediatePropagation zabrání dvojímu
+       otevření z původního listeneru v app.js, funkčnost zůstává stejná. */
+    if (hub && !hub.dataset.vfxBound) {
+      hub.dataset.vfxBound = "true";
+      hub.addEventListener("click", event => {
+        if (event.target.closest(".mk-hub-plus")) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        animateHub(hub, hub.querySelector(".mk-hub-plus"));
+        window.setTimeout(openCurrencySelector, 220);
+      });
+    }
+
     const mobileBar = document.querySelector("#mobileCurrencyButton");
     if (mobileBar && !mobileBar.querySelector(".mk-hub-plus")) {
-      mobileBar.appendChild(build({ mobile: true }));
+      mobileBar.appendChild(buildPlus({ mobile: true }));
     }
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", mount);
+    document.addEventListener("DOMContentLoaded", mount, { once: true });
   } else {
     mount();
   }
