@@ -1074,6 +1074,9 @@ function renderPlayerUI() {
     $("strong", chip).textContent = name || "HRÁČ";
   }
 
+  // Profil v hlavičce si drží vlastní vykreslení.
+  window.MINEKUBE_PROFILE?.refresh();
+
   const setButton = $("#setPlayerButton span");
   if (setButton) setButton.textContent = name ? "Změnit hráče" : "Nastavit hráče";
 }
@@ -1343,10 +1346,31 @@ async function ensurePayPalOrder() {
   return payload.paypalOrderId;
 }
 
+/* Zapíše dokončenou objednávku do lokální historie profilu.
+   Backend zatím historii nenabízí, takže si ji držíme v prohlížeči. */
+function recordOrderInProfile() {
+  if (!window.MINEKUBE_PROFILE) return;
+  const totals = calculateTotals();
+  window.MINEKUBE_PROFILE.addOrder({
+    id: state.activeOrder?.publicId || `MK-${Date.now()}`,
+    date: new Date().toISOString(),
+    total: totals.total,
+    status: state.activeOrder?.status || "PAID",
+    player: state.player,
+    items: cartEntries().map(({ product, quantity }) => ({
+      id: product.id,
+      name: product.name,
+      category: product.categoryLabel,
+      quantity
+    }))
+  });
+}
+
 async function captureActiveOrder() {
   const payload = await apiRequest(`/api/orders/${encodeURIComponent(state.activeOrder.publicId)}/paypal/capture`, { method: "POST", body: "{}" });
   state.activeOrder = payload.order;
   clearCheckoutNonce();
+  recordOrderInProfile();
   state.cart.clear();
   state.coupon = null;
   persistCart();
@@ -1904,6 +1928,22 @@ function bindEvents() {
     primary.style.setProperty("--pointer-y", `${((event.clientY - rect.top) / rect.height) * 100}%`);
   });
 }
+
+/* --- Most pro profil hráče (profile-menu.js) --------------------------- */
+
+/** Otevře/zavře modál store stylem, ať profil vypadá stejně jako zbytek. */
+window.mkOpenModal = modal => openModal(modal);
+window.mkCloseModal = modal => closeModal(modal);
+window.mkToast = (title, message) => showToast(title, message);
+
+/** Nastaví hráče z profilu do storu (košík, checkout, hlavička). */
+window.mkSyncPlayer = function mkSyncPlayer(name) {
+  state.player = String(name || "").trim();
+  safeStorageSet("minekube-store-player", state.player);
+  renderPlayerUI();
+  renderCart();
+  window.MINEKUBE_PROFILE?.refresh();
+};
 
 /* Překreslí všechny ceny po přepnutí zobrazované měny. */
 window.mkRefreshPrices = function mkRefreshPrices() {
