@@ -724,6 +724,67 @@ function money(value) {
 
 /* Přeškrtnutá původní cena. Po zaokrouhlení na devítky se může
    střetnout s aktuální cenou, proto ji řeší přepínač měny zvlášť. */
+/* --- Ceny v herní měně ---------------------------------------------------
+   Hráč platí Premium Coins nebo Mythic Prisms. Skutečné peníze se
+   používají jen u balíčků měny samotné. */
+
+const CURRENCY_ICONS = {
+  premium: '<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="mkCoinG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#f0a800"/></linearGradient></defs><path d="M16 2.6 28 9.3v13.4L16 29.4 4 22.7V9.3Z" fill="url(#mkCoinG)" stroke="#8a5a00" stroke-width="1.4" stroke-linejoin="round"/><path d="M20.6 11.4a6.4 6.4 0 1 0 0 9.2" fill="none" stroke="#7a4f00" stroke-width="2.6" stroke-linecap="round"/><path d="M11.6 16h8.4" stroke="#7a4f00" stroke-width="2.6" stroke-linecap="round"/></svg>',
+  mythic: '<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="mkPrismG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8f4ff"/><stop offset="1" stop-color="#1fa8e0"/></linearGradient></defs><path d="M4.5 7.5h23L16 28.2Z" fill="url(#mkPrismG)" stroke="#0d6d99" stroke-width="1.4" stroke-linejoin="round"/><path d="M10.6 12.2h10.8L16 21.6Z" fill="#e8fbff" opacity=".75"/></svg>'
+};
+
+/** Cenovka s ikonou herní měny. */
+function gamePrice(product, { size = "", value } = {}) {
+  const GC = window.MINEKUBE_GAME_CURRENCY;
+  if (!GC) return money(value === undefined ? product.price : value);
+
+  const type = GC.currencyOf(product);
+  if (type === "money") return money(value === undefined ? product.price : value);
+
+  const amount = GC.priceOf(product, value);
+  const cls = `mk-price ${type === "mythic" ? "is-mythic" : ""} ${size}`.trim();
+  return `<span class="${cls}"><span class="mk-price-icon">${CURRENCY_ICONS[type]}</span>${GC.amount(amount)}</span>`;
+}
+
+/** Přeškrtnutá původní cena v herní měně. */
+function gamePriceOld(product, oldValue) {
+  const GC = window.MINEKUBE_GAME_CURRENCY;
+  if (!GC) return `<del>${moneyOld(oldValue, product.price)}</del>`;
+
+  const type = GC.currencyOf(product);
+  if (type === "money") return `<del>${moneyOld(oldValue, product.price)}</del>`;
+
+  const oldAmount = GC.priceOf(product, oldValue);
+  const currentAmount = GC.priceOf(product);
+  if (oldAmount <= currentAmount) return "";
+  return `<span class="mk-price-old"><span class="mk-price-icon">${CURRENCY_ICONS[type]}</span>${GC.amount(oldAmount)}</span>`;
+}
+
+/** Součet položek košíku rozdělený podle měny. */
+function cartTotalsByCurrency() {
+  const GC = window.MINEKUBE_GAME_CURRENCY;
+  const totals = { premium: 0, mythic: 0, money: 0 };
+  if (!GC) return totals;
+  cartEntries().forEach(({ product, quantity }) => {
+    totals[GC.currencyOf(product)] += GC.priceOf(product) * quantity;
+  });
+  return totals;
+}
+
+/** Naformátovaný součet – umí zobrazit i více měn najednou. */
+function formatCurrencyTotals(totals, size = "is-small") {
+  const GC = window.MINEKUBE_GAME_CURRENCY;
+  const parts = [];
+  if (totals.premium > 0) {
+    parts.push(`<span class="mk-price ${size}"><span class="mk-price-icon">${CURRENCY_ICONS.premium}</span>${GC.amount(totals.premium)}</span>`);
+  }
+  if (totals.mythic > 0) {
+    parts.push(`<span class="mk-price is-mythic ${size}"><span class="mk-price-icon">${CURRENCY_ICONS.mythic}</span>${GC.amount(totals.mythic)}</span>`);
+  }
+  if (totals.money > 0) parts.push(money(totals.money));
+  return parts.length ? parts.join(" ") : `<span class="mk-price ${size}"><span class="mk-price-icon">${CURRENCY_ICONS.premium}</span>0</span>`;
+}
+
 function moneyOld(oldValue, currentValue) {
   if (window.MINEKUBE_FX) return window.MINEKUBE_FX.formatOld(oldValue, currentValue);
   return money(oldValue);
@@ -802,7 +863,7 @@ function createProductCard(product, index) {
           ${product.features.slice(0, 3).map(feature => `<li>${svgIcon("check")}<span>${feature}</span></li>`).join("")}
         </ul>
         <div class="product-price-row">
-          <div class="product-price"><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${moneyOld(product.oldPrice, product.price)}</del>` : ""}</div>
+          <div class="product-price">${gamePrice(product)}${product.oldPrice ? gamePriceOld(product, product.oldPrice) : ""}</div>
           <small class="mk-billing-static">${product.category === "ranks" ? "za rank" : "jednorázově"}</small>
         </div>
         <div class="product-actions">
@@ -1069,6 +1130,41 @@ function calculateTotals() {
   return { subtotal, discount, total };
 }
 
+/* Zůstatek hráče nad tlačítkem objednávky + rychlé dobití. */
+function renderCartBalance(required) {
+  const host = $("#cartBalance");
+  if (!host) return;
+  const GC = window.MINEKUBE_GAME_CURRENCY;
+  if (!GC || (!required.premium && !required.mythic)) {
+    host.innerHTML = "";
+    host.hidden = true;
+    return;
+  }
+
+  const balance = playerBalance();
+  const shortPremium = Math.max(0, required.premium - balance.premium);
+  const shortMythic = Math.max(0, required.mythic - balance.mythic);
+  const missing = shortPremium > 0 || shortMythic > 0;
+
+  host.hidden = false;
+  host.innerHTML = `
+    <div class="mk-cart-balance">
+      <div class="mk-cart-balance-copy">
+        <small>${missing ? "Nedostatek měny" : "Tvůj zůstatek"}</small>
+        <strong>${formatCurrencyTotals(
+          { premium: balance.premium, mythic: balance.mythic, money: 0 }, "is-small"
+        )}</strong>
+      </div>
+      ${missing ? '<button class="mk-topup-button" type="button" data-open-topup>Dobít měnu</button>' : ""}
+    </div>`;
+}
+
+/* Zůstatek hráče. Backend zatím účty nevede, takže jde o ukázková čísla
+   ze stávajícího rozhraní – po napojení se načte z API. */
+function playerBalance() {
+  return { premium: 503, mythic: 0 };
+}
+
 function renderCart() {
   const entries = cartEntries();
   const quantity = entries.reduce((sum, entry) => sum + entry.quantity, 0);
@@ -1078,7 +1174,7 @@ function renderCart() {
   cartItems.innerHTML = entries.map(({ product, quantity: amount }) => `
     <article class="cart-item" style="--cart-accent-rgb:${product.accentRgb}">
       <span class="cart-item-icon">${svgIcon(product.icon)}</span>
-      <div class="cart-item-copy"><small>${state.billing.get(product.id) === "subscription" ? "MĚSÍČNĚ • " : ""}${product.categoryLabel}</small><strong>${product.name}</strong><span>${money(product.price * amount)}</span></div>
+      <div class="cart-item-copy"><small>${state.billing.get(product.id) === "subscription" ? "MĚSÍČNĚ • " : ""}${product.categoryLabel}</small><strong>${product.name}</strong><span>${gamePrice(product, { size: "is-small", value: product.price * amount })}</span></div>
       <div class="cart-item-controls">
         <button type="button" data-remove-cart="${product.id}" aria-label="Odebrat ${product.name}">${svgIcon("trash")}</button>
         <div class="quantity-control">
@@ -1095,10 +1191,27 @@ function renderCart() {
   cartCheckout.hidden = !hasItems;
 
   const totals = calculateTotals();
-  cartSubtotal.textContent = money(totals.subtotal);
-  cartDiscount.textContent = `−${money(totals.discount)}`;
-  cartTotal.textContent = money(totals.total);
+  const byCurrency = cartTotalsByCurrency();
+  const discountRate = state.coupon?.rate || 0;
+
+  // Součty se počítají zvlášť pro každou měnu – hráč může mít v košíku
+  // zároveň položky za Coins i za Prisms.
+  const discounted = {
+    premium: Math.round(byCurrency.premium * (1 - discountRate)),
+    mythic: Math.round(byCurrency.mythic * (1 - discountRate)),
+    money: Math.round((byCurrency.money * (1 - discountRate) + Number.EPSILON) * 100) / 100
+  };
+  const discountAmounts = {
+    premium: byCurrency.premium - discounted.premium,
+    mythic: byCurrency.mythic - discounted.mythic,
+    money: Math.round((byCurrency.money - discounted.money + Number.EPSILON) * 100) / 100
+  };
+
+  cartSubtotal.innerHTML = formatCurrencyTotals(byCurrency);
+  cartDiscount.innerHTML = `−${formatCurrencyTotals(discountAmounts)}`;
+  cartTotal.innerHTML = formatCurrencyTotals(discounted);
   discountRow.hidden = totals.discount === 0;
+  renderCartBalance(discounted);
   renderPlayerUI();
 }
 
@@ -1206,7 +1319,7 @@ function openProductDetail(id) {
         <div class="modal-product-meta">${product.tags.map(tag => `<span>${tag}</span>`).join("")}</div>
         <div class="modal-feature-box"><strong>CO PRODUKT OBSAHUJE</strong><ul>${product.features.map(feature => `<li>${svgIcon("check")}<span>${feature}</span></li>`).join("")}</ul></div>
         <div class="modal-buy-row">
-          <div class="modal-price"><small>CENA PRODUKTU</small><span><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${moneyOld(product.oldPrice, product.price)}</del>` : ""}</span></div>
+          <div class="modal-price"><small>CENA PRODUKTU</small><span>${gamePrice(product, { size: "is-large" })}${product.oldPrice ? gamePriceOld(product, product.oldPrice) : ""}</span></div>
           <button class="modal-add-button" type="button" data-add-product="${product.id}">${svgIcon("cart")}<span>Přidat do košíku</span></button>
         </div>
       </div>
@@ -1279,15 +1392,38 @@ function renderCheckout() {
         <h3>2. Souhrn objednávky</h3>
         <p>Cenu vždy znovu vypočítá Minekube API. Úpravou webu ji nelze změnit.</p>
         <div class="checkout-summary-list">
-          ${cartEntries().map(({ product, quantity }) => `<div class="checkout-summary-item"><span>${svgIcon(product.icon)}</span><div><small>${quantity}× ${product.categoryLabel}</small><strong>${product.name}</strong></div><b>${money(effectivePrice(product) * quantity)}</b></div>`).join("")}
+          ${cartEntries().map(({ product, quantity }) => `<div class="checkout-summary-item"><span>${svgIcon(product.icon)}</span><div><small>${quantity}× ${product.categoryLabel}</small><strong>${product.name}</strong></div><b>${gamePrice(product, { size: "is-small", value: product.price * quantity })}</b></div>`).join("")}
         </div>
-        <div class="checkout-summary-total"><span>Hráč: <strong>${state.player}</strong></span><strong>${money(totals.total)}</strong></div>
+        <div class="checkout-summary-total"><span>Hráč: <strong>${state.player}</strong></span><strong>${formatCurrencyTotals(cartTotalsByCurrency())}</strong></div>
       </div>
       <div class="checkout-nav"><button class="secondary" type="button" data-checkout-back>Zpět</button><button class="primary" type="button" data-checkout-next>Pokračovat k platbě</button></div>`;
   } else if (state.checkoutStep === 3) {
     const mode = state.apiConfig?.paypalMode || "offline";
-    const unavailable = !state.apiConfig?.paypalEnabled;
     const legalReady = legalAcceptanceReady();
+    const spend = cartTotalsByCurrency();
+    const spendsGameCurrency = spend.premium > 0 || spend.mythic > 0;
+
+    // Backend zatím umí jen platbu v korunách. Dokud nezvládne útratu
+    // herní měny, nedovolíme objednávku, která se hráči zobrazuje v coinech.
+    if (spendsGameCurrency) {
+      body.innerHTML = `
+        <div class="checkout-panel">
+          <h3>3. Zaplacení herní měnou</h3>
+          <div class="payment-notice payment-error">
+            <strong>Platba herní měnou zatím není spuštěná.</strong>
+            <span>Odečítání Premium Coins a Mythic Prisms připravujeme. Zatím si můžeš dobít měnu,
+            hotové objednávky se odbaví hned, jakmile systém spustíme.</span>
+          </div>
+          <div class="checkout-summary-total"><span>Celkem k úhradě</span><strong>${formatCurrencyTotals(spend)}</strong></div>
+          <div class="checkout-nav">
+            <button class="secondary" type="button" data-checkout-back>Zpět</button>
+            <button class="primary" type="button" data-open-topup>Dobít měnu</button>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const unavailable = !state.apiConfig?.paypalEnabled;
     body.innerHTML = `
       <div class="checkout-panel paypal-checkout-panel">
         <h3>3. Souhlasy a zaplacení přes PayPal</h3>
@@ -1800,6 +1936,13 @@ function bindEvents() {
     if (currencyBack) {
       closeModal(currencyPacksModal, { restoreFocus: false });
       openModal(currencySelectModal);
+      return;
+    }
+
+    if (event.target.closest("[data-open-topup]")) {
+      closeModal(checkoutModal, { restoreFocus: false });
+      closeCart({ restoreFocus: false });
+      setTimeout(openCurrencySelector, 140);
       return;
     }
 
