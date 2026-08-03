@@ -24,6 +24,43 @@
       </svg>
     </span>`;
 
+  /* Blesky žijí MIMO tělo hubu. Hub má 3D transform (perspective +
+     preserve-3d), který potomky vtahuje do 3D kontextu a SVG výboje
+     se pak vykreslují pod jeho neprůhledným pozadím. */
+  const LIGHTNING = `
+    <span class="mk-hub-lightning" aria-hidden="true">
+      <span class="mk-hub-side mk-hub-side-mythic">
+        <svg class="mk-bolt-1" viewBox="0 0 160 110" preserveAspectRatio="none">
+          <path class="mk-bolt-glow"   d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
+          <path class="mk-bolt-mid"    d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
+          <path class="mk-bolt-core"   d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
+        </svg>
+        <svg class="mk-bolt-2" viewBox="0 0 160 110" preserveAspectRatio="none">
+          <path class="mk-bolt-glow"   d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
+          <path class="mk-bolt-mid"    d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
+          <path class="mk-bolt-core"   d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
+        </svg>
+        <svg class="mk-bolt-3" viewBox="0 0 160 110" preserveAspectRatio="none">
+          <path class="mk-bolt-thread" d="M148 46C120 30 104 66 78 48 52 30 40 74 10 56"></path>
+        </svg>
+      </span>
+      <span class="mk-hub-side mk-hub-side-premium">
+        <svg class="mk-bolt-1" viewBox="0 0 160 110" preserveAspectRatio="none">
+          <path class="mk-bolt-glow"   d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
+          <path class="mk-bolt-mid"    d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
+          <path class="mk-bolt-core"   d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
+        </svg>
+        <svg class="mk-bolt-2" viewBox="0 0 160 110" preserveAspectRatio="none">
+          <path class="mk-bolt-glow"   d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
+          <path class="mk-bolt-mid"    d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
+          <path class="mk-bolt-core"   d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
+        </svg>
+        <svg class="mk-bolt-3" viewBox="0 0 160 110" preserveAspectRatio="none">
+          <path class="mk-bolt-thread" d="M12 46C40 30 56 66 82 48 108 30 120 74 150 56"></path>
+        </svg>
+      </span>
+    </span>`;
+
   /* Vrstvy pozadí. Čistě dekorativní, proto aria-hidden. */
   const LAYERS = `
     <span class="mk-hub-universe" aria-hidden="true">
@@ -31,18 +68,6 @@
       <span class="mk-hub-nebula mk-hub-nebula-b"></span>
       <span class="mk-hub-stars"></span>
       <span class="mk-hub-scan"></span>
-    </span>
-    <span class="mk-hub-lightning" aria-hidden="true">
-      <span class="mk-hub-side mk-hub-side-mythic">
-        <svg class="mk-bolt-1" viewBox="0 0 120 90"><path d="M8 46 26 30 40 39 56 16 74 28 96 6"></path></svg>
-        <svg class="mk-bolt-2" viewBox="0 0 120 90"><path d="M10 62 30 52 44 66 62 50 80 68 100 54"></path></svg>
-        <svg class="mk-bolt-3" viewBox="0 0 120 90"><path d="M18 22 38 34 54 18 72 40"></path></svg>
-      </span>
-      <span class="mk-hub-side mk-hub-side-premium">
-        <svg class="mk-bolt-1" viewBox="0 0 120 90"><path d="M112 44 92 28 78 38 60 15 42 27 20 6"></path></svg>
-        <svg class="mk-bolt-2" viewBox="0 0 120 90"><path d="M110 64 90 54 76 68 58 52 40 70 20 56"></path></svg>
-        <svg class="mk-bolt-3" viewBox="0 0 120 90"><path d="M102 24 82 36 66 20 48 42"></path></svg>
-      </span>
     </span>
     <span class="mk-hub-core mk-hub-core-mythic" aria-hidden="true"></span>
     <span class="mk-hub-core mk-hub-core-premium" aria-hidden="true"></span>
@@ -134,6 +159,11 @@
     if (hub && !hub.querySelector(".mk-hub-universe")) {
       hub.insertAdjacentHTML("afterbegin", LAYERS);
       bindTilt(hub);
+    }
+
+    const wrap = hub?.closest(".ow-currency-hub-wrap");
+    if (wrap && !wrap.querySelector(".mk-hub-lightning")) {
+      wrap.insertAdjacentHTML("afterbegin", LIGHTNING);
     }
 
     const divider = hub?.querySelector(".ow-currency-hub-divider");
