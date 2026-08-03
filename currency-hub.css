@@ -1,0 +1,304 @@
+/* ==========================================================================
+   Minekube Store — epický hub herních měn
+   Tlačítko "+" uprostřed otevírá dobití. Kolem něj energie, jiskry a blesky.
+   ========================================================================== */
+
+/* --- rozšíření mřížky o prostřední tlačítko ------------------------------ */
+/* Hub musí povyrůst, jinak by "+" ukrojil místo popiskům měn. */
+.ow-currency-hub {
+  grid-template-columns: 1fr auto 1fr !important;
+  width: 278px !important;
+  padding-right: 26px !important;
+  transition: transform .28s cubic-bezier(.2, .8, .2, 1), filter .28s ease, box-shadow .28s ease;
+}
+
+/* Popisky měn se musí vejít vedle "+", jinak se ořežou. */
+.ow-currency-hub-segment {
+  grid-template-columns: 24px 1fr !important;
+  gap: 7px !important;
+}
+
+.ow-currency-hub-copy small {
+  font-size: 6.4px !important;
+  letter-spacing: .055em !important;
+}
+
+.ow-currency-hub-copy b { font-size: 17px; }
+
+.ow-currency-hub-segment .ow-currency-gem,
+.ow-currency-hub-segment .ow-currency-coin { transform: scale(.8) !important; }
+
+.ow-currency-hub-arrow { right: 9px !important; }
+
+.ow-currency-hub:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .1),
+    0 14px 38px rgba(0, 0, 0, .34),
+    0 0 34px rgba(255, 76, 170, .14);
+}
+
+/* Segmenty ustoupí, ať má "+" místo. */
+.ow-currency-hub-segment { padding: 7px 4px 7px 9px !important; }
+.ow-currency-hub-segment.is-premium { padding-left: 6px !important; }
+
+/* --- prostřední tlačítko "+" --------------------------------------------- */
+.mk-hub-plus {
+  position: relative;
+  z-index: 6;
+  align-self: center;
+  justify-self: center;
+  width: 34px;
+  height: 34px;
+  margin: 0 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: linear-gradient(150deg, #ff9d2f, #ff4caa 52%, #a855f7);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .18) inset,
+    0 4px 14px rgba(255, 76, 170, .38),
+    0 0 20px rgba(255, 157, 47, .28);
+  transition: transform .24s cubic-bezier(.2, .8, .2, 1), box-shadow .24s ease, filter .24s ease;
+  -webkit-tap-highlight-color: transparent;
+  overflow: visible;
+}
+
+/* pomalé dýchání, aby tlačítko žilo i v klidu */
+.mk-hub-plus::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 15px;
+  background: radial-gradient(circle, rgba(255, 137, 90, .42), transparent 68%);
+  opacity: .55;
+  animation: mkHubBreathe 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* rotující prstenec energie */
+.mk-hub-plus::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 17px;
+  background: conic-gradient(from 0deg,
+    transparent, rgba(255, 210, 28, .85), transparent 26%,
+    rgba(255, 76, 170, .8), transparent 52%,
+    rgba(93, 224, 255, .75), transparent 78%,
+    rgba(255, 210, 28, .85));
+  opacity: 0;
+  animation: mkHubSpin 3.2s linear infinite;
+  transition: opacity .28s ease;
+  pointer-events: none;
+  mask: radial-gradient(circle, transparent 58%, #000 62%);
+  -webkit-mask: radial-gradient(circle, transparent 58%, #000 62%);
+}
+
+.mk-hub-plus svg {
+  position: relative;
+  z-index: 3;
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .45));
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+}
+
+/* --- reakce na najetí ----------------------------------------------------- */
+.ow-currency-hub:hover .mk-hub-plus,
+.mk-hub-plus:hover,
+.mk-hub-plus:focus-visible {
+  transform: scale(1.14);
+  filter: brightness(1.12);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .3) inset,
+    0 6px 20px rgba(255, 76, 170, .55),
+    0 0 34px rgba(255, 157, 47, .5);
+}
+
+.ow-currency-hub:hover .mk-hub-plus::after,
+.mk-hub-plus:hover::after,
+.mk-hub-plus:focus-visible::after { opacity: 1; }
+
+.mk-hub-plus:hover svg,
+.mk-hub-plus:focus-visible svg { transform: rotate(90deg) scale(1.08); }
+
+.mk-hub-plus:active { transform: scale(1.02); }
+
+.mk-hub-plus:focus-visible {
+  outline: 2px solid rgba(255, 210, 28, .9);
+  outline-offset: 3px;
+}
+
+/* --- jiskry kolem tlačítka ------------------------------------------------ */
+.mk-hub-sparks {
+  position: absolute;
+  inset: -16px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.ow-currency-hub:hover .mk-hub-sparks,
+.mk-hub-plus:focus-visible + .mk-hub-sparks { opacity: 1; }
+
+.mk-hub-sparks i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: #ffd21c;
+  box-shadow: 0 0 6px 1px rgba(255, 210, 28, .9);
+  animation: mkHubSpark 1.6s ease-out infinite;
+}
+
+.mk-hub-sparks i:nth-child(1) { --sx:  20px; --sy: -17px; animation-delay: 0s;    }
+.mk-hub-sparks i:nth-child(2) { --sx: -22px; --sy: -12px; animation-delay: .22s; background: #ff4caa; box-shadow: 0 0 6px 1px rgba(255,76,170,.9); }
+.mk-hub-sparks i:nth-child(3) { --sx:  24px; --sy:  14px; animation-delay: .45s; background: #5de0ff; box-shadow: 0 0 6px 1px rgba(93,224,255,.9); }
+.mk-hub-sparks i:nth-child(4) { --sx: -18px; --sy:  18px; animation-delay: .68s; }
+.mk-hub-sparks i:nth-child(5) { --sx:   2px; --sy: -24px; animation-delay: .9s;  background: #ff9d2f; box-shadow: 0 0 6px 1px rgba(255,157,47,.9); }
+.mk-hub-sparks i:nth-child(6) { --sx:  -4px; --sy:  23px; animation-delay: 1.15s; background: #5de0ff; box-shadow: 0 0 6px 1px rgba(93,224,255,.9); }
+
+/* --- blesk při kliknutí --------------------------------------------------- */
+.mk-hub-bolt {
+  position: absolute;
+  inset: -22px;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.mk-hub-bolt svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #fff7d6;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 5px rgba(255, 233, 150, .95));
+}
+
+.mk-hub-plus.is-charged .mk-hub-bolt { animation: mkHubBolt .5s ease-out; }
+
+/* rázová vlna při kliknutí */
+.mk-hub-plus.is-charged::before {
+  animation: mkHubShock .5s ease-out;
+}
+
+/* --- animace -------------------------------------------------------------- */
+@keyframes mkHubBreathe {
+  0%, 100% { opacity: .42; transform: scale(1); }
+  50%      { opacity: .78; transform: scale(1.1); }
+}
+
+@keyframes mkHubSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes mkHubSpark {
+  0%   { transform: translate(0, 0) scale(0); opacity: 0; }
+  18%  { opacity: 1; transform: translate(calc(var(--sx) * .3), calc(var(--sy) * .3)) scale(1.15); }
+  100% { transform: translate(var(--sx), var(--sy)) scale(0); opacity: 0; }
+}
+
+@keyframes mkHubBolt {
+  0%   { opacity: 0; transform: scale(.7); }
+  12%  { opacity: 1; transform: scale(1.05); }
+  38%  { opacity: .5; }
+  55%  { opacity: 1; transform: scale(1.14); }
+  100% { opacity: 0; transform: scale(1.3); }
+}
+
+@keyframes mkHubShock {
+  0%   { opacity: .95; transform: scale(.75); }
+  100% { opacity: 0;   transform: scale(2.5); }
+}
+
+/* jemné cuknutí celého hubu při kliknutí */
+.ow-currency-hub.is-charged { animation: mkHubKick .42s cubic-bezier(.2, .8, .2, 1); }
+
+@keyframes mkHubKick {
+  0%   { transform: scale(1); }
+  32%  { transform: scale(1.022); }
+  100% { transform: scale(1); }
+}
+
+/* --- zvýraznění zůstatku při dobití --------------------------------------- */
+.ow-currency-hub-copy b {
+  transition: color .3s ease, text-shadow .3s ease;
+}
+
+.ow-currency-hub-segment.is-flash .ow-currency-hub-copy b {
+  color: #fff6c9;
+  text-shadow: 0 0 14px rgba(255, 210, 28, .85);
+}
+
+/* Na užších displejích se hub zúží zpět, ale "+" zůstane. */
+@media (max-width: 1400px) {
+  .ow-currency-hub { width: 266px !important; padding-right: 22px !important; }
+  .ow-currency-hub-copy small { font-size: 6px !important; letter-spacing: .01em !important; }
+  .ow-currency-hub-copy b { font-size: 16px; }
+  .ow-currency-hub-segment { grid-template-columns: 21px 1fr !important; gap: 6px !important; }
+  .mk-hub-plus { width: 31px; height: 31px; }
+}
+
+/* --- mobilní tlačítko měn -------------------------------------------------- */
+/* Vpravo musí zbýt místo na "+", jinak přeteče přes popisek měny. */
+.mobile-currency-button {
+  position: relative;
+  padding-right: 52px !important;
+}
+
+.mk-hub-plus.is-mobile {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+}
+
+.mk-hub-plus.is-mobile:hover,
+.mk-hub-plus.is-mobile:focus-visible { transform: translateY(-50%) scale(1.12); }
+
+.mk-hub-plus.is-mobile:active { transform: translateY(-50%) scale(1.02); }
+
+.mk-hub-plus.is-mobile svg { width: 15px; height: 15px; }
+
+/* --- světlý motiv ---------------------------------------------------------- */
+:root[data-theme="light"] .mk-hub-plus {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .4) inset,
+    0 4px 14px rgba(255, 76, 170, .3),
+    0 0 18px rgba(255, 157, 47, .22);
+}
+
+/* --- ohled na uživatele, kteří animace nechtějí ---------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .mk-hub-plus,
+  .mk-hub-plus svg,
+  .mk-hub-plus::before,
+  .mk-hub-plus::after,
+  .mk-hub-sparks,
+  .mk-hub-sparks i,
+  .ow-currency-hub,
+  .ow-currency-hub.is-charged,
+  .mk-hub-plus.is-charged .mk-hub-bolt,
+  .mk-hub-plus.is-charged::before {
+    animation: none !important;
+    transition-duration: .01ms !important;
+  }
+
+  .mk-hub-sparks { display: none; }
+}

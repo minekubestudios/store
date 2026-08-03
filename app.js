@@ -2151,6 +2151,7 @@ function bindEvents() {
 
 /** Otevře/zavře modál store stylem, ať profil vypadá stejně jako zbytek. */
 window.mkOpenModal = modal => openModal(modal);
+window.mkOpenCurrencyTopup = () => openCurrencySelector();
 window.mkCloseModal = modal => closeModal(modal);
 window.mkToast = (title, message) => showToast(title, message);
 
