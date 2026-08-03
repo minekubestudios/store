@@ -1,8 +1,9 @@
 /* ==========================================================================
-   Minekube Store — úpravy karty produktu
+   Minekube Store — karta produktu a nákup herních měn
    1) čisté pozadí náhledu (bez mřížky, rotujícího gradientu a kroužků)
-   2) přepínač jednorázově / předplatné místo tlačítka detailu
-   3) detail se otevírá kliknutím na celou kartu
+   2) detail se otevírá kliknutím na celou kartu
+   3) záložky jednorázové dobití / měsíční předplatné u herních měn
+   4) jednotné zaoblení napříč obchodem
    ========================================================================== */
 
 /* --- 1) čisté pozadí ---------------------------------------------------- */
@@ -22,7 +23,7 @@
     linear-gradient(160deg, rgba(var(--product-accent-rgb), .05), rgba(0, 0, 0, .12));
 }
 
-/* --- 3) celá karta je klikací ------------------------------------------- */
+/* --- 2) celá karta je klikací ------------------------------------------- */
 .store-product-card {
   cursor: pointer;
 }
@@ -32,7 +33,6 @@
   outline-offset: 3px;
 }
 
-/* Nápověda, že se dá kliknout – ukáže se při najetí myší. */
 .product-detail-hint {
   position: absolute;
   z-index: 6;
@@ -88,93 +88,175 @@
   .product-detail-hint { display: none; }
 }
 
-/* --- 2) přepínač jednorázově / předplatné -------------------------------- */
-.product-price-row {
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.mk-billing {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: 11px;
-  border: 1px solid rgba(255, 255, 255, .09);
-  background: rgba(255, 255, 255, .04);
-}
-
-.mk-billing button {
-  border: 0;
-  border-radius: 8px;
-  padding: 6px 11px;
-  background: transparent;
-  color: rgba(240, 236, 250, .55);
-  font: 700 9.5px/1 "Inter", system-ui, sans-serif;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background .16s ease, color .16s ease;
-  white-space: nowrap;
-}
-
-.mk-billing button:hover { color: rgba(240, 236, 250, .85); }
-
-.mk-billing button[aria-pressed="true"] {
-  background: rgba(var(--product-accent-rgb), .18);
-  color: rgb(var(--product-accent-rgb));
-  box-shadow: inset 0 0 0 1px rgba(var(--product-accent-rgb), .3);
-}
-
-.mk-billing button:focus-visible {
-  outline: 2px solid rgba(var(--product-accent-rgb), .8);
-  outline-offset: 1px;
-}
-
-/* jednorázový produkt bez předplatného – jen popisek jako dřív */
 .mk-billing-static {
   color: #8d8299;
   font: 600 10px/1 "Inter", system-ui, sans-serif;
   letter-spacing: .04em;
 }
 
-/* poznámka pod cenou, když je zvolené předplatné */
-.mk-billing-note {
-  flex-basis: 100%;
-  margin-top: -2px;
-  color: rgba(var(--product-accent-rgb), .85);
-  font: 600 10px/1.4 "Inter", system-ui, sans-serif;
-}
-
-/* --- detail v okně produktu --------------------------------------------- */
-.mk-modal-billing {
+/* --- 3) záložky nákupu herní měny ---------------------------------------- */
+.mk-currency-billing {
   display: grid;
-  gap: 9px;
-  margin: 4px 0 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: min(100%, 720px);
+  margin: 0 auto 22px;
+  padding: 6px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  background: rgba(10, 8, 18, .55);
+  backdrop-filter: blur(12px);
 }
 
-.mk-modal-billing > span {
-  font: 700 9.5px/1 "Inter", system-ui, sans-serif;
-  letter-spacing: .15em;
+.mk-currency-billing button {
+  border: 1px solid transparent;
+  border-radius: 17px;
+  padding: 14px 18px;
+  background: transparent;
+  color: rgba(226, 222, 240, .45);
+  font: 800 11.5px/1 "Inter", system-ui, sans-serif;
+  letter-spacing: .13em;
   text-transform: uppercase;
-  color: #8d8299;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
 }
 
-.mk-modal-billing .mk-billing { align-self: start; }
+.mk-currency-billing button:hover {
+  color: rgba(226, 222, 240, .8);
+}
+
+.mk-currency-billing button[aria-pressed="true"] {
+  background: rgba(18, 15, 28, .95);
+  border-color: rgba(255, 255, 255, .12);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .35);
+}
+
+.mk-currency-billing button:focus-visible {
+  outline: 2px solid rgba(var(--pack-accent-rgb, 202, 108, 255), .8);
+  outline-offset: 2px;
+}
+
+/* U předplatného doplníme na kartách balíčků poznámku o obnovení. */
+.currency-pack-recurring {
+  display: block;
+  margin-top: 4px;
+  color: rgba(226, 222, 240, .5);
+  font: 600 9.5px/1 "Inter", system-ui, sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+#currencyPacksModal[data-currency-billing="subscription"] .currency-pack-card {
+  border-color: rgba(var(--pack-accent-rgb), .45);
+}
+
+/* --- 4) jednotné zaoblení ------------------------------------------------ */
+.store-product-card,
+.product-modal-layout,
+.currency-screen-panel,
+.currency-packs-panel,
+.store-modal,
+.player-modal-card,
+.checkout-modal-card {
+  border-radius: 26px !important;
+  overflow: hidden;
+}
+
+.currency-pack-card {
+  border-radius: 22px !important;
+  overflow: hidden;
+}
+
+.currency-pack-art {
+  border-radius: 18px 18px 0 0;
+}
+
+.product-visual {
+  border-radius: 26px 26px 0 0;
+}
+
+.add-to-cart-button,
+.modal-add-button,
+.place-order-button,
+.save-player-button,
+.currency-screen-cancel,
+.currency-back-button {
+  border-radius: 16px !important;
+}
+
+.product-emblem {
+  border-radius: 30px !important;
+}
+
+.cart-item,
+.checkout-panel,
+.checkout-summary-item,
+.modal-feature-box,
+.legal-consent-box,
+.cart-player-summary {
+  border-radius: 18px !important;
+}
+
+.store-search,
+.coupon-row label,
+.coupon-row button,
+.player-input-wrap,
+.product-detail-button,
+.icon-button,
+.store-cart-button,
+.store-home-link,
+.ow-player-chip,
+.ow-currency-hub {
+  border-radius: 15px !important;
+}
+
+.currency-choice-card {
+  border-radius: 24px !important;
+  overflow: hidden;
+}
 
 /* --- světlý motiv -------------------------------------------------------- */
-:root[data-theme="light"] .mk-billing {
-  border-color: rgba(20, 14, 32, .12);
-  background: rgba(20, 14, 32, .035);
-}
-
-:root[data-theme="light"] .mk-billing button { color: rgba(36, 28, 52, .55); }
-:root[data-theme="light"] .mk-billing button:hover { color: rgba(36, 28, 52, .9); }
-
 :root[data-theme="light"] .product-detail-hint {
   background: rgba(255, 255, 255, .9);
   color: #241c34;
 }
 
+:root[data-theme="light"] .mk-currency-billing {
+  border-color: rgba(20, 14, 32, .1);
+  background: rgba(255, 255, 255, .6);
+}
+
+:root[data-theme="light"] .mk-currency-billing button {
+  color: rgba(36, 28, 52, .45);
+}
+
+:root[data-theme="light"] .mk-currency-billing button:hover {
+  color: rgba(36, 28, 52, .85);
+}
+
+:root[data-theme="light"] .mk-currency-billing button[aria-pressed="true"] {
+  background: #fff;
+  border-color: rgba(20, 14, 32, .12);
+  color: #1d1728;
+}
+
+/* --- responzivita -------------------------------------------------------- */
+@media (max-width: 720px) {
+  .mk-currency-billing {
+    margin-bottom: 16px;
+    border-radius: 18px;
+  }
+
+  .mk-currency-billing button {
+    padding: 12px 10px;
+    border-radius: 14px;
+    font-size: 10px;
+    letter-spacing: .08em;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .product-detail-hint,
-  .mk-billing button { transition: none; }
+  .mk-currency-billing button { transition: none; }
 }
