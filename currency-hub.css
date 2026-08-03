@@ -1,9 +1,22 @@
+/* ==========================================================================
+   Minekube Store — hub herních měn
+   Kompletně nový design: symetrický, zarovnaný do řady s ostatními tlačítky
+   v hlavičce, s bohatou vrstvou efektů.
+
+   Rozměry vycházejí z okolních prvků:
+     profil / přepínač měny … 44 px, radius 14 px
+     košík                  … 46 px, radius 15 px
+   Hub proto drží 46 px a radius 15 px – žádný šikmý ořez jako dřív.
+
+   Paleta Minekube:
+     oranžová #ff9d2f · růžová #ff4caa · fialová #a855f7
+     azurová  #5de0ff · zlatá   #ffd21c
+   ========================================================================== */
 
 /* ==========================================================================
-   Oprava rozložení hlavičky
-   Hlavička měla tři stejně široké sloupce, ale pravá skupina potřebuje víc
-   místa než levá – navigace se pak schovávala za hub s měnami.
-   Sloupce teď respektují skutečnou šířku obsahu.
+   1) Rozložení hlavičky
+   Hlavička měla tři stejně široké sloupce, ale pravá skupina potřebuje
+   skoro dvojnásobek – navigace se schovávala za hub.
    ========================================================================== */
 .store-nav-wrap {
   grid-template-columns: auto minmax(0, 1fr) auto !important;
@@ -12,8 +25,6 @@
 }
 
 .store-desktop-nav {
-  /* Navigace navazuje na logo. Vycentrovaná se při širokém okně
-     překrývala s logem i s pravou skupinou. */
   justify-self: start !important;
   min-width: 0;
   overflow: hidden;
@@ -29,135 +40,151 @@
   align-items: center !important;
 }
 
-/* Hub je neprůhledný, aby přes něj nikdy nic neprosvítalo. */
-.ow-currency-hub-wrap { z-index: 40; }
-
-.ow-currency-hub {
-  background: linear-gradient(180deg, #12132b 0%, #07071a 100%) !important;
-}
-
-/* Na užších displejích ustoupí nejdřív méně důležité odkazy –
-   všechny zůstávají dostupné v mobilním menu a v patičce. */
-/* Pravá skupina zabírá ~910 px, takže i na širokém okně zbývá na navigaci
-   jen omezené místo. Odkazy proto ubíráme postupně – všechny zůstávají
-   v mobilním menu a v patičce. */
-@media (max-width: 1990px) {
-  .store-desktop-nav a[data-nav-section="faq"] { display: none; }
-}
-
-@media (max-width: 1660px) {
-  .store-desktop-nav a[data-category-link="currency"] { display: none; }
+/* Odkazy ubývají postupně; všechny zůstávají v mobilním menu i v patičce. */
+@media (max-width: 2100px) { .store-desktop-nav a[data-nav-section="faq"] { display: none; } }
+@media (max-width: 1660px) { .store-desktop-nav a[data-category-link="currency"] { display: none; } }
+@media (max-width: 1560px) {
   .store-home-link span { display: none; }
   .store-home-link { padding-inline: 10px !important; }
 }
-
-@media (max-width: 1480px) {
-  .store-desktop-nav a[data-category-link="keys"] { display: none; }
-}
-
-@media (max-width: 1380px) {
-  .store-desktop-nav a[data-category-link="ranks"] { display: none; }
-}
-
-@media (max-width: 1200px) {
-  .store-desktop-nav { display: none !important; }
-}
+@media (max-width: 1480px) { .store-desktop-nav a[data-category-link="keys"] { display: none; } }
+@media (max-width: 1380px) { .store-desktop-nav a[data-category-link="ranks"] { display: none; } }
+@media (max-width: 1200px) { .store-desktop-nav { display: none !important; } }
 
 /* ==========================================================================
-   Minekube Store — epický hub herních měn
-   Tlačítko "+" uprostřed otevírá dobití. Kolem něj energie, jiskry a blesky.
+   2) Tělo hubu — symetrické, v řadě s ostatními tlačítky
    ========================================================================== */
-
-/* --- rozšíření mřížky o prostřední tlačítko ------------------------------ */
-/* Hub musí povyrůst, jinak by "+" ukrojil místo popiskům měn. */
-.ow-currency-hub {
-  grid-template-columns: 1fr auto 1fr !important;
-  width: 284px !important;
-  padding-right: 26px !important;
-  transition: transform .28s cubic-bezier(.2, .8, .2, 1), filter .28s ease, box-shadow .28s ease;
+.ow-currency-hub-wrap {
+  height: 46px !important;
+  z-index: 40;
 }
 
-/* Popisky měn se musí vejít vedle "+", jinak se ořežou. */
+.ow-currency-hub {
+  position: relative;
+  isolation: isolate;
+  height: 46px !important;
+  width: 296px !important;
+  padding: 0 !important;
+  /* Symetrie: oba segmenty stejně široké, "+" přesně uprostřed. */
+  display: grid !important;
+  grid-template-columns: 1fr 46px 1fr !important;
+  align-items: stretch !important;
+  border-radius: 15px !important;
+  /* Žádný šikmý ořez – ten hub vytrhával z řady. */
+  clip-path: none !important;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .09) !important;
+  background: linear-gradient(180deg, #14142e 0%, #0a0a1e 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .05),
+    0 6px 18px rgba(0, 0, 0, .3);
+  cursor: pointer;
+  transition:
+    transform .3s cubic-bezier(.2, .8, .2, 1),
+    border-color .3s ease,
+    box-shadow .3s ease;
+}
+
+/* Šipku z původního designu nepotřebujeme – narušovala symetrii. */
+.ow-currency-hub-arrow { display: none !important; }
+
+/* --- segmenty s měnami ---------------------------------------------------- */
 .ow-currency-hub-segment {
-  grid-template-columns: 24px 1fr !important;
-  gap: 7px !important;
+  position: relative;
+  z-index: 6;
+  min-width: 0;
+  display: flex !important;
+  align-items: center;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  grid-template-columns: none !important;
+}
+
+/* Levý segment zarovnaný doleva, pravý doprava – zrcadlově. */
+.ow-currency-hub-segment.is-mythic  { justify-content: flex-start; }
+.ow-currency-hub-segment.is-premium { justify-content: flex-end; flex-direction: row-reverse; }
+
+.ow-currency-hub-segment .ow-currency-gem,
+.ow-currency-hub-segment .ow-currency-coin {
+  flex: 0 0 auto;
+  transform: scale(.78) !important;
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1), filter .3s ease;
+}
+
+.ow-currency-hub-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  align-content: center;
+}
+
+.ow-currency-hub-segment.is-premium .ow-currency-hub-copy { text-align: right; }
+
+.ow-currency-hub-copy b {
+  color: #fff;
+  font: 800 16px/1 "Inter", system-ui, sans-serif;
+  letter-spacing: .01em;
+  transition: color .3s ease, text-shadow .3s ease;
 }
 
 .ow-currency-hub-copy small {
-  font-size: 6.4px !important;
-  letter-spacing: .04em !important;
+  color: #9aa2bd;
+  font: 900 6.2px/1 "Inter", system-ui, sans-serif !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color .3s ease;
 }
 
-.ow-currency-hub-copy b { font-size: 17px; }
-
-.ow-currency-hub-segment .ow-currency-gem,
-.ow-currency-hub-segment .ow-currency-coin { transform: scale(.8) !important; }
-
-.ow-currency-hub-arrow { right: 9px !important; }
-
-.ow-currency-hub:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .1),
-    0 14px 38px rgba(0, 0, 0, .34),
-    0 0 34px rgba(255, 76, 170, .14);
-}
-
-/* Segmenty ustoupí, ať má "+" místo. */
-.ow-currency-hub-segment { padding: 7px 4px 7px 9px !important; }
-.ow-currency-hub-segment.is-premium { padding-left: 6px !important; }
+/* barevné odlišení podle měny */
+.ow-currency-hub-segment.is-mythic  .ow-currency-hub-copy small { color: #6fb8d4; }
+.ow-currency-hub-segment.is-premium .ow-currency-hub-copy small { color: #c9a961; }
 
 /* ==========================================================================
-   Živý hub — animace po celé ploše tlačítka
-   Vrstvy: aura → mřížka → paprsky → částice → okrajová linka → obsah
-   Barvy Minekube: oranžová #ff9d2f, růžová #ff4caa, fialová #a855f7,
-   azurová #5de0ff, zlatá #ffd21c
+   3) Vrstvy efektů (odspodu nahoru)
    ========================================================================== */
 
-.ow-currency-hub {
-  isolation: isolate;
-  border-color: rgba(255, 157, 47, .22) !important;
-  border-bottom-color: rgba(255, 76, 170, .55) !important;
-}
-
-/* --- 1) dýchající aura na pozadí ----------------------------------------- */
+/* --- aura: barevná mlha se přelévá ---------------------------------------- */
 .mk-hub-aura {
   position: absolute;
-  inset: -40%;
+  inset: -50%;
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(38% 60% at 18% 50%, rgba(93, 224, 255, .20), transparent 70%),
-    radial-gradient(38% 60% at 82% 50%, rgba(255, 210, 28, .18), transparent 70%),
-    radial-gradient(30% 50% at 50% 50%, rgba(255, 76, 170, .16), transparent 72%);
+    radial-gradient(34% 62% at 16% 50%, rgba(93, 224, 255, .22), transparent 70%),
+    radial-gradient(34% 62% at 84% 50%, rgba(255, 210, 28, .20), transparent 70%),
+    radial-gradient(26% 52% at 50% 50%, rgba(255, 76, 170, .18), transparent 72%);
   animation: mkAuraDrift 9s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 @keyframes mkAuraDrift {
-  0%, 100% { transform: translate3d(-2%, 0, 0) scale(1);    opacity: .75; }
-  50%      { transform: translate3d(2%, 0, 0)  scale(1.08); opacity: 1;   }
+  0%, 100% { transform: translate3d(-2.5%, 0, 0) scale(1);    opacity: .7; }
+  50%      { transform: translate3d(2.5%, 0, 0)  scale(1.09); opacity: 1;  }
 }
 
-/* --- 2) technická mřížka ------------------------------------------------- */
+/* --- hexagonální síť: odkaz na Minecraft bloky ---------------------------- */
 .mk-hub-grid {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: .3;
+  opacity: .26;
   background-image:
-    linear-gradient(rgba(255, 255, 255, .06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
-  background-size: 16px 16px;
-  mask-image: radial-gradient(circle at center, #000 20%, transparent 78%);
-  -webkit-mask-image: radial-gradient(circle at center, #000 20%, transparent 78%);
-  animation: mkGridPan 14s linear infinite;
+    linear-gradient(rgba(255, 255, 255, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .045) 1px, transparent 1px);
+  background-size: 13px 13px;
+  mask-image: radial-gradient(ellipse at center, #000 18%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 18%, transparent 80%);
+  animation: mkGridPan 16s linear infinite;
+  transition: opacity .3s ease;
 }
 
 @keyframes mkGridPan {
-  to { background-position: 16px 16px, 16px 16px; }
+  to { background-position: 13px 13px, 13px 13px; }
 }
 
-/* --- 3) přelétající paprsky (lineny) ------------------------------------- */
+/* --- skenovací paprsky ---------------------------------------------------- */
 .mk-hub-beams {
   position: absolute;
   inset: 0;
@@ -168,34 +195,35 @@
 
 .mk-hub-beams i {
   position: absolute;
-  top: -30%;
-  bottom: -30%;
-  width: 46px;
-  transform: skewX(-19deg);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .11), transparent);
-  animation: mkBeamSweep 4.6s cubic-bezier(.5, 0, .5, 1) infinite;
+  top: -40%;
+  bottom: -40%;
+  width: 42px;
+  transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .12), transparent);
+  animation: mkBeamSweep 5s cubic-bezier(.45, 0, .55, 1) infinite;
+  will-change: transform, opacity;
 }
 
 .mk-hub-beams i:nth-child(1) { animation-delay: 0s; }
 .mk-hub-beams i:nth-child(2) {
-  width: 20px;
-  animation-delay: .55s;
-  background: linear-gradient(90deg, transparent, rgba(93, 224, 255, .32), transparent);
+  width: 18px;
+  animation-delay: .7s;
+  background: linear-gradient(90deg, transparent, rgba(93, 224, 255, .38), transparent);
 }
 .mk-hub-beams i:nth-child(3) {
-  width: 28px;
-  animation-delay: 2.4s;
-  background: linear-gradient(90deg, transparent, rgba(255, 210, 28, .26), transparent);
+  width: 26px;
+  animation-delay: 2.6s;
+  background: linear-gradient(90deg, transparent, rgba(255, 210, 28, .3), transparent);
 }
 
 @keyframes mkBeamSweep {
-  0%        { left: -22%; opacity: 0; }
-  12%       { opacity: 1; }
-  62%       { opacity: 1; }
-  100%      { left: 112%; opacity: 0; }
+  0%   { transform: translateX(-140px) skewX(-20deg); opacity: 0; }
+  10%  { opacity: 1; }
+  65%  { opacity: 1; }
+  100% { transform: translateX(300px) skewX(-20deg);  opacity: 0; }
 }
 
-/* --- 4) částice stoupající vzhůru ---------------------------------------- */
+/* --- stoupající částice --------------------------------------------------- */
 .mk-hub-dust {
   position: absolute;
   inset: 0;
@@ -206,33 +234,34 @@
 
 .mk-hub-dust i {
   position: absolute;
-  bottom: -6px;
+  bottom: -4px;
   width: 2px;
   height: 2px;
   border-radius: 50%;
   background: #ffd88a;
-  box-shadow: 0 0 5px 1px rgba(255, 200, 110, .8);
+  box-shadow: 0 0 5px 1px rgba(255, 200, 110, .85);
   opacity: 0;
-  animation: mkDustRise 5.2s linear infinite;
+  animation: mkDustRise 5.4s linear infinite;
+  will-change: transform, opacity;
 }
 
-.mk-hub-dust i:nth-child(1) { left:  9%; animation-delay: 0s;    }
-.mk-hub-dust i:nth-child(2) { left: 21%; animation-delay: 1.4s; background: #7fe6ff; box-shadow: 0 0 5px 1px rgba(127,230,255,.8); }
-.mk-hub-dust i:nth-child(3) { left: 34%; animation-delay: 2.9s; }
-.mk-hub-dust i:nth-child(4) { left: 47%; animation-delay: .7s;  background: #ff9ad2; box-shadow: 0 0 5px 1px rgba(255,154,210,.8); }
-.mk-hub-dust i:nth-child(5) { left: 61%; animation-delay: 3.6s; }
-.mk-hub-dust i:nth-child(6) { left: 74%; animation-delay: 2.1s; background: #7fe6ff; box-shadow: 0 0 5px 1px rgba(127,230,255,.8); }
-.mk-hub-dust i:nth-child(7) { left: 86%; animation-delay: 4.3s; }
-.mk-hub-dust i:nth-child(8) { left: 95%; animation-delay: 1.1s; background: #ff9ad2; box-shadow: 0 0 5px 1px rgba(255,154,210,.8); }
+.mk-hub-dust i:nth-child(1) { left:  7%; animation-delay: 0s;   }
+.mk-hub-dust i:nth-child(2) { left: 18%; animation-delay: 1.5s; background: #7fe6ff; box-shadow: 0 0 5px 1px rgba(127,230,255,.85); }
+.mk-hub-dust i:nth-child(3) { left: 29%; animation-delay: 3.1s; }
+.mk-hub-dust i:nth-child(4) { left: 41%; animation-delay: .8s;  background: #ff9ad2; box-shadow: 0 0 5px 1px rgba(255,154,210,.85); }
+.mk-hub-dust i:nth-child(5) { left: 59%; animation-delay: 3.8s; }
+.mk-hub-dust i:nth-child(6) { left: 71%; animation-delay: 2.2s; background: #7fe6ff; box-shadow: 0 0 5px 1px rgba(127,230,255,.85); }
+.mk-hub-dust i:nth-child(7) { left: 83%; animation-delay: 4.5s; background: #ff9ad2; box-shadow: 0 0 5px 1px rgba(255,154,210,.85); }
+.mk-hub-dust i:nth-child(8) { left: 93%; animation-delay: 1.2s; }
 
 @keyframes mkDustRise {
-  0%   { transform: translateY(0) scale(.5);      opacity: 0; }
-  14%  { opacity: 1; }
-  72%  { opacity: .85; }
-  100% { transform: translateY(-62px) scale(1.1); opacity: 0; }
+  0%   { transform: translateY(0) scale(.4);      opacity: 0; }
+  16%  { opacity: 1; }
+  70%  { opacity: .8; }
+  100% { transform: translateY(-52px) scale(1.1); opacity: 0; }
 }
 
-/* --- 5) běžící linka po spodní hraně ------------------------------------- */
+/* --- světelná linka po spodní hraně --------------------------------------- */
 .mk-hub-line {
   position: absolute;
   left: 0;
@@ -243,7 +272,7 @@
   pointer-events: none;
   overflow: hidden;
   background: linear-gradient(90deg,
-    rgba(93, 224, 255, .5), rgba(255, 76, 170, .5), rgba(255, 210, 28, .5));
+    rgba(93, 224, 255, .45), rgba(255, 76, 170, .5), rgba(255, 210, 28, .45));
 }
 
 .mk-hub-line::after {
@@ -251,63 +280,102 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 34%;
+  left: 0;
+  width: 32%;
   background: linear-gradient(90deg, transparent, #fff, transparent);
-  filter: blur(.4px);
-  animation: mkLineRun 3.4s cubic-bezier(.45, 0, .55, 1) infinite;
+  animation: mkLineRun 3.6s cubic-bezier(.45, 0, .55, 1) infinite;
+  will-change: transform;
 }
 
 @keyframes mkLineRun {
-  0%   { left: -36%; }
-  100% { left: 104%; }
+  0%   { transform: translateX(-110%); }
+  100% { transform: translateX(420%); }
 }
 
-/* Obsah hubu musí zůstat nad všemi vrstvami. */
-.ow-currency-hub-segment,
-.ow-currency-hub-arrow { position: relative; z-index: 6; }
+/* --- obíhající světelný okraj --------------------------------------------- */
+.mk-hub-rim {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 15px;
+  padding: 1px;
+  background: conic-gradient(from 0deg,
+    transparent 0deg, rgba(93, 224, 255, .9) 22deg, transparent 60deg,
+    transparent 180deg, rgba(255, 157, 47, .85) 202deg, transparent 240deg);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  opacity: 0;
+  animation: mkRimSpin 4s linear infinite;
+  transition: opacity .35s ease;
+  will-change: transform;
+}
 
-/* --- reakce celého hubu na najetí ---------------------------------------- */
-.ow-currency-hub:hover .mk-hub-aura     { animation-duration: 4.5s; }
-.ow-currency-hub:hover .mk-hub-grid     { opacity: .5; }
-.ow-currency-hub:hover .mk-hub-beams i  { animation-duration: 2.3s; }
-.ow-currency-hub:hover .mk-hub-dust i   { animation-duration: 3s; }
-.ow-currency-hub:hover .mk-hub-line::after { animation-duration: 1.8s; }
+@keyframes mkRimSpin {
+  to { transform: rotate(360deg); }
+}
 
+/* ==========================================================================
+   4) Reakce celého hubu na najetí myší
+   ========================================================================== */
 .ow-currency-hub:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 157, 47, .4) !important;
+  transform: translateY(-2px);
+  border-color: rgba(255, 157, 47, .34) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .09),
+    0 12px 30px rgba(0, 0, 0, .4),
+    0 0 30px rgba(255, 76, 170, .18);
 }
 
-/* zvýraznění čísel při najetí */
+.ow-currency-hub:hover .mk-hub-aura      { animation-duration: 4.2s; }
+.ow-currency-hub:hover .mk-hub-grid      { opacity: .45; }
+.ow-currency-hub:hover .mk-hub-beams i   { animation-duration: 2.2s; }
+.ow-currency-hub:hover .mk-hub-dust i    { animation-duration: 2.8s; }
+.ow-currency-hub:hover .mk-hub-line::after { animation-duration: 1.7s; }
+.ow-currency-hub:hover .mk-hub-rim       { opacity: 1; }
+
 .ow-currency-hub:hover .ow-currency-hub-copy b {
-  text-shadow: 0 0 16px rgba(255, 210, 28, .55);
+  text-shadow: 0 0 18px rgba(255, 210, 28, .6);
 }
 
-/* --- prostřední tlačítko "+" --------------------------------------------- */
+.ow-currency-hub:hover .ow-currency-hub-segment .ow-currency-gem,
+.ow-currency-hub:hover .ow-currency-hub-segment .ow-currency-coin {
+  transform: scale(.88) !important;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* ==========================================================================
+   5) Prostřední tlačítko "+"
+   Sedí v samostatném sloupci mřížky, takže je vždy přesně uprostřed.
+   ========================================================================== */
 .mk-hub-plus {
   position: relative;
   z-index: 7;
   align-self: center;
   justify-self: center;
-  width: 36px;
-  height: 36px;
-  margin: 0 2px;
+  width: 34px;
+  height: 34px;
   padding: 0;
   border: 0;
-  border-radius: 12px;
+  border-radius: 11px;
   display: grid;
   place-items: center;
   cursor: pointer;
-  background:
-    linear-gradient(150deg, #ffb03a, #ff4caa 50%, #a855f7);
-  background-size: 200% 200%;
+  background: linear-gradient(150deg, #ffb03a, #ff4caa 50%, #a855f7);
+  background-size: 220% 220%;
   animation: mkPlusHue 6s ease-in-out infinite;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, .2) inset,
-    0 4px 16px rgba(255, 76, 170, .42),
-    0 0 22px rgba(255, 157, 47, .3);
-  transition: transform .24s cubic-bezier(.2, .8, .2, 1), box-shadow .24s ease, filter .24s ease;
+    inset 0 0 0 1px rgba(255, 255, 255, .22),
+    0 3px 12px rgba(255, 76, 170, .4),
+    0 0 18px rgba(255, 157, 47, .26);
+  transition:
+    transform .26s cubic-bezier(.2, .8, .2, 1),
+    box-shadow .26s ease,
+    filter .26s ease;
   -webkit-tap-highlight-color: transparent;
+  will-change: transform;
 }
 
 @keyframes mkPlusHue {
@@ -315,57 +383,59 @@
   50%      { background-position: 100% 50%; }
 }
 
+/* dýchající svatozář */
 .mk-hub-plus::before {
   content: "";
   position: absolute;
-  inset: -6px;
-  border-radius: 17px;
+  inset: -5px;
+  border-radius: 15px;
   background: radial-gradient(circle, rgba(255, 137, 90, .45), transparent 68%);
-  opacity: .55;
+  opacity: .5;
   animation: mkHubBreathe 2.8s ease-in-out infinite;
   pointer-events: none;
 }
 
+/* rotující prstenec energie */
 .mk-hub-plus::after {
   content: "";
   position: absolute;
-  inset: -8px;
-  border-radius: 19px;
+  inset: -7px;
+  border-radius: 17px;
   background: conic-gradient(from 0deg,
     transparent, rgba(255, 210, 28, .9), transparent 26%,
     rgba(255, 76, 170, .85), transparent 52%,
-    rgba(93, 224, 255, .8), transparent 78%,
+    rgba(93, 224, 255, .85), transparent 78%,
     rgba(255, 210, 28, .9));
   opacity: 0;
   animation: mkHubSpin 3.2s linear infinite;
-  transition: opacity .28s ease;
+  transition: opacity .3s ease;
   pointer-events: none;
-  mask: radial-gradient(circle, transparent 57%, #000 61%);
-  -webkit-mask: radial-gradient(circle, transparent 57%, #000 61%);
+  mask: radial-gradient(circle, transparent 56%, #000 60%);
+  -webkit-mask: radial-gradient(circle, transparent 56%, #000 60%);
 }
 
 .mk-hub-plus svg {
   position: relative;
   z-index: 3;
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   fill: none;
   stroke: #fff;
   stroke-width: 3;
   stroke-linecap: round;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .45));
-  transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .5));
+  transition: transform .32s cubic-bezier(.2, .8, .2, 1);
 }
 
 .ow-currency-hub:hover .mk-hub-plus,
 .mk-hub-plus:hover,
 .mk-hub-plus:focus-visible {
   transform: scale(1.16);
-  filter: brightness(1.12);
+  filter: brightness(1.14);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, .32) inset,
-    0 6px 22px rgba(255, 76, 170, .58),
-    0 0 38px rgba(255, 157, 47, .52);
+    inset 0 0 0 1px rgba(255, 255, 255, .34),
+    0 6px 22px rgba(255, 76, 170, .6),
+    0 0 36px rgba(255, 157, 47, .52);
 }
 
 .ow-currency-hub:hover .mk-hub-plus::after,
@@ -373,7 +443,7 @@
 .mk-hub-plus:focus-visible::after { opacity: 1; }
 
 .mk-hub-plus:hover svg,
-.mk-hub-plus:focus-visible svg { transform: rotate(90deg) scale(1.08); }
+.mk-hub-plus:focus-visible svg { transform: rotate(90deg) scale(1.1); }
 
 .mk-hub-plus:active { transform: scale(1.03); }
 
@@ -385,15 +455,14 @@
 /* --- jiskry kolem tlačítka ------------------------------------------------ */
 .mk-hub-sparks {
   position: absolute;
-  inset: -16px;
+  inset: 0;
   z-index: 6;
   pointer-events: none;
   opacity: 0;
   transition: opacity .3s ease;
 }
 
-.ow-currency-hub:hover .mk-hub-sparks,
-.mk-hub-plus:focus-visible + .mk-hub-sparks { opacity: 1; }
+.ow-currency-hub:hover .mk-hub-sparks { opacity: 1; }
 
 .mk-hub-sparks i {
   position: absolute;
@@ -405,20 +474,29 @@
   border-radius: 50%;
   background: #ffd21c;
   box-shadow: 0 0 6px 1px rgba(255, 210, 28, .9);
-  animation: mkHubSpark 1.6s ease-out infinite;
+  animation: mkHubSpark 1.7s ease-out infinite;
+  will-change: transform, opacity;
 }
 
-.mk-hub-sparks i:nth-child(1) { --sx:  20px; --sy: -17px; animation-delay: 0s;    }
-.mk-hub-sparks i:nth-child(2) { --sx: -22px; --sy: -12px; animation-delay: .22s; background: #ff4caa; box-shadow: 0 0 6px 1px rgba(255,76,170,.9); }
-.mk-hub-sparks i:nth-child(3) { --sx:  24px; --sy:  14px; animation-delay: .45s; background: #5de0ff; box-shadow: 0 0 6px 1px rgba(93,224,255,.9); }
-.mk-hub-sparks i:nth-child(4) { --sx: -18px; --sy:  18px; animation-delay: .68s; }
-.mk-hub-sparks i:nth-child(5) { --sx:   2px; --sy: -24px; animation-delay: .9s;  background: #ff9d2f; box-shadow: 0 0 6px 1px rgba(255,157,47,.9); }
-.mk-hub-sparks i:nth-child(6) { --sx:  -4px; --sy:  23px; animation-delay: 1.15s; background: #5de0ff; box-shadow: 0 0 6px 1px rgba(93,224,255,.9); }
+.mk-hub-sparks i:nth-child(1) { --sx:  19px; --sy: -16px; animation-delay: 0s;    }
+.mk-hub-sparks i:nth-child(2) { --sx: -21px; --sy: -11px; animation-delay: .24s; background: #ff4caa; box-shadow: 0 0 6px 1px rgba(255,76,170,.9); }
+.mk-hub-sparks i:nth-child(3) { --sx:  22px; --sy:  13px; animation-delay: .48s; background: #5de0ff; box-shadow: 0 0 6px 1px rgba(93,224,255,.9); }
+.mk-hub-sparks i:nth-child(4) { --sx: -17px; --sy:  16px; animation-delay: .72s; }
+.mk-hub-sparks i:nth-child(5) { --sx:   1px; --sy: -21px; animation-delay: .96s; background: #ff9d2f; box-shadow: 0 0 6px 1px rgba(255,157,47,.9); }
+.mk-hub-sparks i:nth-child(6) { --sx:  -3px; --sy:  20px; animation-delay: 1.2s; background: #5de0ff; box-shadow: 0 0 6px 1px rgba(93,224,255,.9); }
 
-/* --- blesk při kliknutí --------------------------------------------------- */
+@keyframes mkHubSpark {
+  0%   { transform: translate(0, 0) scale(0); opacity: 0; }
+  18%  { opacity: 1; transform: translate(calc(var(--sx) * .3), calc(var(--sy) * .3)) scale(1.15); }
+  100% { transform: translate(var(--sx), var(--sy)) scale(0); opacity: 0; }
+}
+
+/* ==========================================================================
+   6) Kliknutí — blesk, rázová vlna, energetický puls
+   ========================================================================== */
 .mk-hub-bolt {
   position: absolute;
-  inset: -24px;
+  inset: -22px;
   z-index: 8;
   pointer-events: none;
   opacity: 0;
@@ -436,33 +514,7 @@
 }
 
 .mk-hub-plus.is-charged .mk-hub-bolt { animation: mkHubBolt .5s ease-out; }
-.mk-hub-plus.is-charged::before { animation: mkHubShock .5s ease-out; }
-
-/* energetická vlna přes celý hub při kliknutí */
-.ow-currency-hub.is-charged .mk-hub-line::after { animation-duration: .5s; }
-
-.ow-currency-hub.is-charged .mk-hub-aura {
-  animation: mkAuraFlash .55s ease-out;
-}
-
-@keyframes mkAuraFlash {
-  0%   { opacity: 1; transform: scale(1.18); filter: brightness(1.8); }
-  100% { opacity: .75; transform: scale(1);  filter: brightness(1); }
-}
-
-/* --- animace -------------------------------------------------------------- */
-@keyframes mkHubBreathe {
-  0%, 100% { opacity: .42; transform: scale(1); }
-  50%      { opacity: .78; transform: scale(1.1); }
-}
-
-@keyframes mkHubSpin { to { transform: rotate(360deg); } }
-
-@keyframes mkHubSpark {
-  0%   { transform: translate(0, 0) scale(0); opacity: 0; }
-  18%  { opacity: 1; transform: translate(calc(var(--sx) * .3), calc(var(--sy) * .3)) scale(1.15); }
-  100% { transform: translate(var(--sx), var(--sy)) scale(0); opacity: 0; }
-}
+.mk-hub-plus.is-charged::before      { animation: mkHubShock .5s ease-out; }
 
 @keyframes mkHubBolt {
   0%   { opacity: 0; transform: scale(.7); }
@@ -474,36 +526,63 @@
 
 @keyframes mkHubShock {
   0%   { opacity: .95; transform: scale(.75); }
-  100% { opacity: 0;   transform: scale(2.5); }
+  100% { opacity: 0;   transform: scale(2.6); }
 }
 
-.ow-currency-hub.is-charged { animation: mkHubKick .42s cubic-bezier(.2, .8, .2, 1); }
+/* vlna světla přeletí hubem */
+.mk-hub-wave {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg,
+    transparent, rgba(255, 255, 255, .3), rgba(255, 210, 28, .45), rgba(255, 255, 255, .3), transparent);
+}
+
+.ow-currency-hub.is-charged .mk-hub-wave { animation: mkWaveSweep .6s cubic-bezier(.3, 0, .3, 1); }
+
+@keyframes mkWaveSweep {
+  0%   { opacity: 0; transform: translateX(-100%); }
+  20%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(100%); }
+}
+
+.ow-currency-hub.is-charged .mk-hub-aura { animation: mkAuraFlash .6s ease-out; }
+
+@keyframes mkAuraFlash {
+  0%   { opacity: 1; transform: scale(1.2); filter: brightness(2); }
+  100% { opacity: .7; transform: scale(1);  filter: brightness(1); }
+}
+
+.ow-currency-hub.is-charged .mk-hub-rim { opacity: 1; animation-duration: 1s; }
+.ow-currency-hub.is-charged .mk-hub-line::after { animation-duration: .5s; }
+.ow-currency-hub.is-charged { animation: mkHubKick .45s cubic-bezier(.2, .8, .2, 1); }
 
 @keyframes mkHubKick {
-  0%   { transform: scale(1); }
-  32%  { transform: scale(1.022); }
-  100% { transform: scale(1); }
+  0%   { transform: translateY(-2px) scale(1); }
+  34%  { transform: translateY(-2px) scale(1.028); }
+  100% { transform: translateY(-2px) scale(1); }
 }
 
-/* --- zvýraznění zůstatku při dobití --------------------------------------- */
-.ow-currency-hub-copy b { transition: color .3s ease, text-shadow .3s ease; }
-
+/* zůstatky probliknou po dobití */
 .ow-currency-hub-segment.is-flash .ow-currency-hub-copy b {
   color: #fff6c9;
-  text-shadow: 0 0 14px rgba(255, 210, 28, .85);
+  text-shadow: 0 0 16px rgba(255, 210, 28, .9);
 }
 
-/* --- mobilní tlačítko měn -------------------------------------------------- */
-/* Vpravo musí zbýt místo na "+", jinak přeteče přes popisek měny. */
+/* ==========================================================================
+   7) Mobilní pruh s měnami
+   ========================================================================== */
 .mobile-currency-button {
   position: relative;
-  padding-right: 52px !important;
+  padding-right: 54px !important;
   overflow: hidden;
 }
 
 .mk-hub-plus.is-mobile {
   position: absolute;
-  right: 12px;
+  right: 11px;
   top: 50%;
   transform: translateY(-50%);
   width: 32px;
@@ -512,24 +591,52 @@
 
 .mk-hub-plus.is-mobile:hover,
 .mk-hub-plus.is-mobile:focus-visible { transform: translateY(-50%) scale(1.12); }
-.mk-hub-plus.is-mobile:active { transform: translateY(-50%) scale(1.02); }
+.mk-hub-plus.is-mobile:active        { transform: translateY(-50%) scale(1.02); }
 .mk-hub-plus.is-mobile svg { width: 16px; height: 16px; }
 
-/* --- světlý motiv ---------------------------------------------------------- */
-:root[data-theme="light"] .mk-hub-plus {
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, .4) inset,
-    0 4px 14px rgba(255, 76, 170, .3),
-    0 0 18px rgba(255, 157, 47, .22);
+/* ==========================================================================
+   8) Užší displeje
+   ========================================================================== */
+@media (max-width: 1400px) {
+  .ow-currency-hub { width: 274px !important; }
+  .ow-currency-hub-copy b { font-size: 15px; }
+  .ow-currency-hub-copy small { font-size: 5.9px !important; letter-spacing: .015em !important; }
+  .ow-currency-hub-segment { padding: 0 9px !important; gap: 6px !important; }
 }
 
-/* --- ohled na uživatele, kteří animace nechtějí ---------------------------- */
+/* ==========================================================================
+   9) Světlý motiv
+   ========================================================================== */
+:root[data-theme="light"] .ow-currency-hub {
+  border-color: rgba(20, 14, 32, .12) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f1fa 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 6px 18px rgba(31, 21, 48, .12);
+}
+
+:root[data-theme="light"] .ow-currency-hub-copy b { color: #1d1728; }
+:root[data-theme="light"] .mk-hub-aura { opacity: .5; }
+:root[data-theme="light"] .mk-hub-grid { opacity: .12; }
+:root[data-theme="light"] .mk-hub-beams i {
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, .12), transparent);
+}
+
+:root[data-theme="light"] .mk-hub-plus {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .45),
+    0 3px 12px rgba(255, 76, 170, .32),
+    0 0 16px rgba(255, 157, 47, .22);
+}
+
+/* ==========================================================================
+   10) Ohled na uživatele, kteří animace nechtějí
+   ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   .mk-hub-aura,
   .mk-hub-grid,
   .mk-hub-beams i,
   .mk-hub-dust i,
   .mk-hub-line::after,
+  .mk-hub-rim,
   .mk-hub-plus,
   .mk-hub-plus svg,
   .mk-hub-plus::before,
@@ -538,6 +645,7 @@
   .ow-currency-hub,
   .ow-currency-hub.is-charged,
   .ow-currency-hub.is-charged .mk-hub-aura,
+  .ow-currency-hub.is-charged .mk-hub-wave,
   .mk-hub-plus.is-charged .mk-hub-bolt,
   .mk-hub-plus.is-charged::before {
     animation: none !important;
@@ -546,5 +654,22 @@
 
   .mk-hub-sparks,
   .mk-hub-dust,
-  .mk-hub-beams { display: none; }
+  .mk-hub-beams,
+  .mk-hub-wave { display: none; }
 }
+
+/* ==========================================================================
+   11) Drobné opravy převzatého stylu
+   ========================================================================== */
+
+/* Špička tooltipu prosvítala pod hubem i v klidovém stavu. */
+.ow-currency-tooltip { pointer-events: none; }
+.ow-currency-tooltip::before { display: none; }
+.ow-currency-hub-wrap:hover .ow-currency-tooltip::before,
+.ow-currency-hub-wrap:focus-within .ow-currency-tooltip::before { display: block; }
+
+/* Ikona pravého segmentu se dotýkala čísla – zrcadlené pořadí
+   potřebuje odsazení z druhé strany. */
+.ow-currency-hub-segment.is-premium { padding-right: 10px !important; }
+.ow-currency-hub-segment.is-premium .ow-currency-hub-copy { margin-right: 2px; }
+.ow-currency-hub-segment.is-mythic  .ow-currency-hub-copy { margin-left: 2px; }

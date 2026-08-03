@@ -86,7 +86,9 @@
     <span class="mk-hub-grid" aria-hidden="true"></span>
     <span class="mk-hub-beams" aria-hidden="true"><i></i><i></i><i></i></span>
     <span class="mk-hub-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-    <span class="mk-hub-line" aria-hidden="true"></span>`;
+    <span class="mk-hub-rim" aria-hidden="true"></span>
+    <span class="mk-hub-line" aria-hidden="true"></span>
+    <span class="mk-hub-wave" aria-hidden="true"></span>`;
 
   function mount() {
     // Desktop – nahradí tenkou svislou linku mezi měnami.
