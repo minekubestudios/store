@@ -539,6 +539,7 @@ const state = {
   sort: "featured",
   saleOnly: false,
   cart: new Map(),
+  billing: new Map(),
   player: "",
   coupon: null,
   checkoutStep: 1,
@@ -689,6 +690,13 @@ function hydrateState() {
   }
   const savedPlayer = safeStorageGet("minekube-store-player", "");
   if (typeof savedPlayer === "string" && isValidPlayerName(savedPlayer)) state.player = savedPlayer;
+
+  const savedBilling = safeStorageGet("minekube-store-billing", []);
+  if (Array.isArray(savedBilling)) {
+    savedBilling.forEach(entry => {
+      if (Array.isArray(entry) && entry.length === 2) state.billing.set(entry[0], entry[1]);
+    });
+  }
 }
 
 function persistCart() {
@@ -750,11 +758,56 @@ function productVisualLabel(product) {
   return "KOSMETIKA";
 }
 
+/* --- Fakturace: jednorázově / předplatné --------------------------------
+   Předplatné dává smysl jen u časově omezených ranků. Trvalé produkty
+   (VIP Navždy), klíče, měna i balíčky zůstávají jednorázové.
+   Sleva za automatické obnovení je zatím jen v zobrazení – skutečné
+   opakované platby přijdou s funkční fází. */
+/* POZOR: Store API zatím opakované platby neumí – objednávku s příznakem
+   předplatného přijme, ale naúčtuje plnou jednorázovou cenu (ověřeno).
+   Sleva proto musí zůstat na 0, jinak by hráč viděl jinou částku, než
+   kolik mu strhne PayPal. Až backend předplatné podpoří, stačí zvýšit
+   tuhle hodnotu (např. 0.15 = 15 %). */
+const SUBSCRIPTION_DISCOUNT = 0;
+
+function supportsSubscription(product) {
+  return product.category === "ranks" && !/navždy|lifetime|trval/i.test(`${product.name} ${product.categoryLabel}`);
+}
+
+function subscriptionPrice(product) {
+  return Math.round((product.price * (1 - SUBSCRIPTION_DISCOUNT) + Number.EPSILON) * 100) / 100;
+}
+
+function billingModeFor(product) {
+  return supportsSubscription(product) && state.billing.get(product.id) === "subscription"
+    ? "subscription"
+    : "onetime";
+}
+
+function effectivePrice(product) {
+  return billingModeFor(product) === "subscription" ? subscriptionPrice(product) : product.price;
+}
+
+function billingControlMarkup(product) {
+  if (!supportsSubscription(product)) {
+    return `<small class="mk-billing-static">${product.category === "ranks" ? "za rank" : "jednorázově"}</small>`;
+  }
+  const mode = billingModeFor(product);
+  return `
+    <div class="mk-billing" role="group" aria-label="Způsob platby">
+      <button type="button" data-billing="onetime" data-billing-product="${product.id}"
+              aria-pressed="${mode === "onetime"}">Jednorázově</button>
+      <button type="button" data-billing="subscription" data-billing-product="${product.id}"
+              aria-pressed="${mode === "subscription"}">Předplatné</button>
+    </div>`;
+}
+
 function createProductCard(product, index) {
   const inCart = state.cart.has(product.id);
   const mythic = isMythicProduct(product);
+  const subscribed = billingModeFor(product) === "subscription";
   return `
-    <article class="store-product-card ${mythic ? "is-mythic-product" : ""} is-entering" data-product-id="${product.id}" data-product-category="${product.category}" style="--product-accent:${product.accent};--product-accent-rgb:${product.accentRgb};--delay:${Math.min(index * 45, 360)}ms">
+    <article class="store-product-card ${mythic ? "is-mythic-product" : ""} is-entering" data-product-id="${product.id}" data-product-category="${product.category}" style="--product-accent:${product.accent};--product-accent-rgb:${product.accentRgb};--delay:${Math.min(index * 45, 360)}ms" tabindex="0" role="button" aria-label="Zobrazit detail produktu ${product.name}">
       <div class="product-visual">
         <div class="product-card-topline">
           <span class="product-badge"><i></i>${product.badge}</span>
@@ -765,6 +818,7 @@ function createProductCard(product, index) {
           <strong>${product.code.split(" // ")[0]}</strong>
         </div>
         <div class="product-data-strip"><span><i></i> MINEKUBE NETWORK</span><b>${product.code}</b></div>
+        <span class="product-detail-hint">${svgIcon("info")} Zobrazit detail</span>
       </div>
       <div class="product-content">
         <div class="product-category-label"><span>${product.categoryLabel}</span><b>MK-${String(products.indexOf(product) + 1).padStart(2, "0")}</b></div>
@@ -774,16 +828,14 @@ function createProductCard(product, index) {
           ${product.features.slice(0, 3).map(feature => `<li>${svgIcon("check")}<span>${feature}</span></li>`).join("")}
         </ul>
         <div class="product-price-row">
-          <div class="product-price"><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${moneyOld(product.oldPrice, product.price)}</del>` : ""}</div>
-          <small>${product.category === "ranks" ? "za rank" : "jednorázově"}</small>
+          <div class="product-price"><strong>${money(effectivePrice(product))}</strong>${subscribed ? `<del>${moneyOld(product.price, effectivePrice(product))}</del>` : product.oldPrice ? `<del>${moneyOld(product.oldPrice, product.price)}</del>` : ""}</div>
+          ${billingControlMarkup(product)}
+          ${subscribed ? `<span class="mk-billing-note">Automatické obnovení každých 30 dní.</span>` : ""}
         </div>
         <div class="product-actions">
           <button class="add-to-cart-button ${inCart ? "is-added" : ""}" type="button" data-add-product="${product.id}">
             ${svgIcon(inCart ? "check" : "cart")}
             <span>${inCart ? "V košíku" : "Přidat do košíku"}</span>
-          </button>
-          <button class="product-detail-button" type="button" data-product-detail="${product.id}" aria-label="Detail produktu ${product.name}" title="Detail produktu">
-            ${svgIcon("info")}
           </button>
         </div>
       </div>
@@ -927,7 +979,7 @@ function createCurrencyPackCard(product, index, type) {
       ${bonus ? `<span class="currency-pack-bonus">${bonus}</span>` : ""}
       <span class="currency-pack-copy">
         <strong>${isPremium ? '<i class="ow-currency-coin">M</i>' : '<i class="ow-currency-gem"></i>'}<span>${label}</span></strong>
-        <b>${money(product.price)}</b>
+        <b>${money(effectivePrice(product))}</b>
       </span>
     </button>`;
 }
@@ -968,6 +1020,17 @@ function openCurrencyPacks(type) {
   renderCurrencyPacks(type);
   closeModal(currencySelectModal, { restoreFocus: false });
   openModal(currencyPacksModal);
+}
+
+/* Přepne způsob platby u produktu a překreslí, co je vidět. */
+function setBillingMode(id, mode) {
+  const product = getProduct(id);
+  if (!product || !supportsSubscription(product)) return;
+  state.billing.set(id, mode === "subscription" ? "subscription" : "onetime");
+  safeStorageSet("minekube-store-billing", [...state.billing]);
+  renderProducts();
+  renderCart();
+  if (productModal?.classList.contains("is-open")) openProductDetail(id);
 }
 
 function addToCart(id, quantity = 1) {
@@ -1012,7 +1075,7 @@ function cartEntries() {
 }
 
 function calculateTotals() {
-  const subtotal = cartEntries().reduce((sum, { product, quantity }) => sum + product.price * quantity, 0);
+  const subtotal = cartEntries().reduce((sum, { product, quantity }) => sum + effectivePrice(product) * quantity, 0);
   const discountRate = state.coupon?.rate || 0;
   const discount = Math.round((subtotal * discountRate + Number.EPSILON) * 100) / 100;
   const total = Math.round((Math.max(0, subtotal - discount) + Number.EPSILON) * 100) / 100;
@@ -1028,7 +1091,7 @@ function renderCart() {
   cartItems.innerHTML = entries.map(({ product, quantity: amount }) => `
     <article class="cart-item" style="--cart-accent-rgb:${product.accentRgb}">
       <span class="cart-item-icon">${svgIcon(product.icon)}</span>
-      <div class="cart-item-copy"><small>${product.categoryLabel}</small><strong>${product.name}</strong><span>${money(product.price * amount)}</span></div>
+      <div class="cart-item-copy"><small>${billingModeFor(product) === "subscription" ? "PŘEDPLATNÉ • " : ""}${product.categoryLabel}</small><strong>${product.name}</strong><span>${money(effectivePrice(product) * amount)}</span></div>
       <div class="cart-item-controls">
         <button type="button" data-remove-cart="${product.id}" aria-label="Odebrat ${product.name}">${svgIcon("trash")}</button>
         <div class="quantity-control">
@@ -1155,8 +1218,14 @@ function openProductDetail(id) {
         <p>${product.description}</p>
         <div class="modal-product-meta">${product.tags.map(tag => `<span>${tag}</span>`).join("")}</div>
         <div class="modal-feature-box"><strong>CO PRODUKT OBSAHUJE</strong><ul>${product.features.map(feature => `<li>${svgIcon("check")}<span>${feature}</span></li>`).join("")}</ul></div>
+        ${supportsSubscription(product) ? `
+        <div class="mk-modal-billing">
+          <span>ZPŮSOB PLATBY</span>
+          ${billingControlMarkup(product)}
+          ${billingModeFor(product) === "subscription" ? `<small class="mk-billing-note">Rank se obnoví každých 30 dní${SUBSCRIPTION_DISCOUNT > 0 ? ` se slevou ${Math.round(SUBSCRIPTION_DISCOUNT * 100)} %` : ""}. Zrušíš kdykoli.</small>` : ""}
+        </div>` : ""}
         <div class="modal-buy-row">
-          <div class="modal-price"><small>CENA PRODUKTU</small><span><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${moneyOld(product.oldPrice, product.price)}</del>` : ""}</span></div>
+          <div class="modal-price"><small>CENA PRODUKTU</small><span><strong>${money(effectivePrice(product))}</strong>${billingModeFor(product) === "subscription" ? `<del>${moneyOld(product.price, effectivePrice(product))}</del>` : product.oldPrice ? `<del>${moneyOld(product.oldPrice, product.price)}</del>` : ""}</span></div>
           <button class="modal-add-button" type="button" data-add-product="${product.id}">${svgIcon("cart")}<span>Přidat do košíku</span></button>
         </div>
       </div>
@@ -1229,7 +1298,7 @@ function renderCheckout() {
         <h3>2. Souhrn objednávky</h3>
         <p>Cenu vždy znovu vypočítá Minekube API. Úpravou webu ji nelze změnit.</p>
         <div class="checkout-summary-list">
-          ${cartEntries().map(({ product, quantity }) => `<div class="checkout-summary-item"><span>${svgIcon(product.icon)}</span><div><small>${quantity}× ${product.categoryLabel}</small><strong>${product.name}</strong></div><b>${money(product.price * quantity)}</b></div>`).join("")}
+          ${cartEntries().map(({ product, quantity }) => `<div class="checkout-summary-item"><span>${svgIcon(product.icon)}</span><div><small>${quantity}× ${product.categoryLabel}</small><strong>${product.name}</strong></div><b>${money(effectivePrice(product) * quantity)}</b></div>`).join("")}
         </div>
         <div class="checkout-summary-total"><span>Hráč: <strong>${state.player}</strong></span><strong>${money(totals.total)}</strong></div>
       </div>
@@ -1330,7 +1399,7 @@ async function createInternalOrder() {
         termsVersion: versions.termsVersion,
         privacyVersion: versions.privacyVersion
       },
-      items: cartEntries().map(({ product, quantity }) => ({ productId: product.id, quantity }))
+      items: cartEntries().map(({ product, quantity }) => ({ productId: product.id, quantity, billingMode: billingModeFor(product) }))
     })
   });
   state.activeOrder = payload.order;
@@ -1774,6 +1843,20 @@ function bindEvents() {
       return;
     }
 
+    // Přepínač jednorázově / předplatné na kartě i v detailu.
+    const billingButton = event.target.closest("[data-billing-product]");
+    if (billingButton) {
+      setBillingMode(billingButton.dataset.billingProduct, billingButton.dataset.billing);
+      return;
+    }
+
+    // Kliknutí kamkoli na kartu otevře detail produktu.
+    const card = event.target.closest(".store-product-card[data-product-id]");
+    if (card && !event.target.closest("button, a, input, label, select")) {
+      openProductDetail(card.dataset.productId);
+      return;
+    }
+
     const categoryLink = event.target.closest("[data-category-link]");
     if (categoryLink) {
       event.preventDefault();
@@ -1844,6 +1927,15 @@ function bindEvents() {
     if (closeButton) {
       closeModal(closeButton.closest(".store-modal-shell"));
     }
+  });
+
+  // Karta produktu je ovladatelná i klávesnicí.
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const card = event.target.closest?.(".store-product-card[data-product-id]");
+    if (!card || card !== event.target) return;
+    event.preventDefault();
+    openProductDetail(card.dataset.productId);
   });
 
   document.addEventListener("change", event => {
