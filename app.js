@@ -710,6 +710,13 @@ function money(value) {
   }).format(normalized);
 }
 
+/* Přeškrtnutá původní cena. Po zaokrouhlení na devítky se může
+   střetnout s aktuální cenou, proto ji řeší přepínač měny zvlášť. */
+function moneyOld(oldValue, currentValue) {
+  if (window.MINEKUBE_FX) return window.MINEKUBE_FX.formatOld(oldValue, currentValue);
+  return money(oldValue);
+}
+
 function svgIcon(name, className = "") {
   if (name === "coins" || name === "mythicPrism") {
     const fileName = name === "coins" ? "coins-icon.png" : "prims-icon.png";
@@ -767,7 +774,7 @@ function createProductCard(product, index) {
           ${product.features.slice(0, 3).map(feature => `<li>${svgIcon("check")}<span>${feature}</span></li>`).join("")}
         </ul>
         <div class="product-price-row">
-          <div class="product-price"><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${money(product.oldPrice)}</del>` : ""}</div>
+          <div class="product-price"><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${moneyOld(product.oldPrice, product.price)}</del>` : ""}</div>
           <small>${product.category === "ranks" ? "za rank" : "jednorázově"}</small>
         </div>
         <div class="product-actions">
@@ -1146,7 +1153,7 @@ function openProductDetail(id) {
         <div class="modal-product-meta">${product.tags.map(tag => `<span>${tag}</span>`).join("")}</div>
         <div class="modal-feature-box"><strong>CO PRODUKT OBSAHUJE</strong><ul>${product.features.map(feature => `<li>${svgIcon("check")}<span>${feature}</span></li>`).join("")}</ul></div>
         <div class="modal-buy-row">
-          <div class="modal-price"><small>CENA PRODUKTU</small><span><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${money(product.oldPrice)}</del>` : ""}</span></div>
+          <div class="modal-price"><small>CENA PRODUKTU</small><span><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${moneyOld(product.oldPrice, product.price)}</del>` : ""}</span></div>
           <button class="modal-add-button" type="button" data-add-product="${product.id}">${svgIcon("cart")}<span>Přidat do košíku</span></button>
         </div>
       </div>

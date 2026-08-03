@@ -15,10 +15,35 @@ window.MINEKUBE_FX = (function () {
   const STORAGE_KEY = "minekube-store-display-currency";
   const BASE = "CZK";
 
+  /*
+   * charm = zaokrouhlení na "psychologickou" cenu končící devítkou.
+   *   step   … rozestup mezi sousedními cenami (CZK po desetikorunách, EUR po eurech)
+   *   ending … na co má cena končit (9 Kč, 0,99 €)
+   *   min    … nejnižší povolený výsledek
+   * Zaokrouhluje se na NEJBLIŽŠÍ takovou cenu, přesná půlka nahoru.
+   * Nastav charm na null, pokud chceš u dané měny přesnou částku.
+   */
   const CURRENCIES = {
-    CZK: { code: "CZK", name: "Česká koruna", locale: "cs-CZ", rate: 1, decimals: 0 },
-    EUR: { code: "EUR", name: "Euro", locale: "cs-CZ", rate: 0.0395, decimals: 2 }
+    CZK: {
+      code: "CZK", name: "Česká koruna", locale: "cs-CZ", rate: 1, decimals: 0,
+      charm: { step: 10, ending: 9, min: 9 }
+    },
+    EUR: {
+      code: "EUR", name: "Euro", locale: "cs-CZ", rate: 0.0395, decimals: 2,
+      charm: { step: 1, ending: 0.99, min: 0.99 }
+    }
   };
+
+  /** Přiklopí částku na nejbližší cenu končící devítkou. */
+  function charmRound(value, charm) {
+    if (!charm) return value;
+    // Nulu (prázdný košík, nulová sleva) nikdy nezvedáme.
+    if (!(value > 0)) return value;
+
+    const steps = Math.round((value - charm.ending) / charm.step);
+    const result = steps * charm.step + charm.ending;
+    return Math.round(Math.max(result, charm.min) * 100) / 100;
+  }
 
   let current = BASE;
   const listeners = new Set();
@@ -32,11 +57,38 @@ window.MINEKUBE_FX = (function () {
     return CURRENCIES[current] || CURRENCIES[BASE];
   }
 
-  /** Naformátuje částku zadanou v základní měně (CZK) do aktuálně zvolené měny. */
-  function format(valueInBase) {
+  /** Převede částku ze základní měny (CZK) do zvolené měny včetně charm zaokrouhlení. */
+  function convert(valueInBase) {
     const fx = config();
     const converted = Number(valueInBase) * fx.rate;
-    const normalized = Math.round((converted + Number.EPSILON) * 100) / 100;
+    return charmRound(Math.round((converted + Number.EPSILON) * 100) / 100, fx.charm);
+  }
+
+  /*
+   * Přeškrtnutá původní cena musí zůstat vyšší než aktuální.
+   * Po zaokrouhlení na devítky se totiž dvě blízké ceny můžou potkat
+   * (89 Kč a 109 Kč vyjdou obě na 3,99 €) – pak původní cenu posuneme
+   * o jeden krok nahoru, aby sleva dávala smysl.
+   */
+  function convertOld(oldValueInBase, currentValueInBase) {
+    const fx = config();
+    let old = convert(oldValueInBase);
+    const current = convert(currentValueInBase);
+    if (fx.charm && old <= current) {
+      old = Math.round((current + fx.charm.step) * 100) / 100;
+    }
+    return old;
+  }
+
+  /** Naformátuje částku zadanou v základní měně (CZK) do aktuálně zvolené měny. */
+  function format(valueInBase) {
+    return formatExact(convert(valueInBase));
+  }
+
+  /** Naformátuje už převedenou částku (bez dalšího přepočtu). */
+  function formatExact(value) {
+    const fx = config();
+    const normalized = Number(value);
     const hasFraction = Math.abs(normalized - Math.round(normalized)) > 0.000001;
 
     return new Intl.NumberFormat(fx.locale, {
@@ -45,6 +97,11 @@ window.MINEKUBE_FX = (function () {
       minimumFractionDigits: hasFraction ? 2 : fx.decimals,
       maximumFractionDigits: 2
     }).format(normalized);
+  }
+
+  /** Naformátuje původní (přeškrtnutou) cenu vůči aktuální. */
+  function formatOld(oldValueInBase, currentValueInBase) {
+    return formatExact(convertOld(oldValueInBase, currentValueInBase));
   }
 
   function set(code) {
@@ -62,6 +119,8 @@ window.MINEKUBE_FX = (function () {
     base: BASE,
     list: Object.values(CURRENCIES),
     format,
+    formatOld,
+    convert,
     set,
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
   };
