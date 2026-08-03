@@ -29,7 +29,7 @@
       }, index * 70);
     });
 
-    pulseTimer = window.setTimeout(() => hub.classList.remove("is-charged"), 720);
+    pulseTimer = window.setTimeout(() => hub.classList.remove("is-charged"), 980);
   }
 
   function openCurrencySelector() {
@@ -42,7 +42,7 @@
 
       const modal = document.querySelector("#currencySelectModal");
       if (modal && typeof window.mkOpenModal === "function") window.mkOpenModal(modal);
-    }, 105);
+    }, 460);
   }
 
   if (!reducedMotion.matches) {

@@ -1229,3 +1229,511 @@
     inset 0 0 22px rgba(0, 0, 0, .48),
     inset 0 1px 0 rgba(72, 229, 255, .16) !important;
 }
+
+/* ==========================================================================
+   STEP 8 — vyvážená hlavička, košík místo motivu a profesionální VFX hubu
+   ========================================================================== */
+
+/* Více prostoru pro VFX a větší pravé ovládací prvky. */
+.site-header.store-header {
+  min-height: 94px !important;
+  overflow: visible !important;
+}
+
+.store-nav-wrap {
+  width: min(calc(100% - 28px), 1880px) !important;
+  min-height: 94px !important;
+  gap: 18px !important;
+  overflow: visible !important;
+}
+
+.store-header-actions {
+  position: relative !important;
+  isolation: isolate;
+  min-height: 78px !important;
+  padding: 7px 9px !important;
+  gap: 11px !important;
+  overflow: visible !important;
+  border-radius: 25px;
+}
+
+.store-header-actions::before {
+  content: "";
+  position: absolute;
+  z-index: -20;
+  inset: 1px 0;
+  border: 1px solid rgba(73, 218, 255, .12);
+  border-radius: 25px;
+  background:
+    radial-gradient(ellipse at 18% 50%, rgba(38, 217, 255, .08), transparent 38%),
+    radial-gradient(ellipse at 60% 50%, rgba(133, 72, 255, .08), transparent 44%),
+    radial-gradient(ellipse at 90% 50%, rgba(255, 164, 44, .06), transparent 35%),
+    rgba(5, 4, 18, .56);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .32), inset 0 0 18px rgba(72, 104, 255, .06);
+  pointer-events: none;
+}
+
+/* Měnový hub zůstává dominantní; ostatní prvky jsou jen o trochu menší. */
+.ow-currency-hub-wrap {
+  width: 184px !important;
+  height: 68px !important;
+  flex: 0 0 184px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button {
+  width: 184px !important;
+  min-width: 184px !important;
+  max-width: 184px !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  grid-template-columns: minmax(0, 1fr) 48px !important;
+  padding-right: 7px !important;
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, .62),
+    -5px 0 21px rgba(33, 220, 255, .22),
+    5px 0 21px rgba(255, 165, 45, .18),
+    inset 0 -2px 0 rgba(0, 0, 0, .72) !important;
+}
+
+/* Bílá zůstává pouze na číslech zůstatku. Bez bílých odlesků a září. */
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy b,
+.ow-currency-hub.mk-main-currency-button:hover .ow-currency-hub-copy b,
+.ow-currency-hub.mk-main-currency-button:focus-visible .ow-currency-hub-copy b {
+  color: #ffffff !important;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, .92) !important;
+}
+
+.ow-currency-hub.mk-main-currency-button:hover,
+.ow-currency-hub.mk-main-currency-button:focus-visible {
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, .7),
+    -7px 0 28px rgba(34, 225, 255, .42),
+    0 0 38px rgba(130, 67, 255, .34),
+    7px 0 29px rgba(255, 164, 43, .34),
+    inset 0 -2px 0 rgba(0, 0, 0, .78) !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-universe {
+  outline: 1px solid rgba(74, 226, 255, .13) !important;
+  box-shadow: inset 0 0 23px rgba(0, 0, 0, .5) !important;
+}
+
+.mk-main-currency-icon,
+.mk-main-plus-core {
+  box-shadow: none;
+}
+
+.mk-main-icon-core {
+  background: #4eeaff !important;
+}
+
+.mk-main-currency-scan {
+  background: linear-gradient(90deg, transparent, rgba(70, 232, 255, .38), rgba(147, 78, 255, .34), rgba(255, 68, 199, .3), rgba(255, 183, 50, .28), transparent) !important;
+}
+
+.mk-main-balance-divider {
+  background: linear-gradient(90deg, transparent, rgba(69, 230, 255, .46) 22%, rgba(149, 79, 255, .35) 52%, rgba(255, 190, 65, .42) 82%, transparent) !important;
+}
+
+/* Profesionální blesky a galaxy částice za tlačítkem. */
+.mk-main-lightning-field {
+  position: absolute;
+  z-index: -5;
+  inset: -20px -58px;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(.9);
+  transition: opacity .26s ease, transform .48s cubic-bezier(.16, 1, .3, 1);
+}
+
+.ow-currency-hub:hover .mk-main-lightning-field,
+.ow-currency-hub:focus-visible .mk-main-lightning-field {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.mk-lightning-svg {
+  position: absolute;
+  top: 50%;
+  width: 104px;
+  height: 68px;
+  overflow: visible;
+  transform: translateY(-50%);
+}
+
+.mk-lightning-left { right: calc(100% - 22px); }
+.mk-lightning-right { left: calc(100% - 22px); }
+
+.mk-lightning-svg path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 17 9 5 11;
+  stroke-dashoffset: 100;
+  opacity: 0;
+}
+
+.mk-lightning-left path:first-child {
+  stroke: #38eaff;
+  stroke-width: 3.3;
+  filter: drop-shadow(0 0 4px rgba(43, 232, 255, .95)) drop-shadow(0 0 10px rgba(87, 83, 255, .72));
+}
+
+.mk-lightning-left path:last-child {
+  stroke: #8b65ff;
+  stroke-width: 2.2;
+  filter: drop-shadow(0 0 5px rgba(137, 91, 255, .88));
+}
+
+.mk-lightning-right path:first-child {
+  stroke: #ffb63d;
+  stroke-width: 3.3;
+  filter: drop-shadow(0 0 4px rgba(255, 181, 52, .95)) drop-shadow(0 0 10px rgba(255, 71, 201, .7));
+}
+
+.mk-lightning-right path:last-child {
+  stroke: #ff4fca;
+  stroke-width: 2.2;
+  filter: drop-shadow(0 0 5px rgba(255, 66, 197, .9));
+}
+
+.ow-currency-hub:hover .mk-lightning-svg path,
+.ow-currency-hub:focus-visible .mk-lightning-svg path {
+  animation: mkProLightningFlow 1.16s cubic-bezier(.2, .72, .25, 1) infinite;
+}
+
+.ow-currency-hub:hover .mk-lightning-svg path:last-child,
+.ow-currency-hub:focus-visible .mk-lightning-svg path:last-child {
+  animation-delay: .12s;
+  animation-duration: 1.42s;
+}
+
+.mk-back-particles {
+  position: absolute;
+  inset: 0;
+}
+
+.mk-back-particles i {
+  --px: 50%;
+  --py: 50%;
+  --tx: 0px;
+  --ty: -20px;
+  --delay: 0s;
+  --duration: 1.5s;
+  position: absolute;
+  left: var(--px);
+  top: var(--py);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #38eaff;
+  box-shadow: 0 0 6px rgba(53, 233, 255, .9), 0 0 13px rgba(118, 79, 255, .65);
+  opacity: 0;
+}
+
+.mk-back-particles i:nth-child(2n) { background: #9d68ff; box-shadow: 0 0 6px rgba(154, 93, 255, .9), 0 0 13px rgba(255, 66, 207, .55); }
+.mk-back-particles i:nth-child(3n) { background: #ffba45; box-shadow: 0 0 6px rgba(255, 184, 61, .9), 0 0 13px rgba(255, 76, 194, .55); border-radius: 1px; transform: rotate(45deg); }
+.mk-back-particles i:nth-child(1)  { --px: 8%;  --py: 48%; --tx: -24px; --ty: -27px; --delay: .02s; --duration: 1.32s; }
+.mk-back-particles i:nth-child(2)  { --px: 14%; --py: 70%; --tx: -36px; --ty: 9px;   --delay: .19s; --duration: 1.56s; }
+.mk-back-particles i:nth-child(3)  { --px: 22%; --py: 22%; --tx: -19px; --ty: -31px; --delay: .36s; --duration: 1.38s; }
+.mk-back-particles i:nth-child(4)  { --px: 34%; --py: 82%; --tx: -5px;  --ty: 22px;  --delay: .12s; --duration: 1.72s; }
+.mk-back-particles i:nth-child(5)  { --px: 44%; --py: 15%; --tx: -2px;  --ty: -26px; --delay: .51s; --duration: 1.47s; }
+.mk-back-particles i:nth-child(6)  { --px: 54%; --py: 86%; --tx: 8px;   --ty: 24px;  --delay: .27s; --duration: 1.65s; }
+.mk-back-particles i:nth-child(7)  { --px: 65%; --py: 18%; --tx: 12px;  --ty: -28px; --delay: .43s; --duration: 1.39s; }
+.mk-back-particles i:nth-child(8)  { --px: 74%; --py: 78%; --tx: 18px;  --ty: 18px;  --delay: .08s; --duration: 1.58s; }
+.mk-back-particles i:nth-child(9)  { --px: 84%; --py: 29%; --tx: 29px;  --ty: -20px; --delay: .34s; --duration: 1.44s; }
+.mk-back-particles i:nth-child(10) { --px: 91%; --py: 64%; --tx: 38px;  --ty: 7px;   --delay: .55s; --duration: 1.63s; }
+.mk-back-particles i:nth-child(11) { --px: 58%; --py: 42%; --tx: 17px;  --ty: -7px;  --delay: .68s; --duration: 1.31s; }
+.mk-back-particles i:nth-child(12) { --px: 39%; --py: 55%; --tx: -14px; --ty: 4px;   --delay: .76s; --duration: 1.49s; }
+
+.ow-currency-hub:hover .mk-back-particles i,
+.ow-currency-hub:focus-visible .mk-back-particles i {
+  animation: mkBackParticle var(--duration) ease-out var(--delay) infinite;
+}
+
+/* Kliknutí: vícestupňový lightning pulse, který má čas doběhnout před modalem. */
+.mk-main-click-pulse {
+  inset: -20px -36px !important;
+  overflow: visible !important;
+  border-radius: 34px !important;
+}
+
+.mk-main-click-pulse i {
+  width: 34px !important;
+  height: 34px !important;
+  background: transparent !important;
+}
+
+.mk-main-click-pulse i:first-child {
+  border-color: rgba(54, 234, 255, .96) !important;
+  box-shadow: 0 0 15px rgba(45, 232, 255, .88), 0 0 31px rgba(116, 74, 255, .58) !important;
+}
+
+.mk-main-click-pulse i:last-child {
+  border-color: rgba(255, 181, 56, .94) !important;
+  box-shadow: 0 0 15px rgba(255, 180, 52, .84), 0 0 31px rgba(255, 67, 197, .56) !important;
+}
+
+.ow-currency-hub.is-charged::after {
+  animation: mkUltimateAuraBurst .9s cubic-bezier(.16, .84, .2, 1) !important;
+}
+
+.ow-currency-hub.is-charged .mk-main-lightning-field {
+  opacity: 1 !important;
+  animation: mkUltimateLightningBurst .82s cubic-bezier(.16, .84, .2, 1) !important;
+}
+
+.ow-currency-hub.is-charged .mk-lightning-svg path {
+  opacity: 1 !important;
+  animation: mkClickLightning .68s cubic-bezier(.1, .72, .2, 1) both !important;
+}
+
+.ow-currency-hub.is-charged .mk-lightning-svg path:last-child { animation-delay: .06s !important; }
+.ow-currency-hub.is-charged .mk-main-click-pulse i:first-child { animation: mkUltimatePulse .86s cubic-bezier(.14, .72, .2, 1) !important; }
+.ow-currency-hub.is-charged .mk-main-click-pulse i:last-child { animation: mkUltimatePulse .86s cubic-bezier(.14, .72, .2, 1) .08s !important; }
+.ow-currency-hub.is-charged { animation: mkUltimateCurrencyKick .8s cubic-bezier(.16, 1, .3, 1) !important; }
+
+/* Zaoblený informační panel měn. */
+.ow-currency-hub-wrap .ow-currency-tooltip {
+  border-radius: 22px !important;
+  overflow: hidden !important;
+  border-color: rgba(67, 225, 255, .42) !important;
+  box-shadow: 0 24px 58px rgba(0, 0, 0, .58), 0 0 29px rgba(104, 72, 255, .2) !important;
+}
+
+/* Ostatní pravá tlačítka — větší, ale stále lehce pod měnovým hubem. */
+.store-header-actions .store-home-link {
+  height: 60px !important;
+  min-height: 60px !important;
+  min-width: 126px !important;
+  padding: 0 16px !important;
+  border-radius: 16px !important;
+  clip-path: none !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+}
+
+.store-header-actions .mk-profile-chip,
+.store-header-actions .ow-player-chip {
+  height: 60px !important;
+  min-height: 60px !important;
+  min-width: 130px !important;
+  padding: 0 12px 0 8px !important;
+  border-radius: 16px !important;
+}
+
+.store-header-actions .mk-profile-chip .mk-avatar,
+.store-header-actions .ow-player-chip > span {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 11px !important;
+}
+
+.store-header-actions .mk-profile-copy strong { font-size: 13px !important; }
+.store-header-actions .mk-profile-copy small { font-size: 8px !important; }
+
+/* Původní themeToggle je nyní kompaktní tlačítko košíku. */
+#themeToggle.header-cart-toggle {
+  position: relative !important;
+  isolation: isolate;
+  display: grid !important;
+  place-items: center !important;
+  width: 60px !important;
+  min-width: 60px !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(119, 81, 255, .42) !important;
+  border-radius: 16px !important;
+  color: #66ecff !important;
+  background:
+    radial-gradient(circle at 28% 24%, rgba(50, 222, 255, .18), transparent 34%),
+    linear-gradient(145deg, rgba(19, 23, 61, .98), rgba(48, 25, 88, .98)) !important;
+  box-shadow: 0 12px 27px rgba(0, 0, 0, .38), 0 0 16px rgba(84, 74, 255, .18) !important;
+  cursor: pointer;
+  transition: transform .3s cubic-bezier(.16, 1, .3, 1), border-color .28s ease, box-shadow .28s ease, color .28s ease !important;
+}
+
+#themeToggle.header-cart-toggle:hover,
+#themeToggle.header-cart-toggle:focus-visible {
+  color: #ffc44f !important;
+  border-color: rgba(255, 90, 206, .66) !important;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .46), 0 0 21px rgba(52, 230, 255, .34), 0 0 28px rgba(255, 65, 198, .2) !important;
+  transform: translateY(-2px) !important;
+  outline: none !important;
+}
+
+#themeToggle .header-cart-icon {
+  position: relative;
+  z-index: 2;
+  width: 25px !important;
+  height: 25px !important;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 5px rgba(65, 226, 255, .58));
+}
+
+.header-cart-toggle-aura {
+  position: absolute;
+  z-index: 0;
+  inset: -30%;
+  background: conic-gradient(from 0deg, transparent, rgba(52, 230, 255, .28), transparent 30%, rgba(154, 78, 255, .25), transparent 61%, rgba(255, 82, 204, .23), transparent);
+  animation: mkHeaderCartSpin 5s linear infinite;
+}
+
+.header-cart-toggle-count {
+  position: absolute;
+  z-index: 3;
+  top: 5px;
+  right: 5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  color: #12071a;
+  font-size: 9px;
+  font-weight: 1000;
+  background: linear-gradient(145deg, #ffd65b, #ff7f34);
+  box-shadow: 0 0 10px rgba(255, 170, 42, .48);
+}
+
+@keyframes mkProLightningFlow {
+  0% { opacity: 0; stroke-dashoffset: 100; transform: translateY(2px) scaleX(.92); }
+  14% { opacity: 1; }
+  48% { opacity: .86; stroke-dashoffset: 12; transform: translateY(-2px) scaleX(1.03); }
+  100% { opacity: 0; stroke-dashoffset: -100; transform: translateY(1px) scaleX(.96); }
+}
+
+@keyframes mkBackParticle {
+  0% { opacity: 0; transform: translate(0, 0) scale(.35) rotate(0deg); }
+  18% { opacity: .95; }
+  72% { opacity: .75; }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.45) rotate(160deg); }
+}
+
+@keyframes mkUltimateAuraBurst {
+  0% { opacity: .42; transform: scale(.82); filter: blur(16px) saturate(1); }
+  28% { opacity: 1; transform: scale(1.34); filter: blur(11px) saturate(1.65); }
+  100% { opacity: 0; transform: scale(1.7); filter: blur(25px) saturate(1.25); }
+}
+
+@keyframes mkUltimateLightningBurst {
+  0% { opacity: 0; transform: scale(.72); }
+  18% { opacity: 1; transform: scale(1.12); }
+  58% { opacity: .92; transform: scale(1.04); }
+  100% { opacity: 0; transform: scale(1.36); }
+}
+
+@keyframes mkClickLightning {
+  0% { opacity: 0; stroke-dashoffset: 100; stroke-width: 2; }
+  16% { opacity: 1; stroke-width: 5; }
+  58% { opacity: 1; stroke-dashoffset: -24; stroke-width: 3.5; }
+  100% { opacity: 0; stroke-dashoffset: -100; stroke-width: 1.5; }
+}
+
+@keyframes mkUltimatePulse {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.16); }
+  15% { opacity: 1; }
+  70% { opacity: .72; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(9.5); }
+}
+
+@keyframes mkUltimateCurrencyKick {
+  0% { transform: translateY(-2px) scale(1); filter: saturate(1.1); }
+  22% { transform: translateY(-5px) scale(1.045); filter: saturate(1.65) brightness(1.18); }
+  48% { transform: translateY(-3px) scale(.985); filter: saturate(1.38) brightness(1.08); }
+  100% { transform: translateY(-2px) scale(1); filter: saturate(1.1); }
+}
+
+@keyframes mkHeaderCartSpin { to { transform: rotate(360deg); } }
+
+@media (max-width: 1520px) {
+  .store-header-actions { gap: 8px !important; padding-inline: 7px !important; }
+  .ow-currency-hub-wrap { width: 184px !important; flex-basis: 184px !important; }
+  .ow-currency-hub.mk-main-currency-button { width: 184px !important; min-width: 184px !important; max-width: 184px !important; }
+  .store-header-actions .store-home-link { min-width: 60px !important; width: 60px !important; padding: 0 !important; }
+  .store-header-actions .store-home-link span { display: none !important; }
+  .store-header-actions .mk-profile-chip { min-width: 112px !important; }
+}
+
+@media (max-width: 1180px) {
+  .store-header-actions .mk-profile-copy,
+  .store-header-actions .mk-profile-caret { display: none !important; }
+  .store-header-actions .mk-profile-chip { min-width: 60px !important; width: 60px !important; padding: 0 !important; justify-content: center !important; }
+}
+
+@media (max-width: 900px) {
+  .site-header.store-header,
+  .store-nav-wrap { min-height: 70px !important; }
+  .store-header-actions { min-height: 0 !important; padding: 0 !important; }
+  .store-header-actions::before { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-main-lightning-field,
+  .mk-lightning-svg path,
+  .mk-back-particles i,
+  .header-cart-toggle-aura { animation: none !important; }
+}
+
+/* STEP 8.1 — ochranné rozestupy: VFX zůstávají u měny a nepřekrývají ovladače. */
+.ow-currency-hub-wrap {
+  margin-right: 42px !important;
+}
+
+.mk-lightning-svg {
+  width: 82px !important;
+}
+
+.mk-lightning-left { right: calc(100% - 18px) !important; }
+.mk-lightning-right { left: calc(100% - 18px) !important; }
+
+.store-header-actions > .mk-profile,
+.store-header-actions > .ow-player-chip,
+.store-header-actions > .store-home-link,
+.store-header-actions > #themeToggle {
+  position: relative !important;
+  z-index: 20 !important;
+}
+
+.store-header-actions .mk-profile-chip,
+.store-header-actions .ow-player-chip,
+.store-header-actions .store-home-link {
+  background: rgba(8, 7, 23, .96) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+@keyframes mkUltimatePulse {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.16); }
+  15% { opacity: 1; }
+  70% { opacity: .72; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(6.2); }
+}
+
+@media (max-width: 1520px) {
+  .ow-currency-hub-wrap { margin-right: 20px !important; }
+  .mk-lightning-svg { width: 68px !important; }
+}
+
+@media (max-width: 1180px) {
+  .ow-currency-hub-wrap { margin-right: 8px !important; }
+}
+
+/* STEP 8.2 — finální bezpečná zóna mezi VFX měny a profilem. */
+.ow-currency-hub-wrap { margin-right: 64px !important; }
+.mk-lightning-svg { width: 70px !important; }
+
+@media (max-width: 1520px) {
+  .ow-currency-hub-wrap { margin-right: 28px !important; }
+  .mk-lightning-svg { width: 58px !important; }
+}
+
+@media (max-width: 1180px) {
+  .ow-currency-hub-wrap { margin-right: 10px !important; }
+}

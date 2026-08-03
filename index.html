@@ -112,6 +112,17 @@
         <div class="ow-currency-hub-wrap">
           <button class="ow-currency-hub mk-main-currency-button" id="currencyHubButton" type="button" aria-label="Otevřít nákup herních měn" aria-haspopup="dialog">
             <span class="mk-main-currency-fx" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="mk-main-lightning-field" aria-hidden="true">
+              <svg class="mk-lightning-svg mk-lightning-left" viewBox="0 0 104 68" preserveAspectRatio="none">
+                <path pathLength="100" d="M102 34 L86 29 L77 39 L65 22 L54 46 L42 31 L31 38 L19 20 L3 34"></path>
+                <path pathLength="100" d="M97 46 L82 43 L73 54 L62 39 L51 57 L39 46 L26 54 L13 43"></path>
+              </svg>
+              <svg class="mk-lightning-svg mk-lightning-right" viewBox="0 0 104 68" preserveAspectRatio="none">
+                <path pathLength="100" d="M2 34 L18 29 L27 39 L39 22 L50 46 L62 31 L73 38 L85 20 L101 34"></path>
+                <path pathLength="100" d="M7 46 L22 43 L31 54 L42 39 L53 57 L65 46 L78 54 L91 43"></path>
+              </svg>
+              <span class="mk-back-particles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            </span>
             <span class="mk-main-currency-universe" aria-hidden="true">
               <span class="mk-main-currency-nebula mk-main-currency-nebula-a"></span>
               <span class="mk-main-currency-nebula mk-main-currency-nebula-b"></span>
@@ -160,11 +171,14 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path><path d="M9 12h11"></path></svg>
           <span>Hlavní web</span>
         </a>
-        <button class="icon-button" id="themeToggle" type="button" aria-label="Přepnout motiv" title="Přepnout motiv">
-          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="4"></circle>
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+        <button class="icon-button header-cart-toggle" id="themeToggle" type="button" aria-label="Otevřít košík, 0 položek" title="Otevřít košík">
+          <span class="header-cart-toggle-aura" aria-hidden="true"></span>
+          <svg class="header-cart-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"></path>
+            <circle cx="10" cy="20" r="1"></circle>
+            <circle cx="17" cy="20" r="1"></circle>
           </svg>
+          <b class="header-cart-toggle-count" id="headerCartCount">0</b>
         </button>
         <button class="store-cart-button" id="cartButton" type="button" aria-label="Otevřít košík" aria-expanded="false">
           <span class="cart-button-aura" aria-hidden="true"></span>
