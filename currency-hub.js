@@ -31,32 +31,32 @@
     <span class="mk-hub-lightning" aria-hidden="true">
       <span class="mk-hub-side mk-hub-side-mythic">
         <svg class="mk-bolt-1" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path class="mk-bolt-glow"   d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
-          <path class="mk-bolt-mid"    d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
-          <path class="mk-bolt-core"   d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-glow"   d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-mid"    d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-core"   d="M150 54 116 48 98 62 74 40 52 52 30 30 12 38"></path>
         </svg>
         <svg class="mk-bolt-2" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path class="mk-bolt-glow"   d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
-          <path class="mk-bolt-mid"    d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
-          <path class="mk-bolt-core"   d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-glow"   d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-mid"    d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-core"   d="M150 60 122 72 104 60 82 80 58 66 34 84 14 74"></path>
         </svg>
         <svg class="mk-bolt-3" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path class="mk-bolt-thread" d="M148 46C120 30 104 66 78 48 52 30 40 74 10 56"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-thread" d="M148 46C120 30 104 66 78 48 52 30 40 74 10 56"></path>
         </svg>
       </span>
       <span class="mk-hub-side mk-hub-side-premium">
         <svg class="mk-bolt-1" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path class="mk-bolt-glow"   d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
-          <path class="mk-bolt-mid"    d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
-          <path class="mk-bolt-core"   d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-glow"   d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-mid"    d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-core"   d="M10 54 44 48 62 62 86 40 108 52 130 30 148 38"></path>
         </svg>
         <svg class="mk-bolt-2" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path class="mk-bolt-glow"   d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
-          <path class="mk-bolt-mid"    d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
-          <path class="mk-bolt-core"   d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-glow"   d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-mid"    d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-core"   d="M10 60 38 72 56 60 78 80 102 66 126 84 146 74"></path>
         </svg>
         <svg class="mk-bolt-3" viewBox="0 0 160 110" preserveAspectRatio="none">
-          <path class="mk-bolt-thread" d="M12 46C40 30 56 66 82 48 108 30 120 74 150 56"></path>
+          <path vector-effect="non-scaling-stroke" class="mk-bolt-thread" d="M12 46C40 30 56 66 82 48 108 30 120 74 150 56"></path>
         </svg>
       </span>
     </span>`;
@@ -66,6 +66,8 @@
     <span class="mk-hub-universe" aria-hidden="true">
       <span class="mk-hub-nebula mk-hub-nebula-a"></span>
       <span class="mk-hub-nebula mk-hub-nebula-b"></span>
+      <span class="mk-hub-nebula mk-hub-nebula-c"></span>
+      <span class="mk-hub-nebula mk-hub-nebula-d"></span>
       <span class="mk-hub-stars"></span>
       <span class="mk-hub-scan"></span>
     </span>
@@ -163,7 +165,9 @@
 
     const wrap = hub?.closest(".ow-currency-hub-wrap");
     if (wrap && !wrap.querySelector(".mk-hub-lightning")) {
-      wrap.insertAdjacentHTML("afterbegin", LIGHTNING);
+      // Vkládáme ZA tlačítko, ne před něj – hub tvoří vlastní vykreslovací
+      // vrstvu (3D transform) a cokoli před ním v DOM by překryl.
+      hub.insertAdjacentHTML("afterend", LIGHTNING);
     }
 
     const divider = hub?.querySelector(".ow-currency-hub-divider");

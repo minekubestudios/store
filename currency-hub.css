@@ -202,29 +202,47 @@
 /* --- mlhoviny ------------------------------------------------------------- */
 .mk-hub-nebula {
   position: absolute;
-  width: 110px;
-  height: 76px;
+  width: 124px;
+  height: 96px;
   border-radius: 50%;
-  filter: blur(15px);
-  opacity: .72;
+  filter: blur(16px);
+  opacity: .75;
 }
 
+/* Čtyři mlhoviny rozmístěné do rohů. Animace je posouvá jen v malém
+   rozsahu, aby žádná část tlačítka nezůstala bez barvy. */
 .mk-hub-nebula-a {
-  left: -14px;
-  top: -12px;
-  background: radial-gradient(circle, rgba(88, 226, 255, .85), transparent 66%);
+  left: -30px;
+  top: -22px;
+  background: radial-gradient(circle, rgba(88, 226, 255, .9), transparent 64%);
   animation: hubNebulaA 7.5s ease-in-out infinite alternate;
 }
 
 .mk-hub-nebula-b {
-  right: -16px;
-  bottom: -14px;
-  background: radial-gradient(circle, rgba(255, 92, 228, .8), transparent 66%);
+  right: -30px;
+  bottom: -22px;
+  background: radial-gradient(circle, rgba(255, 92, 228, .85), transparent 64%);
   animation: hubNebulaB 8.6s ease-in-out infinite alternate;
 }
 
-@keyframes hubNebulaA { to { transform: translate(24px, 10px) scale(1.28); opacity: .8; } }
-@keyframes hubNebulaB { to { transform: translate(-28px, -10px) scale(1.22); opacity: .82; } }
+.mk-hub-nebula-c {
+  left: -26px;
+  bottom: -24px;
+  background: radial-gradient(circle, rgba(138, 92, 246, .82), transparent 64%);
+  animation: hubNebulaC 9.4s ease-in-out infinite alternate;
+}
+
+.mk-hub-nebula-d {
+  right: -24px;
+  top: -24px;
+  background: radial-gradient(circle, rgba(255, 176, 58, .55), transparent 64%);
+  animation: hubNebulaD 8.1s ease-in-out infinite alternate;
+}
+
+@keyframes hubNebulaA { to { transform: translate(14px, 8px)   scale(1.2);  opacity: .82; } }
+@keyframes hubNebulaB { to { transform: translate(-16px, -8px) scale(1.16); opacity: .84; } }
+@keyframes hubNebulaC { to { transform: translate(16px, -10px) scale(1.22); opacity: .8;  } }
+@keyframes hubNebulaD { to { transform: translate(-14px, 10px) scale(1.18); opacity: .68; } }
 
 /* --- blikající hvězdy ----------------------------------------------------- */
 .mk-hub-stars {
@@ -897,17 +915,34 @@
   height: 58px !important;
 }
 
-/* Dekorativní vrstvy jsou absolutně pozicované, ale prohlížeč je i tak
-   považuje za položky mřížky a počítá s nimi řádky. Vyřadíme je. */
+/* Dekorativní vrstvy musí pokrývat CELÉ tlačítko. Přes grid-area by
+   respektovaly padding mřížky a smrskly se jen do sloupce s měnami –
+   levá část s "+" by pak zůstala bez galaxie. Proto je pozicujeme
+   napevno vůči tlačítku, nezávisle na mřížce. */
 .ow-currency-hub > .mk-hub-universe,
-.ow-currency-hub > .mk-hub-lightning,
 .ow-currency-hub > .mk-hub-core,
 .ow-currency-hub > .mk-hub-orbits,
 .ow-currency-hub > .mk-hub-corners,
 .ow-currency-hub > .mk-hub-wave,
 .ow-currency-hub > .mk-hub-pulse,
 .ow-currency-hub > .mk-hub-sparks {
-  grid-area: 1 / 1 / -1 / -1;
+  position: absolute !important;
+  grid-area: unset !important;
+}
+
+.ow-currency-hub > .mk-hub-universe {
+  inset: 2px !important;
+}
+
+.ow-currency-hub > .mk-hub-wave,
+.ow-currency-hub > .mk-hub-orbits,
+.ow-currency-hub > .mk-hub-corners {
+  left: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 /* "+" zabírá oba řádky a sedí uprostřed levého sloupce. */
@@ -1000,25 +1035,29 @@
    neprůhledné, takže cokoli uvnitř by bylo neviditelné. */
 /* Výboje sahají od vnějšku až přes celou šířku tlačítka – překrývají se
    uprostřed, takže energie působí jako by prošlehla celým hubem. */
+/* Výboje sálají hlavně ven ze stran – přes střed jen zlehka,
+   ať nepřekrývají čísla zůstatků. */
 .mk-hub-side {
   position: absolute;
-  top: -20px;
-  bottom: -20px;
-  width: 190px;
+  top: -18px;
+  bottom: -18px;
+  width: 132px;
   pointer-events: none;
   overflow: visible;
+  opacity: .85;
 }
 
-.mk-hub-side-mythic  { left: -76px; }
-.mk-hub-side-premium { right: -76px; }
+.mk-hub-side-mythic  { left: -96px; }
+.mk-hub-side-premium { right: -96px; }
 
+/* Průhlednost řídí jednotlivé cesty přes animaci – kdyby ji měl i <svg>,
+   zůstaly by výboje trvale neviditelné. */
 .mk-hub-side svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   fill: none;
-  opacity: 0;
   stroke-linecap: round;
   stroke-linejoin: round;
   overflow: visible;
@@ -1031,8 +1070,8 @@
 
 /* --- vrstva 1: široká rozostřená svatozář -------------------------------- */
 .mk-hub-side .mk-bolt-glow {
-  stroke-width: 16;
-  filter: blur(9px);
+  stroke-width: 13;
+  filter: blur(8px);
   opacity: 0;
 }
 
@@ -1041,8 +1080,8 @@
 
 /* --- vrstva 2: sytý střed výboje ------------------------------------------ */
 .mk-hub-side .mk-bolt-mid {
-  stroke-width: 6.5;
-  filter: blur(1.6px);
+  stroke-width: 5;
+  filter: blur(1.4px);
 }
 
 .mk-hub-side-mythic  .mk-bolt-mid { stroke: #7dd8ff; }
@@ -1050,7 +1089,7 @@
 
 /* --- vrstva 3: bílé jádro, které dělá „neon" ------------------------------ */
 .mk-hub-side .mk-bolt-core {
-  stroke-width: 2.4;
+  stroke-width: 1.8;
   stroke: #fff;
   filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 12px currentColor);
 }
@@ -1060,7 +1099,7 @@
 
 /* --- plazmové vlákno: tenká vlnovka, která se plazí ven ------------------- */
 .mk-hub-side .mk-bolt-thread {
-  stroke-width: 2.6;
+  stroke-width: 2;
   stroke-dasharray: 5 9;
   opacity: 0;
   filter: blur(.4px);
