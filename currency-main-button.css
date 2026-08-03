@@ -1,0 +1,711 @@
+/* ==========================================================================\n   Minekube Store — hlavní tlačítko měn\n   Přesný vizuální jazyk STORE tlačítka z hlavního webu, upravený pro\n   zůstatky herních měn a pravý ovladač "+". Tato vrstva je načtená až\n   jako poslední, takže bezpečně ruší staré experimentální VFX bez zásahu\n   do modálů, produktů, košíku nebo platební logiky.\n   ========================================================================== */
+
+@property --mk-currency-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.ow-currency-hub-wrap {
+  position: relative !important;
+  width: 222px !important;
+  height: 58px !important;
+  flex: 0 0 222px !important;
+  z-index: 40;
+}
+
+.ow-currency-hub.mk-main-currency-button {
+  --hub-x: 50%;
+  --hub-y: 50%;
+  --mk-currency-angle: 0deg;
+  position: relative !important;
+  isolation: isolate;
+  width: 222px !important;
+  min-width: 222px !important;
+  max-width: 222px !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) 38px !important;
+  grid-template-rows: 1fr !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 7px 6px 6px !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  clip-path: none !important;
+  color: #f8fbff;
+  background: #050518 !important;
+  box-shadow:
+    0 14px 34px rgba(2, 1, 18, .62),
+    0 0 24px rgba(81, 226, 255, .24),
+    0 0 38px rgba(151, 78, 255, .16),
+    inset 0 1px 0 rgba(255, 255, 255, .18),
+    inset 0 -1px 0 rgba(0, 0, 0, .78) !important;
+  transform: translateY(0) !important;
+  filter: none;
+  transition:
+    transform .34s cubic-bezier(.16, .84, .2, 1),
+    filter .3s ease,
+    box-shadow .36s ease !important;
+  cursor: pointer;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Silná, čistá RGB linka — stejná skladba jako na hlavním STORE tlačítku. */
+.ow-currency-hub.mk-main-currency-button::before {
+  content: "" !important;
+  position: absolute !important;
+  z-index: -1 !important;
+  inset: -4px !important;
+  padding: 4px !important;
+  border-radius: 22px !important;
+  background: conic-gradient(
+    from var(--mk-currency-angle),
+    #59f7ff 0deg,
+    #567cff 55deg,
+    #9d60ff 112deg,
+    #ff4fdf 170deg,
+    #ff8b48 218deg,
+    #ffe173 264deg,
+    #a56cff 316deg,
+    #59f7ff 360deg
+  ) !important;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  filter:
+    drop-shadow(0 0 7px rgba(83, 240, 255, .72))
+    drop-shadow(0 0 14px rgba(155, 79, 255, .45))
+    drop-shadow(0 0 20px rgba(255, 70, 218, .24)) !important;
+  transform: none !important;
+  opacity: 1 !important;
+  animation: mkCurrencyBorder 3.1s linear infinite !important;
+  pointer-events: none;
+}
+
+.ow-currency-hub.mk-main-currency-button::after {
+  content: "" !important;
+  position: absolute !important;
+  z-index: -6 !important;
+  inset: -20px -27px !important;
+  height: auto !important;
+  border-radius: 32px !important;
+  background:
+    radial-gradient(ellipse at 18% 50%, rgba(65, 235, 255, .43), transparent 48%),
+    radial-gradient(ellipse at 52% 48%, rgba(118, 58, 255, .5), transparent 54%),
+    radial-gradient(ellipse at 84% 48%, rgba(255, 132, 53, .34), transparent 48%) !important;
+  filter: blur(18px) !important;
+  opacity: .38 !important;
+  transform: scale(.9) !important;
+  transition: opacity .35s ease, transform .5s cubic-bezier(.16, 1, .3, 1), filter .35s ease !important;
+  animation: mkCurrencyAura 3.2s ease-in-out infinite !important;
+  pointer-events: none;
+}
+
+.ow-currency-hub.mk-main-currency-button:hover,
+.ow-currency-hub.mk-main-currency-button:focus-visible {
+  transform: translateY(-4px) !important;
+  filter: saturate(1.23) brightness(1.1) !important;
+  box-shadow:
+    0 22px 48px rgba(2, 1, 20, .72),
+    0 0 0 1px rgba(160, 248, 255, .12),
+    0 0 25px rgba(77, 235, 255, .52),
+    0 0 46px rgba(139, 70, 255, .43),
+    0 0 66px rgba(255, 126, 52, .22),
+    inset 0 1px 0 rgba(255, 255, 255, .24),
+    inset 0 -1px 0 rgba(0, 0, 0, .82) !important;
+  outline: none;
+}
+
+.ow-currency-hub.mk-main-currency-button:hover::before,
+.ow-currency-hub.mk-main-currency-button:focus-visible::before {
+  filter:
+    drop-shadow(0 0 9px rgba(87, 246, 255, .95))
+    drop-shadow(0 0 19px rgba(159, 78, 255, .72))
+    drop-shadow(0 0 27px rgba(255, 121, 48, .38)) !important;
+  animation-duration: 1.05s !important;
+}
+
+.ow-currency-hub.mk-main-currency-button:hover::after,
+.ow-currency-hub.mk-main-currency-button:focus-visible::after {
+  opacity: .92 !important;
+  transform: scale(1.15) !important;
+}
+
+.ow-currency-hub.mk-main-currency-button:active {
+  transform: translateY(-1px) scale(.985) !important;
+  filter: brightness(1.32) saturate(1.45) !important;
+  transition-duration: .08s !important;
+}
+
+/* Staré externí blesky a experimentální vrstvy jsou záměrně vypnuté. */
+.ow-currency-hub-wrap > .mk-hub-lightning,
+.ow-currency-hub .mk-hub-universe,
+.ow-currency-hub .mk-hub-core,
+.ow-currency-hub .mk-hub-orbits,
+.ow-currency-hub .mk-hub-corners,
+.ow-currency-hub .mk-hub-wave,
+.ow-currency-hub .mk-hub-pulse,
+.ow-currency-hub .mk-hub-sparks,
+.ow-currency-hub .mk-hub-bolt,
+.ow-currency-hub .ow-currency-hub-arrow,
+.ow-currency-hub .ow-currency-hub-divider {
+  display: none !important;
+}
+
+/* Vnitřní galaxie. */
+.mk-main-currency-universe {
+  position: absolute;
+  z-index: 0;
+  inset: 2px;
+  overflow: hidden;
+  border-radius: 16px;
+  pointer-events: none;
+  outline: 1px solid rgba(218, 252, 255, .08);
+  background:
+    radial-gradient(circle at var(--hub-x) var(--hub-y), rgba(134, 246, 255, .28), transparent 31%),
+    radial-gradient(circle at 74% 18%, rgba(255, 56, 222, .28), transparent 38%),
+    radial-gradient(circle at 18% 84%, rgba(73, 111, 255, .46), transparent 44%),
+    radial-gradient(circle at 92% 70%, rgba(255, 157, 48, .34), transparent 37%),
+    linear-gradient(112deg, #07183d 0%, #152d88 22%, #834fe4 53%, #e839ce 77%, #ff9b3b 100%);
+  box-shadow:
+    inset 0 0 22px rgba(0, 0, 0, .45),
+    inset 0 1px 0 rgba(255, 255, 255, .15);
+}
+
+.mk-main-currency-universe::before {
+  content: "";
+  position: absolute;
+  inset: -70%;
+  background:
+    radial-gradient(circle, #fff 0 1px, transparent 1.5px) 0 0 / 23px 23px,
+    radial-gradient(circle, #8df8ff 0 1px, transparent 1.7px) 8px 11px / 31px 31px,
+    radial-gradient(circle, #ffb06b 0 1px, transparent 1.7px) 13px 5px / 41px 41px;
+  opacity: .46;
+  transform: rotate(8deg);
+  animation: mkCurrencyStarDrift 13s linear infinite;
+}
+
+.mk-main-currency-universe::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 13px, rgba(111, 235, 255, .045) 13px 14px),
+    repeating-linear-gradient(0deg, transparent 0 9px, rgba(177, 87, 255, .04) 9px 10px);
+  opacity: .56;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+}
+
+.mk-main-currency-nebula {
+  position: absolute;
+  width: 98px;
+  height: 72px;
+  border-radius: 50%;
+  filter: blur(17px);
+  opacity: .6;
+  mix-blend-mode: screen;
+}
+
+.mk-main-currency-nebula-a {
+  left: -22px;
+  top: -17px;
+  background: #35c8ff;
+  animation: mkCurrencyNebulaA 5.2s ease-in-out infinite alternate;
+}
+
+.mk-main-currency-nebula-b {
+  right: -20px;
+  bottom: -20px;
+  background: #ff70c9;
+  animation: mkCurrencyNebulaB 4.4s ease-in-out infinite alternate;
+}
+
+.mk-main-currency-stars {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 24%, #fff 0 1px, transparent 1.8px),
+    radial-gradient(circle at 25% 72%, #72f7ff 0 1px, transparent 1.9px),
+    radial-gradient(circle at 44% 18%, #fff 0 1px, transparent 1.8px),
+    radial-gradient(circle at 62% 66%, #ff8de8 0 1px, transparent 2px),
+    radial-gradient(circle at 79% 24%, #ffe071 0 1px, transparent 1.8px),
+    radial-gradient(circle at 91% 72%, #fff 0 1px, transparent 1.7px);
+  animation: mkCurrencyTwinkle 1.9s ease-in-out infinite alternate;
+}
+
+.mk-main-currency-scan {
+  position: absolute;
+  left: -45%;
+  top: -80%;
+  width: 34%;
+  height: 260%;
+  transform: skewX(-17deg);
+  background: linear-gradient(90deg, transparent, rgba(125, 247, 255, .34), rgba(255, 255, 255, .28), rgba(255, 164, 73, .22), transparent);
+  filter: blur(1px);
+  opacity: .26;
+  animation: mkCurrencyScanIdle 5.4s ease-in-out infinite;
+}
+
+.ow-currency-hub:hover .mk-main-currency-scan,
+.ow-currency-hub:focus-visible .mk-main-currency-scan {
+  opacity: .72;
+  animation: mkCurrencyScanHover .88s cubic-bezier(.18, .76, .25, 1) infinite;
+}
+
+/* Levý panel s oběma ikonami měny. */
+.mk-main-currency-icon,
+.mk-main-currency-label,
+.mk-hub-plus,
+.mk-main-currency-corners,
+.mk-main-click-pulse {
+  position: relative;
+  z-index: 4;
+}
+
+.mk-main-currency-icon {
+  width: 42px;
+  height: 42px;
+  display: block;
+  border: 1px solid rgba(119, 238, 255, .62);
+  border-radius: 13px;
+  background:
+    linear-gradient(145deg, rgba(89, 233, 255, .18), rgba(119, 52, 255, .26) 48%, rgba(255, 60, 215, .18)),
+    rgba(4, 8, 31, .68);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .05) inset,
+    0 0 13px rgba(70, 230, 255, .33),
+    0 0 22px rgba(152, 55, 255, .22),
+    inset 0 0 15px rgba(72, 169, 255, .18);
+  transition: border-color .3s ease, box-shadow .34s ease, filter .3s ease;
+}
+
+.mk-main-currency-icon::before,
+.mk-main-currency-icon::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(119, 245, 255, .22);
+  border-radius: 10px;
+  transition: transform .6s cubic-bezier(.16, 1, .3, 1), opacity .35s ease;
+}
+
+.mk-main-currency-icon::after {
+  inset: 8px;
+  border-color: rgba(255, 161, 74, .28);
+  transform: rotate(45deg);
+}
+
+.mk-main-icon-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d7fdff;
+  box-shadow: 0 0 7px #65f5ff, 0 0 15px #7d5cff, 0 0 21px #ff8d39;
+  opacity: .2;
+  transform: translate(-50%, -50%);
+  transition: opacity .3s ease, transform .45s ease;
+}
+
+.mk-main-currency-icon .ow-currency-gem,
+.mk-main-currency-icon .ow-currency-coin {
+  position: absolute !important;
+  display: block !important;
+  width: 22px !important;
+  height: 22px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+  filter: drop-shadow(0 0 5px rgba(105, 238, 255, .58));
+  transition: transform .5s cubic-bezier(.16, 1, .3, 1), filter .35s ease;
+}
+
+.mk-main-icon-prism { left: 4px; top: 4px; z-index: 3; transform: rotate(-7deg); }
+.mk-main-icon-coin { right: 3px; bottom: 3px; z-index: 4; transform: rotate(7deg); filter: drop-shadow(0 0 5px rgba(255, 205, 68, .62)) !important; }
+
+.ow-currency-hub:hover .mk-main-currency-icon,
+.ow-currency-hub:focus-visible .mk-main-currency-icon {
+  border-color: rgba(174, 252, 255, .94);
+  filter: brightness(1.14);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .09) inset,
+    0 0 17px rgba(82, 239, 255, .75),
+    0 0 31px rgba(145, 69, 255, .5),
+    inset 0 0 19px rgba(80, 193, 255, .28);
+}
+
+.ow-currency-hub:hover .mk-main-currency-icon::before { transform: rotate(90deg) scale(.8); }
+.ow-currency-hub:hover .mk-main-currency-icon::after { transform: rotate(225deg) scale(1.08); }
+.ow-currency-hub:hover .mk-main-icon-core { opacity: 1; transform: translate(-50%, -50%) scale(2.25); }
+.ow-currency-hub:hover .mk-main-icon-prism { transform: translate(-1px, -1px) rotate(-13deg) scale(1.12); }
+.ow-currency-hub:hover .mk-main-icon-coin { transform: translate(1px, 1px) rotate(13deg) scale(1.12); }
+
+/* Střední část — zachované oba zůstatky, ale v kompozici hlavního tlačítka. */
+.mk-main-currency-label {
+  min-width: 0;
+  display: grid;
+  align-content: center;
+  line-height: 1;
+  text-align: left;
+  text-shadow: none;
+}
+
+.mk-main-currency-label > small {
+  position: relative;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: hidden;
+  color: #c7f8ff;
+  font-size: 6px;
+  font-weight: 1000;
+  letter-spacing: .24em;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 0 5px rgba(89, 234, 255, .44);
+}
+
+.mk-main-currency-label > small span { position: relative; z-index: 1; }
+.mk-main-currency-label > small i {
+  position: absolute;
+  left: -50%;
+  bottom: 0;
+  width: 42%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #7cf8ff, #ff64e7, transparent);
+  box-shadow: 0 0 6px #75eaff;
+  animation: mkCurrencyLabelScan 2.8s ease-in-out infinite;
+}
+
+.mk-main-balance-line {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  margin-top: 4px;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment {
+  position: relative !important;
+  grid-column: auto !important;
+  grid-row: auto !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  flex-direction: row !important;
+  gap: 3px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment::before,
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment::after {
+  display: none !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-gem,
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-coin {
+  position: static !important;
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+  transform: none !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy {
+  display: block !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy b {
+  display: block;
+  color: #fff;
+  font-size: 15px !important;
+  font-weight: 1000;
+  line-height: .95 !important;
+  letter-spacing: .015em !important;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 5px rgba(94, 235, 255, .44);
+  transition: color .28s ease, text-shadow .28s ease;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy small { display: none !important; }
+
+.mk-main-balance-divider {
+  width: 1px;
+  height: 17px;
+  background: linear-gradient(transparent, rgba(255, 255, 255, .44), transparent);
+  box-shadow: 0 0 5px rgba(116, 238, 255, .25);
+  opacity: .65;
+}
+
+.ow-currency-hub:hover .is-mythic .ow-currency-hub-copy b {
+  color: #f0fdff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 7px #63f3ff, 0 0 12px rgba(111, 82, 255, .62);
+}
+
+.ow-currency-hub:hover .is-premium .ow-currency-hub-copy b {
+  color: #fff9e7;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 7px #ffd05a, 0 0 12px rgba(255, 116, 48, .58);
+}
+
+/* Pravé plusko nahrazuje šipku z hlavního STORE tlačítka. */
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  width: 38px !important;
+  height: 42px !important;
+  display: grid !important;
+  place-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-left: 1px solid rgba(124, 231, 255, .25) !important;
+  border-radius: 0 !important;
+  color: #effdff !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: pointer;
+  transition: filter .3s ease;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus::before,
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus::after { display: none !important; }
+
+.mk-main-plus-core {
+  position: absolute;
+  width: 27px;
+  height: 27px;
+  border: 1px solid rgba(170, 247, 255, .5);
+  border-radius: 9px;
+  background: linear-gradient(145deg, rgba(91, 225, 255, .14), rgba(164, 80, 255, .18) 48%, rgba(255, 132, 54, .14));
+  transform: rotate(45deg) scale(.76);
+  box-shadow: 0 0 9px rgba(88, 235, 255, .28), inset 0 0 10px rgba(255, 255, 255, .04);
+  transition: transform .45s cubic-bezier(.16, 1, .3, 1), box-shadow .35s ease, border-color .35s ease;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus svg {
+  position: relative;
+  z-index: 2;
+  width: 18px !important;
+  height: 18px !important;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(117, 246, 255, .62));
+  transition: transform .42s cubic-bezier(.16, 1, .3, 1), filter .35s ease;
+}
+
+.ow-currency-hub:hover .mk-main-plus-core,
+.ow-currency-hub:focus-visible .mk-main-plus-core {
+  transform: rotate(135deg) scale(.93);
+  border-color: rgba(255, 232, 156, .88);
+  box-shadow: 0 0 12px rgba(88, 235, 255, .64), 0 0 20px rgba(255, 137, 51, .4);
+}
+
+.ow-currency-hub:hover .mk-hub-plus svg,
+.ow-currency-hub:focus-visible .mk-hub-plus svg {
+  transform: rotate(90deg) scale(1.1) !important;
+  filter: drop-shadow(0 0 5px #8df8ff) drop-shadow(0 0 10px rgba(255, 190, 82, .8));
+}
+
+.mk-hub-plus:focus-visible {
+  outline: 1px solid #a8faff !important;
+  outline-offset: 2px !important;
+}
+
+/* Ostré kybernetické rohy. */
+.mk-main-currency-corners {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.mk-main-currency-corners i {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-color: #89f8ff;
+  opacity: .7;
+  filter: drop-shadow(0 0 3px #6eefff);
+}
+
+.mk-main-currency-corners i:nth-child(1) { left: 1px; top: 1px; border-left: 2px solid; border-top: 2px solid; border-radius: 15px 0 0 0; }
+.mk-main-currency-corners i:nth-child(2) { right: 1px; top: 1px; border-right: 2px solid; border-top: 2px solid; border-radius: 0 15px 0 0; border-color: #ffd26d; }
+.mk-main-currency-corners i:nth-child(3) { right: 1px; bottom: 1px; border-right: 2px solid; border-bottom: 2px solid; border-radius: 0 0 15px 0; border-color: #ffad51; }
+.mk-main-currency-corners i:nth-child(4) { left: 1px; bottom: 1px; border-left: 2px solid; border-bottom: 2px solid; border-radius: 0 0 0 15px; }
+
+.ow-currency-hub:hover .mk-main-currency-corners i { animation: mkCurrencyCornerSpark .72s steps(2, end) infinite; opacity: 1; }
+
+/* Jemné částice zůstávají UVNITŘ tlačítka, stejně jako na referenci. */
+.mk-main-currency-fx {
+  position: absolute;
+  z-index: 3;
+  inset: 3px;
+  overflow: hidden;
+  border-radius: 15px;
+  pointer-events: none;
+}
+
+.mk-main-currency-fx i {
+  --fx-x: 50%;
+  --fx-y: 50%;
+  --fx-size: 2px;
+  position: absolute;
+  left: var(--fx-x);
+  top: var(--fx-y);
+  width: var(--fx-size);
+  height: var(--fx-size);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 5px #8df8ff, 0 0 9px rgba(255, 108, 224, .65);
+  opacity: .25;
+  transform: translate(-50%, -50%) scale(.7);
+}
+
+.mk-main-currency-fx i:nth-child(1) { --fx-x: 13%; --fx-y: 22%; --fx-size: 1.5px; animation-delay: .05s; }
+.mk-main-currency-fx i:nth-child(2) { --fx-x: 31%; --fx-y: 74%; --fx-size: 2px; animation-delay: .22s; }
+.mk-main-currency-fx i:nth-child(3) { --fx-x: 45%; --fx-y: 23%; --fx-size: 1.6px; animation-delay: .38s; }
+.mk-main-currency-fx i:nth-child(4) { --fx-x: 56%; --fx-y: 67%; --fx-size: 2px; animation-delay: .55s; }
+.mk-main-currency-fx i:nth-child(5) { --fx-x: 68%; --fx-y: 18%; --fx-size: 1.5px; animation-delay: .7s; }
+.mk-main-currency-fx i:nth-child(6) { --fx-x: 79%; --fx-y: 61%; --fx-size: 2.1px; animation-delay: .86s; }
+.mk-main-currency-fx i:nth-child(7) { --fx-x: 89%; --fx-y: 28%; --fx-size: 1.6px; animation-delay: 1.02s; }
+.mk-main-currency-fx i:nth-child(8) { --fx-x: 91%; --fx-y: 79%; --fx-size: 1.8px; animation-delay: 1.18s; }
+
+.ow-currency-hub:hover .mk-main-currency-fx i,
+.ow-currency-hub:focus-visible .mk-main-currency-fx i {
+  animation: mkCurrencyParticle 1.55s ease-in-out infinite alternate;
+}
+
+/* Klikací pulz zůstává uvnitř tlačítka a neruší otevření modálu. */
+.mk-main-click-pulse {
+  position: absolute;
+  z-index: 6;
+  inset: 2px;
+  overflow: hidden;
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.mk-main-click-pulse i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.2);
+}
+
+.mk-main-click-pulse i:first-child {
+  border: 2px solid rgba(126, 240, 255, .95);
+  box-shadow: 0 0 14px rgba(102, 247, 255, .9), 0 0 26px rgba(150, 89, 255, .55);
+}
+
+.mk-main-click-pulse i:last-child {
+  border: 2px solid rgba(255, 169, 71, .9);
+  box-shadow: 0 0 14px rgba(255, 176, 70, .8), 0 0 26px rgba(255, 78, 218, .48);
+}
+
+.ow-currency-hub.is-charged .mk-main-click-pulse i:first-child { animation: mkCurrencyPulse .68s cubic-bezier(.2, .7, .3, 1); }
+.ow-currency-hub.is-charged .mk-main-click-pulse i:last-child { animation: mkCurrencyPulse .68s cubic-bezier(.2, .7, .3, 1) .08s; }
+.ow-currency-hub.is-charged { animation: mkCurrencyKick .5s cubic-bezier(.16, 1, .3, 1) !important; }
+
+/* Tooltip zůstává funkční, jen se přesně zarovná k novému rozměru. */
+.ow-currency-hub-wrap .ow-currency-tooltip {
+  top: calc(100% + 15px) !important;
+  right: 0 !important;
+  transform-origin: top right !important;
+}
+
+/* Původní skrytí košíku a další funkční pravidla zůstávají beze změny. */
+.store-header-actions .store-cart-button,
+.store-cart-button {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  min-width: 0 !important;
+  max-width: 1px !important;
+  flex: 0 0 1px !important;
+  opacity: 0 !important;
+}
+
+@keyframes mkCurrencyBorder { to { --mk-currency-angle: 360deg; } }
+@keyframes mkCurrencyAura { 0%, 100% { opacity: .3; transform: scale(.86); } 50% { opacity: .48; transform: scale(1); } }
+@keyframes mkCurrencyStarDrift { to { transform: rotate(8deg) translate3d(36px, 24px, 0); } }
+@keyframes mkCurrencyNebulaA { to { transform: translate(24px, 11px) scale(1.25); opacity: .82; } }
+@keyframes mkCurrencyNebulaB { to { transform: translate(-27px, -11px) scale(1.22); opacity: .86; } }
+@keyframes mkCurrencyTwinkle { from { opacity: .38; filter: brightness(.9); } to { opacity: .92; filter: brightness(1.5); } }
+@keyframes mkCurrencyScanIdle { 0%, 55% { left: -45%; opacity: 0; } 72% { opacity: .28; } 100% { left: 118%; opacity: 0; } }
+@keyframes mkCurrencyScanHover { 0% { left: -42%; opacity: 0; } 20% { opacity: .8; } 100% { left: 116%; opacity: 0; } }
+@keyframes mkCurrencyLabelScan { 0%, 18% { left: -50%; opacity: 0; } 36% { opacity: 1; } 76% { left: 116%; opacity: .7; } 100% { left: 116%; opacity: 0; } }
+@keyframes mkCurrencyCornerSpark { 0%, 34% { filter: drop-shadow(0 0 2px #6eefff); } 42%, 58% { filter: drop-shadow(0 0 7px #6eefff) drop-shadow(0 0 12px #ff9b3b); } 66%, 100% { filter: drop-shadow(0 0 3px #6eefff); } }
+@keyframes mkCurrencyParticle { 0% { opacity: .18; transform: translate(-50%, -50%) scale(.55); } 50% { opacity: 1; transform: translate(-50%, calc(-50% - 3px)) scale(1.35); } 100% { opacity: .3; transform: translate(-50%, calc(-50% + 2px)) scale(.75); } }
+@keyframes mkCurrencyPulse { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); } 12% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(10); } }
+@keyframes mkCurrencyKick { 0% { transform: translateY(-2px) scale(1); } 35% { transform: translateY(-4px) scale(1.035); filter: brightness(1.55) saturate(1.5); } 100% { transform: translateY(-2px) scale(1); } }
+
+@media (max-width: 1400px) {
+  .ow-currency-hub-wrap { width: 206px !important; flex-basis: 206px !important; }
+  .ow-currency-hub.mk-main-currency-button { width: 206px !important; min-width: 206px !important; max-width: 206px !important; grid-template-columns: 40px minmax(0, 1fr) 36px !important; gap: 6px !important; }
+  .ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy b { font-size: 14px !important; }
+  .ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-gem,
+  .ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-coin { width: 14px !important; height: 14px !important; min-width: 14px !important; }
+}
+
+@media (max-width: 900px) {
+  .ow-currency-hub-wrap { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ow-currency-hub.mk-main-currency-button,
+  .ow-currency-hub.mk-main-currency-button::before,
+  .ow-currency-hub.mk-main-currency-button::after,
+  .mk-main-currency-universe::before,
+  .mk-main-currency-nebula,
+  .mk-main-currency-stars,
+  .mk-main-currency-scan,
+  .mk-main-currency-label > small i,
+  .mk-main-currency-fx i,
+  .mk-main-currency-corners i,
+  .mk-main-click-pulse i {
+    animation: none !important;
+    transition-duration: .01ms !important;
+  }
+}
