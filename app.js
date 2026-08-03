@@ -696,6 +696,10 @@ function persistCart() {
 }
 
 function money(value) {
+  // Zobrazovanou měnu řídí přepínač CZK / EUR (currency-switch.js).
+  // Ceny v datech jsou vždy v CZK; EUR je jen orientační přepočet.
+  if (window.MINEKUBE_FX) return window.MINEKUBE_FX.format(value);
+
   const normalized = Math.round((Number(value) + Number.EPSILON) * 100) / 100;
   const hasHalere = Math.abs(normalized - Math.round(normalized)) > 0.000001;
   return new Intl.NumberFormat("cs-CZ", {
@@ -953,6 +957,7 @@ function openCurrencySelector() {
 }
 
 function openCurrencyPacks(type) {
+  state.activeCurrencyType = type;
   renderCurrencyPacks(type);
   closeModal(currencySelectModal, { restoreFocus: false });
   openModal(currencyPacksModal);
@@ -1254,6 +1259,7 @@ function renderCheckout() {
           <span id="paymentStatus">${unavailable ? "Spusť store-api a zkontroluj store-config.js." : legalReady ? "Připravuji zabezpečené platební tlačítko…" : "Nejdřív potvrď obě povinná políčka výše."}</span>
         </div>
         <div class="checkout-summary-total"><span>Celkem k úhradě</span><strong>${money(totals.total)}</strong></div>
+        ${window.MINEKUBE_FX && !window.MINEKUBE_FX.isBase ? `<div class="mk-fx-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span>Zobrazená částka v ${window.MINEKUBE_FX.current} je orientační přepočet. Platba proběhne v CZK.</span></div>` : ""}
         <div class="paypal-button-shell ${legalReady ? "" : "is-locked"}" id="paypalButtonShell" ${legalReady ? "" : "hidden"}>
           ${mode === "mock" ? '<button class="place-order-button" type="button" data-start-mock-payment>Simulovat úspěšnou Sandbox platbu</button>' : '<paypal-button id="minekubePayPalButton" type="pay" hidden></paypal-button>'}
         </div>
@@ -1891,6 +1897,18 @@ function bindEvents() {
     primary.style.setProperty("--pointer-y", `${((event.clientY - rect.top) / rect.height) * 100}%`);
   });
 }
+
+/* Překreslí všechny ceny po přepnutí zobrazované měny. */
+window.mkRefreshPrices = function mkRefreshPrices() {
+  try {
+    renderProducts();
+    renderCart();
+    if (state.activeCurrencyType) renderCurrencyPacks(state.activeCurrencyType);
+    if (checkoutModal?.classList.contains("is-open")) renderCheckout();
+  } catch (error) {
+    console.error("Nepodařilo se překreslit ceny:", error);
+  }
+};
 
 async function init() {
   hydrateState();
