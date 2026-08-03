@@ -1,58 +1,77 @@
 "use strict";
 
-/* Minekube Store — profesionální Currency Hub VFX */
+/* Minekube Store — Currency Hub: profesionální galaxy/lightning VFX */
 (function () {
-  const PLUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>';
+  const PLUS = `
+    <svg class="mk-hub-plus-icon" viewBox="0 0 32 32" aria-hidden="true">
+      <path class="mk-plus-glow" d="M16 7v18M7 16h18"></path>
+      <path class="mk-plus-core" d="M16 7v18M7 16h18"></path>
+    </svg>`;
 
-  const SPARKS = '<span class="mk-hub-sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>';
+  const SPARKS = '<span class="mk-hub-sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>';
 
   const BOLT = `
     <span class="mk-hub-bolt" aria-hidden="true">
       <svg viewBox="0 0 100 100">
-        <path d="M50 8 44 35l12-7-8 25 14-9-16 38"></path>
-        <path d="M16 50h20M64 50h20M24 24l13 13M76 24 63 37M24 76l13-13M76 76 63 63"></path>
+        <path d="M50 5 40 38l15-8-8 25 17-10-18 49"></path>
+        <path d="M10 50h23M67 50h23M20 20l17 17M80 20 63 37M20 80l17-17M80 80 63 63"></path>
       </svg>
     </span>`;
 
-  /* Zrcadlově přesné SVG oblouky. VFX leží mimo samotné tlačítko,
-     takže nepřekrývá text ani ikony. */
+  const leftBoltA = "M216 45 L199 36 L186 48 L169 27 L152 43 L134 18 L116 38 L97 13 L79 34 L59 17 L43 40 L23 27 L5 44";
+  const leftBoltB = "M216 45 L201 54 L187 42 L171 62 L153 48 L136 70 L118 54 L99 75 L82 57 L63 70 L47 51 L29 62 L6 45";
+  const rightBoltA = "M4 45 L21 36 L34 48 L51 27 L68 43 L86 18 L104 38 L123 13 L141 34 L161 17 L177 40 L197 27 L215 44";
+  const rightBoltB = "M4 45 L19 54 L33 42 L49 62 L67 48 L84 70 L102 54 L121 75 L138 57 L157 70 L173 51 L191 62 L214 45";
+
+  function layeredPath(path, groupClass) {
+    return `
+      <g class="${groupClass}">
+        <path pathLength="100" class="mk-bolt-glow" d="${path}"></path>
+        <path pathLength="100" class="mk-bolt-mid" d="${path}"></path>
+        <path pathLength="100" class="mk-bolt-core" d="${path}"></path>
+      </g>`;
+  }
+
   const VFX = `
     <span class="mk-hub-vfx" aria-hidden="true">
       <span class="mk-hub-side-glow is-left"></span>
       <span class="mk-hub-side-glow is-right"></span>
       <span class="mk-hub-lightning">
         <span class="mk-hub-side mk-hub-side-mythic">
-          <svg class="mk-bolt-1" viewBox="0 0 180 80" preserveAspectRatio="none">
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-glow" d="M174 40 C151 25 139 53 117 37 S82 24 64 41 S31 57 6 40"></path>
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-mid" d="M174 40 C151 25 139 53 117 37 S82 24 64 41 S31 57 6 40"></path>
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-core" d="M174 40 C151 25 139 53 117 37 S82 24 64 41 S31 57 6 40"></path>
-          </svg>
-          <svg class="mk-bolt-2" viewBox="0 0 180 80" preserveAspectRatio="none">
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-glow" d="M174 40 C151 55 139 27 117 43 S82 56 64 39 S31 23 6 40"></path>
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-mid" d="M174 40 C151 55 139 27 117 43 S82 56 64 39 S31 23 6 40"></path>
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-core" d="M174 40 C151 55 139 27 117 43 S82 56 64 39 S31 23 6 40"></path>
-          </svg>
-          <svg class="mk-bolt-3" viewBox="0 0 180 80" preserveAspectRatio="none">
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-thread" d="M174 40 C150 39 139 55 116 42 S82 26 62 40 S30 50 6 40"></path>
+          <svg viewBox="0 0 220 90" preserveAspectRatio="none">
+            ${layeredPath(leftBoltA, "mk-bolt-a")}
+            ${layeredPath(leftBoltB, "mk-bolt-b")}
+            <g class="mk-bolt-branches">
+              <path pathLength="100" d="M169 27 L158 7 L146 20"></path>
+              <path pathLength="100" d="M116 38 L101 27 L90 31"></path>
+              <path pathLength="100" d="M59 17 L48 3 L36 16"></path>
+            </g>
           </svg>
         </span>
         <span class="mk-hub-side mk-hub-side-premium">
-          <svg class="mk-bolt-1" viewBox="0 0 180 80" preserveAspectRatio="none">
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-glow" d="M6 40 C29 25 41 53 63 37 S98 24 116 41 S149 57 174 40"></path>
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-mid" d="M6 40 C29 25 41 53 63 37 S98 24 116 41 S149 57 174 40"></path>
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-core" d="M6 40 C29 25 41 53 63 37 S98 24 116 41 S149 57 174 40"></path>
-          </svg>
-          <svg class="mk-bolt-2" viewBox="0 0 180 80" preserveAspectRatio="none">
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-glow" d="M6 40 C29 55 41 27 63 43 S98 56 116 39 S149 23 174 40"></path>
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-mid" d="M6 40 C29 55 41 27 63 43 S98 56 116 39 S149 23 174 40"></path>
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-core" d="M6 40 C29 55 41 27 63 43 S98 56 116 39 S149 23 174 40"></path>
-          </svg>
-          <svg class="mk-bolt-3" viewBox="0 0 180 80" preserveAspectRatio="none">
-            <path vector-effect="non-scaling-stroke" class="mk-bolt-thread" d="M6 40 C30 39 41 55 64 42 S98 26 118 40 S150 50 174 40"></path>
+          <svg viewBox="0 0 220 90" preserveAspectRatio="none">
+            ${layeredPath(rightBoltA, "mk-bolt-a")}
+            ${layeredPath(rightBoltB, "mk-bolt-b")}
+            <g class="mk-bolt-branches">
+              <path pathLength="100" d="M51 27 L62 7 L74 20"></path>
+              <path pathLength="100" d="M104 38 L119 27 L130 31"></path>
+              <path pathLength="100" d="M161 17 L172 3 L184 16"></path>
+            </g>
           </svg>
         </span>
       </span>
-      <span class="mk-hub-particles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="mk-hub-galaxy-particles">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </span>
+      <span class="mk-hub-click-pulse">
+        <i class="mk-pulse-core"></i>
+        <i class="mk-pulse-ring ring-a"></i>
+        <i class="mk-pulse-ring ring-b"></i>
+        <i class="mk-pulse-ring ring-c"></i>
+        <i class="mk-pulse-cross cross-a"></i>
+        <i class="mk-pulse-cross cross-b"></i>
+      </span>
     </span>`;
 
   const LAYERS = `
@@ -64,15 +83,14 @@
       <span class="mk-hub-stars"></span>
       <span class="mk-hub-scan"></span>
     </span>
-    <span class="mk-hub-wave" aria-hidden="true"></span>
-    <span class="mk-hub-pulse" aria-hidden="true"><i></i><i></i></span>`;
+    <span class="mk-hub-wave" aria-hidden="true"></span>`;
 
   function flashBalances(hub) {
     hub?.querySelectorAll(".ow-currency-hub-segment").forEach((segment, index) => {
       window.setTimeout(() => {
         segment.classList.add("is-flash");
-        window.setTimeout(() => segment.classList.remove("is-flash"), 440);
-      }, index * 75);
+        window.setTimeout(() => segment.classList.remove("is-flash"), 520);
+      }, index * 90);
     });
   }
 
@@ -85,7 +103,7 @@
 
     window.setTimeout(() => {
       [hub, plus, wrap].forEach(node => node?.classList.remove("is-charged"));
-    }, 760);
+    }, 980);
   }
 
   function openCurrencySelector() {
@@ -111,7 +129,7 @@
       event.stopPropagation();
       const hub = plus.closest(".ow-currency-hub");
       animateHub(hub, plus);
-      window.setTimeout(openCurrencySelector, 220);
+      window.setTimeout(openCurrencySelector, 520);
     };
 
     plus.addEventListener("click", activate);
@@ -139,9 +157,6 @@
       plus.insertAdjacentHTML("afterend", SPARKS);
     }
 
-    /* Tlačítko jako celek: nejdřív se ukáže krátký pulz, potom se otevře
-       stávající obrazovka měn. StopImmediatePropagation zabrání dvojímu
-       otevření z původního listeneru v app.js, funkčnost zůstává stejná. */
     if (hub && !hub.dataset.vfxBound) {
       hub.dataset.vfxBound = "true";
       hub.addEventListener("click", event => {
@@ -149,7 +164,7 @@
         event.preventDefault();
         event.stopImmediatePropagation();
         animateHub(hub, hub.querySelector(".mk-hub-plus"));
-        window.setTimeout(openCurrencySelector, 220);
+        window.setTimeout(openCurrencySelector, 520);
       });
     }
 
