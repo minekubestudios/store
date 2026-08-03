@@ -162,10 +162,11 @@
   border-radius: 13px;
   pointer-events: none;
   background:
-    radial-gradient(circle at var(--hub-x) var(--hub-y), rgba(134, 246, 255, .26), transparent 31%),
-    radial-gradient(circle at 74% 18%, rgba(255, 56, 222, .23), transparent 36%),
-    radial-gradient(circle at 18% 86%, rgba(91, 57, 255, .35), transparent 42%),
-    linear-gradient(115deg, #080722 0%, #12103a 42%, #260c42 72%, #09162f 100%);
+    radial-gradient(circle at var(--hub-x) var(--hub-y), rgba(134, 246, 255, .3), transparent 34%),
+    radial-gradient(circle at 78% 20%, rgba(255, 56, 222, .3), transparent 44%),
+    radial-gradient(circle at 22% 82%, rgba(91, 57, 255, .42), transparent 48%),
+    radial-gradient(circle at 50% 50%, rgba(120, 80, 255, .2), transparent 62%),
+    linear-gradient(115deg, #0a0828 0%, #16123f 40%, #2a0d48 70%, #0b1836 100%);
   box-shadow: inset 0 0 20px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .08);
 }
 
@@ -201,11 +202,11 @@
 /* --- mlhoviny ------------------------------------------------------------- */
 .mk-hub-nebula {
   position: absolute;
-  width: 92px;
-  height: 62px;
+  width: 110px;
+  height: 76px;
   border-radius: 50%;
-  filter: blur(16px);
-  opacity: .5;
+  filter: blur(15px);
+  opacity: .72;
 }
 
 .mk-hub-nebula-a {
@@ -230,11 +231,18 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 12% 24%, #fff 0 1px, transparent 1.7px),
-    radial-gradient(circle at 28% 76%, #70f7ff 0 1px, transparent 1.9px),
-    radial-gradient(circle at 63% 19%, #fff 0 1px, transparent 1.8px),
-    radial-gradient(circle at 84% 67%, #ff76e8 0 1px, transparent 2px),
-    radial-gradient(circle at 47% 56%, #ffd36e 0 1px, transparent 1.8px);
+    radial-gradient(circle at 7% 22%,  #fff     0 1.2px, transparent 2px),
+    radial-gradient(circle at 15% 68%, #9df6ff  0 1.1px, transparent 1.9px),
+    radial-gradient(circle at 24% 38%, #fff     0 1px,   transparent 1.7px),
+    radial-gradient(circle at 31% 82%, #ffb0f0  0 1.2px, transparent 2px),
+    radial-gradient(circle at 39% 16%, #fff     0 1.1px, transparent 1.8px),
+    radial-gradient(circle at 47% 58%, #ffd36e  0 1.2px, transparent 2px),
+    radial-gradient(circle at 55% 28%, #9df6ff  0 1px,   transparent 1.7px),
+    radial-gradient(circle at 63% 74%, #fff     0 1.2px, transparent 2px),
+    radial-gradient(circle at 71% 20%, #ff76e8  0 1.1px, transparent 1.9px),
+    radial-gradient(circle at 79% 62%, #fff     0 1.2px, transparent 2px),
+    radial-gradient(circle at 88% 34%, #9df6ff  0 1.1px, transparent 1.9px),
+    radial-gradient(circle at 94% 78%, #ffd36e  0 1px,   transparent 1.7px);
   animation: hubStarsTwinkle 1.9s ease-in-out infinite alternate;
 }
 
@@ -525,11 +533,15 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  background: linear-gradient(150deg, #66f7ff, #8764ff 46%, #ff48dc);
+  /* Poloprůhledné sklo – galaxie pod tlačítkem zůstane vidět. */
+  background: linear-gradient(150deg,
+    rgba(102, 247, 255, .55), rgba(135, 100, 255, .5) 46%, rgba(255, 72, 220, .55));
   background-size: 220% 220%;
+  backdrop-filter: blur(2px) saturate(1.4);
   animation: hubPlusHue 5.5s ease-in-out infinite;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, .26),
+    inset 0 0 0 1px rgba(255, 255, 255, .38),
+    inset 0 0 14px rgba(255, 255, 255, .12),
     0 3px 12px rgba(135, 100, 255, .5),
     0 0 18px rgba(102, 247, 255, .3);
   transition:
@@ -986,17 +998,19 @@
    posunuté, ne přes celou výšku. */
 /* Výboje musí ležet VEDLE hubu, ne pod ním – tělo tlačítka je
    neprůhledné, takže cokoli uvnitř by bylo neviditelné. */
+/* Výboje sahají od vnějšku až přes celou šířku tlačítka – překrývají se
+   uprostřed, takže energie působí jako by prošlehla celým hubem. */
 .mk-hub-side {
   position: absolute;
-  top: -18px;
-  bottom: -18px;
-  width: 96px;
+  top: -20px;
+  bottom: -20px;
+  width: 190px;
   pointer-events: none;
   overflow: visible;
 }
 
-.mk-hub-side-mythic  { left: -92px; }
-.mk-hub-side-premium { right: -92px; }
+.mk-hub-side-mythic  { left: -76px; }
+.mk-hub-side-premium { right: -76px; }
 
 .mk-hub-side svg {
   position: absolute;
@@ -1017,8 +1031,8 @@
 
 /* --- vrstva 1: široká rozostřená svatozář -------------------------------- */
 .mk-hub-side .mk-bolt-glow {
-  stroke-width: 9;
-  filter: blur(7px);
+  stroke-width: 16;
+  filter: blur(9px);
   opacity: 0;
 }
 
@@ -1027,8 +1041,8 @@
 
 /* --- vrstva 2: sytý střed výboje ------------------------------------------ */
 .mk-hub-side .mk-bolt-mid {
-  stroke-width: 3.2;
-  filter: blur(1.2px);
+  stroke-width: 6.5;
+  filter: blur(1.6px);
 }
 
 .mk-hub-side-mythic  .mk-bolt-mid { stroke: #7dd8ff; }
@@ -1036,9 +1050,9 @@
 
 /* --- vrstva 3: bílé jádro, které dělá „neon" ------------------------------ */
 .mk-hub-side .mk-bolt-core {
-  stroke-width: 1.2;
+  stroke-width: 2.4;
   stroke: #fff;
-  filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 9px currentColor);
+  filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 12px currentColor);
 }
 
 .mk-hub-side-mythic  .mk-bolt-core { color: #8fe3ff; }
@@ -1046,8 +1060,8 @@
 
 /* --- plazmové vlákno: tenká vlnovka, která se plazí ven ------------------- */
 .mk-hub-side .mk-bolt-thread {
-  stroke-width: 1.3;
-  stroke-dasharray: 3 7;
+  stroke-width: 2.6;
+  stroke-dasharray: 5 9;
   opacity: 0;
   filter: blur(.4px);
 }
