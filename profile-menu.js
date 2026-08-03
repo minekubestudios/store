@@ -478,6 +478,14 @@ window.MINEKUBE_PROFILE = (function () {
       legacy.replaceWith(build("Desktop"));
     }
 
+    // Profil se přesouvá na místo košíku (ten je jen skrytý, ne odstraněný –
+    // pořád ho používá zbytek storu pro počty položek a otevírání panelu).
+    const cartButton = document.querySelector("#cartButton");
+    const desktopProfile = document.querySelector(".store-header-actions .mk-profile");
+    if (cartButton && desktopProfile && cartButton.parentElement) {
+      cartButton.parentElement.insertBefore(desktopProfile, cartButton.nextSibling);
+    }
+
     // Mobil – do rozbalovací navigace, nad přepínač měny.
     const mobileNav = document.querySelector("#mobileNav");
     if (mobileNav && !mobileNav.querySelector(".mk-profile")) {

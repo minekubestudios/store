@@ -216,17 +216,15 @@ window.MINEKUBE_FX = (function () {
   }
 
   function mount() {
-    // Desktop – vedle přepínače motivu v hlavičce.
-    const themeToggle = document.querySelector("#themeToggle");
-    if (themeToggle && !document.querySelector(".store-header-actions .mk-fx")) {
-      themeToggle.parentElement.insertBefore(build("Desktop"), themeToggle);
-    }
-
-    // Mobil – do rozbalovací navigace.
-    const mobileNav = document.querySelector("#mobileNav");
-    if (mobileNav && !mobileNav.querySelector(".mk-fx")) {
-      const helpLink = mobileNav.querySelector('a[href="#faq"]');
-      mobileNav.insertBefore(build("Mobile"), helpLink);
+    // Přepínač patří tam, kde se platí skutečnými penězi – tedy do okna
+    // s balíčky herní měny. V hlavičce obchodu nedával smysl, protože
+    // zbytek katalogu je v Coins a Prisms.
+    const tabs = document.querySelector("#currencyBillingTabs");
+    if (tabs && !tabs.parentElement.querySelector(".mk-fx")) {
+      const row = document.createElement("div");
+      row.className = "mk-packs-controls";
+      tabs.parentElement.insertBefore(row, tabs);
+      row.append(tabs, build("Packs"));
     }
 
     syncAll();

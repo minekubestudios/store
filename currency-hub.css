@@ -34,15 +34,15 @@
   align-items: center !important;
 }
 
-@media (max-width: 2100px) { .store-desktop-nav a[data-nav-section="faq"] { display: none; } }
-@media (max-width: 1660px) { .store-desktop-nav a[data-category-link="currency"] { display: none; } }
-@media (max-width: 1560px) {
+/* Po zmenšení hubu a skrytí košíku zabírá pravá skupina jen ~555 px,
+   takže se do navigace vejde víc odkazů než dřív. */
+@media (max-width: 1380px) { .store-desktop-nav a[data-nav-section="faq"] { display: none; } }
+@media (max-width: 1240px) {
   .store-home-link span { display: none; }
   .store-home-link { padding-inline: 10px !important; }
 }
-@media (max-width: 1480px) { .store-desktop-nav a[data-category-link="keys"] { display: none; } }
-@media (max-width: 1380px) { .store-desktop-nav a[data-category-link="ranks"] { display: none; } }
-@media (max-width: 1200px) { .store-desktop-nav { display: none !important; } }
+@media (max-width: 1140px) { .store-desktop-nav a[data-category-link="currency"] { display: none; } }
+@media (max-width: 1040px) { .store-desktop-nav { display: none !important; } }
 
 /* ==========================================================================
    2) Tělo hubu
@@ -858,4 +858,289 @@
   .mk-hub-scan,
   .mk-hub-wave,
   .mk-hub-pulse { display: none; }
+}
+
+
+/* ==========================================================================
+   16) Kompaktní hub — jen ikony a čísla
+   Popisky měn zmizely, hub je užší a blesky se barví podle strany:
+   vlevo modrofialové (Mythic), vpravo zlaté (Premium).
+   ========================================================================== */
+
+.ow-currency-hub {
+  width: 178px !important;
+  height: 44px !important;
+  grid-template-columns: 1fr 38px 1fr !important;
+}
+
+.ow-currency-hub-wrap { width: 178px; height: 44px !important; }
+
+@media (max-width: 1400px) {
+  .ow-currency-hub { width: 168px !important; }
+  .ow-currency-hub-wrap { width: 168px; }
+}
+
+/* Popisky pryč – zůstávají jen ikony a čísla. */
+.ow-currency-hub-copy small { display: none !important; }
+
+.ow-currency-hub-copy b {
+  font-size: 15px !important;
+  line-height: 1 !important;
+}
+
+.ow-currency-hub-segment {
+  gap: 6px !important;
+  padding: 0 9px !important;
+}
+
+.ow-currency-hub-segment.is-mythic  { justify-content: center; padding-left: 8px !important; }
+.ow-currency-hub-segment.is-premium { justify-content: center; padding-right: 8px !important; }
+
+.ow-currency-hub-segment .ow-currency-gem,
+.ow-currency-hub-segment .ow-currency-coin { transform: scale(.68) !important; }
+
+.ow-currency-hub:hover .ow-currency-hub-segment .ow-currency-gem,
+.ow-currency-hub:hover .ow-currency-hub-segment .ow-currency-coin {
+  transform: scale(.8) !important;
+}
+
+/* Menší "+" do užšího hubu. */
+.mk-hub-plus {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+}
+
+.mk-hub-plus svg { width: 15px; height: 15px; }
+
+/* --- blesky rozdělené podle měny ------------------------------------------ */
+/* Levá půlka hubu dostane modrofialové výboje, pravá zlaté. Kreslí se
+   za tlačítkem, takže při najetí vypadají jako energie sálající z měn. */
+
+/* Blesky musí ležet NAD tělem hubu, jinak je překryje neprůhledné pozadí.
+   Kreslí se kolem okrajů, takže obsah nezakrývají. */
+.mk-hub-lightning {
+  inset: -30px -40px !important;
+  z-index: 8 !important;
+}
+
+.mk-hub-side {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 58%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.mk-hub-side-mythic  { left: -6%; }
+.mk-hub-side-premium { right: -6%; }
+
+.mk-hub-side svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  opacity: 0;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mk-hub-side svg path { stroke-dasharray: 120; }
+
+/* Mythic – modrofialová */
+.mk-hub-side-mythic .mk-bolt-1 { stroke: #7ee9ff; stroke-width: 2.8; filter: drop-shadow(0 0 7px #35d4ff) drop-shadow(0 0 16px #7b5cff) drop-shadow(0 0 26px #5de0ff); }
+.mk-hub-side-mythic .mk-bolt-2 { stroke: #c07cff; stroke-width: 2.5; filter: drop-shadow(0 0 7px #a855f7) drop-shadow(0 0 18px #5de0ff) drop-shadow(0 0 28px #a855f7); }
+.mk-hub-side-mythic .mk-bolt-3 { stroke: #ddd0ff; stroke-width: 1.9; filter: drop-shadow(0 0 6px #8b7bff) drop-shadow(0 0 14px #a855f7); }
+
+/* Premium – zlatá */
+.mk-hub-side-premium .mk-bolt-1 { stroke: #ffe066; stroke-width: 2.8; filter: drop-shadow(0 0 7px #ffb800) drop-shadow(0 0 16px #ff9d2f) drop-shadow(0 0 26px #ffd21c); }
+.mk-hub-side-premium .mk-bolt-2 { stroke: #ffbb4d; stroke-width: 2.5; filter: drop-shadow(0 0 7px #ff9d2f) drop-shadow(0 0 18px #ffd21c) drop-shadow(0 0 28px #ff8c1a); }
+.mk-hub-side-premium .mk-bolt-3 { stroke: #fff6cc; stroke-width: 1.9; filter: drop-shadow(0 0 6px #ffd76a) drop-shadow(0 0 14px #ffb800); }
+
+.ow-currency-hub:hover .mk-bolt-1 { animation: mkSideBolt1 .86s steps(2, end) infinite; }
+.ow-currency-hub:hover .mk-bolt-2 { animation: mkSideBolt2 1.04s steps(2, end) .14s infinite; }
+.ow-currency-hub:hover .mk-bolt-3 { animation: mkSideBolt3 .72s steps(2, end) .3s infinite; }
+
+/* Pravá strana běží s odstupem, ať výboje nešlehají synchronně. */
+.ow-currency-hub:hover .mk-hub-side-premium .mk-bolt-1 { animation-delay: .22s; }
+.ow-currency-hub:hover .mk-hub-side-premium .mk-bolt-2 { animation-delay: .42s; }
+.ow-currency-hub:hover .mk-hub-side-premium .mk-bolt-3 { animation-delay: .06s; }
+
+@keyframes mkSideBolt1 {
+  0%, 10%   { opacity: 0;   stroke-dashoffset: 110; }
+  16%, 42%  { opacity: 1;   stroke-dashoffset: 36; }
+  50%, 100% { opacity: 0;   stroke-dashoffset: -42; }
+}
+@keyframes mkSideBolt2 {
+  0%, 22%   { opacity: 0;   stroke-dashoffset: -80; }
+  30%, 56%  { opacity: 1;   stroke-dashoffset: 0; }
+  64%, 100% { opacity: 0;   stroke-dashoffset: 76; }
+}
+@keyframes mkSideBolt3 {
+  0%, 36%   { opacity: 0;   stroke-dashoffset: 60; }
+  44%, 68%  { opacity: .95; stroke-dashoffset: 0; }
+  76%, 100% { opacity: 0;   stroke-dashoffset: -48; }
+}
+
+/* --- energetické jádro pod každou měnou ----------------------------------- */
+.mk-hub-core {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin-top: -23px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+
+.mk-hub-core-mythic {
+  left: 0;
+  background: radial-gradient(circle, rgba(93, 224, 255, .8), rgba(168, 85, 247, .42) 45%, transparent 72%);
+}
+
+.mk-hub-core-premium {
+  right: 0;
+  background: radial-gradient(circle, rgba(255, 210, 28, .75), rgba(255, 157, 47, .4) 45%, transparent 72%);
+}
+
+.ow-currency-hub:hover .mk-hub-core {
+  opacity: 1;
+  animation: mkCorePulse 1.3s ease-in-out infinite alternate;
+}
+
+.ow-currency-hub:hover .mk-hub-core-premium { animation-delay: .35s; }
+
+@keyframes mkCorePulse {
+  from { transform: scale(.85); filter: blur(3px); }
+  to   { transform: scale(1.15); filter: blur(6px); }
+}
+
+/* Čísla se při najetí barví podle své měny. */
+.ow-currency-hub:hover .is-mythic .ow-currency-hub-copy b {
+  color: #d9f6ff;
+  text-shadow: 0 0 16px rgba(93, 224, 255, .95), 0 0 26px rgba(168, 85, 247, .6);
+}
+
+.ow-currency-hub:hover .is-premium .ow-currency-hub-copy b {
+  color: #fff4c9;
+  text-shadow: 0 0 16px rgba(255, 210, 28, .95), 0 0 26px rgba(255, 157, 47, .6);
+}
+
+/* Aura se rozdělí na dvě barevné poloviny. */
+.ow-currency-hub::after {
+  background:
+    radial-gradient(ellipse at 16% 50%, rgba(93, 224, 255, .42), transparent 52%),
+    radial-gradient(ellipse at 50% 50%, rgba(138, 92, 246, .38), transparent 55%),
+    radial-gradient(ellipse at 84% 50%, rgba(255, 190, 40, .42), transparent 52%);
+}
+
+/* --- kliknutí ------------------------------------------------------------- */
+.ow-currency-hub.is-charged .mk-hub-core {
+  opacity: 1;
+  animation: mkCoreBurst .6s ease-out;
+}
+
+@keyframes mkCoreBurst {
+  0%   { transform: scale(.7);  filter: blur(2px) brightness(2.4); opacity: 1; }
+  100% { transform: scale(2.1); filter: blur(12px) brightness(1);  opacity: 0; }
+}
+
+.ow-currency-hub.is-charged .mk-bolt-1,
+.ow-currency-hub.is-charged .mk-bolt-2,
+.ow-currency-hub.is-charged .mk-bolt-3 { animation-duration: .34s !important; }
+
+/* --- skrytý košík --------------------------------------------------------- */
+/* Košík zůstává v DOM kvůli logice storu, jen ho není vidět.
+   Selektor je zesílený, protože overwatch-store.css nastavuje rozměry
+   s vyšší specificitou. */
+.store-header-actions .store-cart-button,
+.store-cart-button {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  min-width: 0 !important;
+  max-width: 1px !important;
+  flex: 0 0 1px !important;
+  opacity: 0 !important;
+}
+
+/* Na mobilu je v hlavičce jen logo a hamburger, proto sem vrátíme
+   profil hráče – košík je skrytý a hub je v rozbalovacím menu. */
+@media (max-width: 900px) {
+  .store-header-actions > .mk-profile { display: block !important; }
+  .store-header-actions > .mk-profile .mk-profile-copy { display: none; }
+  .store-header-actions > .mk-profile .mk-profile-chip {
+    padding: 0 8px;
+    gap: 6px;
+  }
+  .store-header-actions > .mk-profile .mk-profile-menu {
+    width: min(260px, calc(100vw - 32px));
+  }
+  .ow-currency-hub-wrap { display: none; }
+}
+
+/* --- přepínač měny v okně balíčků ----------------------------------------- */
+/* Sedí vedle záložek, protože obojí ovlivňuje cenu balíčků. */
+.mk-packs-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: min(100%, 860px);
+  margin: 0 auto 22px;
+}
+
+.mk-packs-controls .mk-currency-billing {
+  margin: 0;
+  flex: 1 1 auto;
+}
+
+.mk-packs-controls .mk-fx { flex: 0 0 auto; }
+
+.mk-packs-controls .mk-fx-toggle {
+  height: 58px;
+  border-radius: 22px;
+  padding: 0 16px;
+  background: rgba(10, 8, 18, .55);
+  border-color: rgba(255, 255, 255, .07);
+}
+
+@media (max-width: 720px) {
+  .mk-packs-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mk-packs-controls .mk-currency-billing { width: 100%; }
+  .mk-packs-controls .mk-fx { width: 100%; }
+  .mk-packs-controls .mk-fx-toggle {
+    width: 100%;
+    height: 46px;
+    justify-content: center;
+    border-radius: 16px;
+  }
+}
+
+.currency-packs-header .mk-fx-menu {
+  z-index: 120;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-hub-side svg,
+  .mk-hub-core {
+    animation: none !important;
+  }
+  .mk-hub-side, .mk-hub-core { display: none; }
 }

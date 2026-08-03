@@ -33,10 +33,19 @@
       <span class="mk-hub-scan"></span>
     </span>
     <span class="mk-hub-lightning" aria-hidden="true">
-      <svg class="mk-hub-bolt-svg mk-hub-bolt-a" viewBox="0 0 300 84"><path d="M12 55 40 38 62 45 90 18 114 31 143 8"></path></svg>
-      <svg class="mk-hub-bolt-svg mk-hub-bolt-b" viewBox="0 0 300 84"><path d="M288 23 259 38 239 30 211 61 183 48 155 74"></path></svg>
-      <svg class="mk-hub-bolt-svg mk-hub-bolt-c" viewBox="0 0 300 84"><path d="M22 18 51 28 69 14 97 35"></path></svg>
+      <span class="mk-hub-side mk-hub-side-mythic">
+        <svg class="mk-bolt-1" viewBox="0 0 120 90"><path d="M8 46 26 30 40 39 56 16 74 28 96 6"></path></svg>
+        <svg class="mk-bolt-2" viewBox="0 0 120 90"><path d="M10 62 30 52 44 66 62 50 80 68 100 54"></path></svg>
+        <svg class="mk-bolt-3" viewBox="0 0 120 90"><path d="M18 22 38 34 54 18 72 40"></path></svg>
+      </span>
+      <span class="mk-hub-side mk-hub-side-premium">
+        <svg class="mk-bolt-1" viewBox="0 0 120 90"><path d="M112 44 92 28 78 38 60 15 42 27 20 6"></path></svg>
+        <svg class="mk-bolt-2" viewBox="0 0 120 90"><path d="M110 64 90 54 76 68 58 52 40 70 20 56"></path></svg>
+        <svg class="mk-bolt-3" viewBox="0 0 120 90"><path d="M102 24 82 36 66 20 48 42"></path></svg>
+      </span>
     </span>
+    <span class="mk-hub-core mk-hub-core-mythic" aria-hidden="true"></span>
+    <span class="mk-hub-core mk-hub-core-premium" aria-hidden="true"></span>
     <span class="mk-hub-orbits" aria-hidden="true"><i></i><i></i><i></i></span>
     <span class="mk-hub-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
     <span class="mk-hub-wave" aria-hidden="true"></span>
