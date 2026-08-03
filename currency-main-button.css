@@ -709,3 +709,200 @@
     transition-duration: .01ms !important;
   }
 }
+
+/* ==========================================================================
+   Kompaktní varianta — původní rozměry hlavičky, nový galaxy vzhled
+   Zachovává celý nový vizuál, animace, ikony i pravé plusko. Mění pouze
+   rozměry a vnitřní kompozici zpět na původní kompaktní proporce.
+   ========================================================================== */
+
+.store-header-actions {
+  align-items: center !important;
+  gap: 9px !important;
+}
+
+.ow-currency-hub-wrap {
+  width: 138px !important;
+  height: 58px !important;
+  flex: 0 0 138px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button {
+  width: 138px !important;
+  min-width: 138px !important;
+  max-width: 138px !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  grid-template-columns: 34px minmax(0, 1fr) 29px !important;
+  grid-template-rows: 1fr !important;
+  gap: 3px !important;
+  padding: 6px 5px !important;
+  border-radius: 15px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button::before {
+  inset: -3px !important;
+  padding: 3px !important;
+  border-radius: 18px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button::after {
+  inset: -15px -18px !important;
+  border-radius: 25px !important;
+  filter: blur(15px) !important;
+}
+
+.mk-main-currency-universe {
+  inset: 2px !important;
+  border-radius: 13px !important;
+}
+
+.mk-main-currency-icon {
+  width: 34px !important;
+  height: 42px !important;
+  border-radius: 11px !important;
+}
+
+.mk-main-currency-icon::before {
+  inset: 3px !important;
+  border-radius: 8px !important;
+}
+
+.mk-main-currency-icon::after {
+  inset: 7px !important;
+}
+
+.mk-main-currency-icon .ow-currency-gem,
+.mk-main-currency-icon .ow-currency-coin {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.mk-main-icon-prism { left: 2px !important; top: 3px !important; }
+.mk-main-icon-coin { right: 2px !important; bottom: 3px !important; }
+
+.mk-main-currency-label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+}
+
+/* V kompaktní původní velikosti patří prostor oběma zůstatkům. */
+.mk-main-currency-label > small {
+  display: none !important;
+}
+
+.mk-main-balance-line {
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: 1fr 1px 1fr !important;
+  align-items: center !important;
+  gap: 1px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment {
+  width: 100% !important;
+  min-width: 0 !important;
+  justify-content: flex-start !important;
+  gap: 4px !important;
+  padding: 0 1px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-gem,
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-coin {
+  width: 13px !important;
+  height: 13px !important;
+  min-width: 13px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy b {
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+.mk-main-balance-divider {
+  width: calc(100% - 3px) !important;
+  height: 1px !important;
+  margin-left: 1px !important;
+  background: linear-gradient(90deg, rgba(119, 244, 255, .42), rgba(255, 255, 255, .14) 48%, rgba(255, 190, 79, .4)) !important;
+  box-shadow: 0 0 5px rgba(132, 225, 255, .24) !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus {
+  width: 29px !important;
+  height: 42px !important;
+}
+
+.mk-main-plus-core {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 8px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.mk-main-currency-fx,
+.mk-main-click-pulse {
+  border-radius: 13px !important;
+}
+
+/* Ostatní ovládací prvky vpravo se vrací na původní kompaktní velikost. */
+.store-header-actions .ow-player-chip {
+  min-width: 76px !important;
+  width: auto !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 11px !important;
+  border-radius: 11px !important;
+  gap: 8px !important;
+}
+
+.store-header-actions .ow-player-chip > span {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 8px !important;
+}
+
+.store-header-actions .ow-player-chip > strong {
+  font-size: 9px !important;
+  max-width: 74px !important;
+}
+
+.store-header-actions .store-home-link {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 11px !important;
+  border-radius: 11px !important;
+  gap: 8px !important;
+  font-size: 12px !important;
+  clip-path: none !important;
+}
+
+.store-header-actions .icon-button {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  border-radius: 11px !important;
+}
+
+@media (max-width: 1400px) {
+  .ow-currency-hub-wrap {
+    width: 138px !important;
+    flex-basis: 138px !important;
+  }
+  .ow-currency-hub.mk-main-currency-button {
+    width: 138px !important;
+    min-width: 138px !important;
+    max-width: 138px !important;
+    grid-template-columns: 34px minmax(0, 1fr) 29px !important;
+    gap: 3px !important;
+  }
+}
