@@ -80,9 +80,21 @@
     return button;
   }
 
+  /* Vrstvy živého pozadí. Jsou čistě dekorativní, proto aria-hidden. */
+  const LAYERS = `
+    <span class="mk-hub-aura" aria-hidden="true"></span>
+    <span class="mk-hub-grid" aria-hidden="true"></span>
+    <span class="mk-hub-beams" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="mk-hub-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    <span class="mk-hub-line" aria-hidden="true"></span>`;
+
   function mount() {
     // Desktop – nahradí tenkou svislou linku mezi měnami.
     const hub = document.querySelector("#currencyHubButton");
+    if (hub && !hub.querySelector(".mk-hub-aura")) {
+      hub.insertAdjacentHTML("afterbegin", LAYERS);
+    }
+
     const divider = hub?.querySelector(".ow-currency-hub-divider");
     if (divider && !hub.querySelector(".mk-hub-plus")) {
       const plus = build();
