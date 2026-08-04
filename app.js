@@ -2078,7 +2078,11 @@ function bindEvents() {
 
   $("#currencyHubButton")?.addEventListener("click", event => {
     if (event.target.closest(".mk-hub-plus")) return;
-    window.setTimeout(openCurrencySelector, 460);
+    if (typeof window.mkLaunchCurrencyPortal === "function") {
+      window.mkLaunchCurrencyPortal(event, event.currentTarget);
+    } else {
+      openCurrencySelector();
+    }
   });
   $("#mobileCurrencyButton")?.addEventListener("click", () => {
     $("#mobileNav")?.classList.remove("open");

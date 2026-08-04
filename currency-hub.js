@@ -1,9 +1,8 @@
 "use strict";
 
 /*
- * Minekube Store — efekty tlačítka měn převzaté z hlavního webu.
- * Strukturu tlačítka nemění: celé původní rozložení včetně pravého pluska
- * zůstává řízené HTML a currency-main-button.css.
+ * Minekube Store — VFX tlačítka měn a plynulý přechod do fullscreen nabídky.
+ * Struktura tlačítka zůstává beze změny: dvě měny vlevo, plusko vpravo.
  */
 
 (function () {
@@ -18,8 +17,10 @@
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const fxPalette = ["#69f7ff", "#8f6cff", "#ff58df", "#ffd36e", "#78adff"];
   const fxIcons = ["✦", "◇", "⬡", "+", "✧"];
+  const portalPalette = ["#55efff", "#7e79ff", "#ae67ff", "#ff5ad4", "#ffc44e"];
   let fxTimer = 0;
   let lastPulseAt = 0;
+  let portalBusy = false;
 
   const randomBetween = (min, max) => Math.random() * (max - min) + min;
 
@@ -60,9 +61,9 @@
     }
   }
 
-  /* Klikací pulz z tlačítka „Stáhnout modpack“ na hlavním webu. */
+  /* Klikací pulz převzatý z tlačítka „Stáhnout modpack“. */
   function launchDownloadPulse(event, target) {
-    if (reducedMotion.matches) return;
+    if (reducedMotion.matches || !target) return;
 
     const now = performance.now();
     if (now - lastPulseAt < 180) return;
@@ -130,6 +131,115 @@
     else if (typeof window.mkOpenModal === "function" && selector) window.mkOpenModal(selector);
   }
 
+  function addPortalRing(layer, index) {
+    const ring = document.createElement("span");
+    ring.className = "mk-currency-portal-ring";
+    ring.style.setProperty("--ring-size", `${86 + index * 17}px`);
+    ring.style.setProperty("--ring-width", `${index % 2 ? 2 : 3}px`);
+    ring.style.setProperty("--ring-color", portalPalette[index % portalPalette.length]);
+    ring.style.setProperty("--ring-delay", `${index * 42}ms`);
+    ring.style.setProperty("--ring-scale", `${11.5 + index * 1.55}`);
+    layer.appendChild(ring);
+  }
+
+  function addPortalBeam(layer, index) {
+    const beam = document.createElement("span");
+    beam.className = "mk-currency-portal-beam";
+    beam.style.setProperty("--beam-angle", `${index * 30 + randomBetween(-4, 4)}deg`);
+    beam.style.setProperty("--beam-width", `${randomBetween(2, 4.6).toFixed(1)}px`);
+    beam.style.setProperty("--beam-color", portalPalette[index % portalPalette.length]);
+    beam.style.setProperty("--beam-delay", `${50 + index * 17}ms`);
+    layer.appendChild(beam);
+  }
+
+  function addPortalParticle(layer, viewportDiagonal, index) {
+    const particle = document.createElement("i");
+    particle.className = "mk-currency-portal-particle";
+    const angle = randomBetween(0, Math.PI * 2);
+    const distance = randomBetween(viewportDiagonal * .16, viewportDiagonal * .64);
+    particle.style.setProperty("--particle-x", `${(Math.cos(angle) * distance).toFixed(1)}px`);
+    particle.style.setProperty("--particle-y", `${(Math.sin(angle) * distance).toFixed(1)}px`);
+    particle.style.setProperty("--particle-size", `${randomBetween(2.3, 7.4).toFixed(1)}px`);
+    particle.style.setProperty("--particle-radius", index % 5 === 0 ? "1px" : "50%");
+    particle.style.setProperty("--particle-color", portalPalette[index % portalPalette.length]);
+    particle.style.setProperty("--particle-rotation", `${randomBetween(-180, 180).toFixed(1)}deg`);
+    particle.style.setProperty("--particle-scale", randomBetween(.45, 1.1).toFixed(2));
+    particle.style.setProperty("--particle-delay", `${randomBetween(20, 170).toFixed(0)}ms`);
+    layer.appendChild(particle);
+  }
+
+  function createPortalLayer(target) {
+    const rect = target.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const diagonal = Math.hypot(window.innerWidth, window.innerHeight);
+    const portalScale = Math.max(18, (diagonal / Math.min(rect.width, rect.height)) * 1.65);
+
+    const layer = document.createElement("div");
+    layer.className = "mk-currency-portal-transition";
+    layer.setAttribute("aria-hidden", "true");
+    layer.style.setProperty("--portal-x", `${centerX.toFixed(1)}px`);
+    layer.style.setProperty("--portal-y", `${centerY.toFixed(1)}px`);
+    layer.style.setProperty("--portal-w", `${rect.width.toFixed(1)}px`);
+    layer.style.setProperty("--portal-h", `${rect.height.toFixed(1)}px`);
+    layer.style.setProperty("--portal-scale", portalScale.toFixed(2));
+
+    const grid = document.createElement("span");
+    grid.className = "mk-currency-portal-grid";
+    layer.appendChild(grid);
+
+    const core = document.createElement("span");
+    core.className = "mk-currency-portal-core";
+    layer.appendChild(core);
+
+    for (let index = 0; index < 5; index += 1) addPortalRing(layer, index);
+    for (let index = 0; index < 12; index += 1) addPortalBeam(layer, index);
+    for (let index = 0; index < 54; index += 1) addPortalParticle(layer, diagonal, index);
+
+    const flash = document.createElement("span");
+    flash.className = "mk-currency-portal-flash";
+    layer.appendChild(flash);
+
+    return layer;
+  }
+
+  function launchCurrencyPortal(event, target) {
+    const hub = target?.closest?.("#currencyHubButton") || document.querySelector("#currencyHubButton");
+    if (!hub || portalBusy) return false;
+
+    if (reducedMotion.matches) {
+      openCurrencySelector();
+      return true;
+    }
+
+    portalBusy = true;
+    launchDownloadPulse(event, hub);
+    spawnStoreFx(hub, 42, true);
+    hub.classList.add("is-charged", "is-portal-launching");
+    hub.setAttribute("aria-busy", "true");
+
+    const layer = createPortalLayer(hub);
+    document.body.appendChild(layer);
+    document.body.classList.add("currency-transition-active");
+
+    // Dvě RAF zajistí, že prohlížeč nejprve vykreslí počáteční stav.
+    requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.add("is-active")));
+
+    // Modal se připraví pod plátnem portálu a odhalí se až při jeho doznění.
+    window.setTimeout(openCurrencySelector, 430);
+    window.setTimeout(() => layer.classList.add("is-revealing"), 590);
+
+    window.setTimeout(() => {
+      layer.remove();
+      hub.classList.remove("is-charged", "is-portal-launching");
+      hub.removeAttribute("aria-busy");
+      document.body.classList.remove("currency-transition-active");
+      portalBusy = false;
+    }, 980);
+
+    return true;
+  }
+
   function mount() {
     const hub = document.querySelector("#currencyHubButton");
     const wrap = hub?.closest(".ow-currency-hub-wrap");
@@ -161,9 +271,6 @@
       });
 
       hub.addEventListener("pointerdown", event => launchDownloadPulse(event, hub));
-      hub.addEventListener("click", event => {
-        if (event.detail === 0 && !event.target.closest(".mk-hub-plus")) launchDownloadPulse(event, hub);
-      });
     }
 
     const plus = hub.querySelector(".mk-hub-plus");
@@ -171,8 +278,7 @@
       const activate = event => {
         event.preventDefault();
         event.stopPropagation();
-        launchDownloadPulse(event, hub);
-        window.setTimeout(openCurrencySelector, 160);
+        launchCurrencyPortal(event, hub);
       };
 
       plus.addEventListener("click", activate);
@@ -181,6 +287,8 @@
       });
     }
   }
+
+  window.mkLaunchCurrencyPortal = launchCurrencyPortal;
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", mount);

@@ -1,0 +1,454 @@
+/* ========================================================================== 
+   Minekube Store — finální symetrie tlačítka měn + plynulý fullscreen přechod
+   Načítá se jako poslední vrstva. Nemění produkty, košík ani platební logiku.
+   ========================================================================== */
+
+/* --- Přesná a vyvážená geometrie hlavního tlačítka ---------------------- */
+.ow-currency-hub-wrap {
+  width: 184px !important;
+  height: 68px !important;
+  flex: 0 0 184px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button {
+  box-sizing: border-box !important;
+  width: 184px !important;
+  min-width: 184px !important;
+  max-width: 184px !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  grid-template-columns: 129px 48px !important;
+  grid-template-rows: 29px 29px !important;
+  column-gap: 0 !important;
+  row-gap: 0 !important;
+  align-content: center !important;
+  align-items: center !important;
+  padding: 5px 7px 5px 0 !important;
+  border-radius: 17px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-label,
+.ow-currency-hub.mk-main-currency-button .mk-main-balance-line {
+  display: contents !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment {
+  box-sizing: border-box !important;
+  grid-column: 1 !important;
+  width: 129px !important;
+  height: 29px !important;
+  display: grid !important;
+  grid-template-columns: 27px minmax(0, 1fr) !important;
+  align-items: center !important;
+  justify-items: start !important;
+  gap: 8px !important;
+  padding: 0 10px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment.is-mythic {
+  grid-row: 1 !important;
+  align-self: end !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment.is-premium {
+  grid-row: 2 !important;
+  align-self: start !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-gem,
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-coin {
+  width: 25px !important;
+  height: 25px !important;
+  min-width: 25px !important;
+  justify-self: center !important;
+  align-self: center !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy {
+  width: 100% !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy b {
+  min-width: 34px !important;
+  font-variant-numeric: tabular-nums lining-nums !important;
+  line-height: 1 !important;
+  transform: translateY(.25px);
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-main-balance-divider {
+  left: 10px !important;
+  right: 55px !important;
+  top: 50% !important;
+  transform: translateY(-.5px) !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus {
+  right: 7px !important;
+  top: 50% !important;
+  width: 46px !important;
+  height: 46px !important;
+  transform: translateY(-50%) !important;
+  transform-origin: center !important;
+}
+
+.ow-currency-hub.mk-main-currency-button:hover .mk-hub-plus,
+.ow-currency-hub.mk-main-currency-button:focus-visible .mk-hub-plus {
+  transform: translateY(-50%) scale(1.055) !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus svg {
+  left: 0 !important;
+  top: 0 !important;
+  margin: 0 !important;
+  transform-origin: center !important;
+}
+
+/* --- Informační panel přesně pod středem tlačítka ----------------------- */
+.ow-currency-hub-wrap .ow-currency-tooltip {
+  box-sizing: border-box !important;
+  left: 50% !important;
+  right: auto !important;
+  top: calc(100% + 15px) !important;
+  width: 370px !important;
+  border-radius: 22px !important;
+  overflow: hidden !important;
+  transform: translate(-50%, -8px) scale(.98) !important;
+  transform-origin: top center !important;
+}
+
+.ow-currency-hub-wrap:hover .ow-currency-tooltip,
+.ow-currency-hub-wrap:focus-within .ow-currency-tooltip {
+  transform: translate(-50%, 0) scale(1) !important;
+}
+
+.ow-currency-hub-wrap .ow-currency-tooltip::before {
+  display: block !important;
+  left: 50% !important;
+  right: auto !important;
+  top: -8px !important;
+  transform: translateX(-50%) rotate(45deg) !important;
+}
+
+.ow-currency-tooltip-head {
+  grid-template-columns: 30px minmax(0, 1fr) 44px !important;
+}
+
+.ow-currency-tooltip-head b {
+  width: 44px;
+  text-align: right;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Při spuštění portálu tooltip okamžitě ustoupí. */
+body.currency-transition-active .ow-currency-tooltip {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translate(-50%, -5px) scale(.98) !important;
+}
+
+/* --- Fullscreen přechod z pulzu do okna měn ----------------------------- */
+.mk-currency-portal-transition {
+  --portal-x: 50vw;
+  --portal-y: 50vh;
+  --portal-w: 184px;
+  --portal-h: 68px;
+  --portal-scale: 24;
+  position: fixed;
+  z-index: 4200;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: auto;
+  opacity: 0;
+  visibility: hidden;
+  background: rgba(1, 2, 13, 0);
+  transition: opacity .12s linear, visibility .12s linear;
+  contain: strict;
+}
+
+.mk-currency-portal-transition.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mk-currency-portal-transition.is-revealing {
+  pointer-events: none;
+  animation: mkPortalCurtainOut .34s cubic-bezier(.32, 0, .2, 1) forwards;
+}
+
+.mk-currency-portal-transition::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(circle at var(--portal-x) var(--portal-y), rgba(82, 240, 255, .28), transparent 14%),
+    radial-gradient(circle at var(--portal-x) var(--portal-y), rgba(132, 73, 255, .28), transparent 29%),
+    radial-gradient(circle at calc(var(--portal-x) + 12vw) calc(var(--portal-y) + 4vh), rgba(255, 68, 211, .17), transparent 31%),
+    radial-gradient(circle at calc(var(--portal-x) - 13vw) calc(var(--portal-y) - 6vh), rgba(255, 187, 55, .16), transparent 28%),
+    linear-gradient(135deg, #020419 0%, #09163d 38%, #170a42 68%, #060315 100%);
+}
+
+.mk-currency-portal-transition::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(circle, #4df0ff 0 1px, transparent 1.7px) 0 0 / 31px 31px,
+    radial-gradient(circle, #a875ff 0 1px, transparent 1.8px) 13px 17px / 43px 43px,
+    radial-gradient(circle, #ffd25a 0 1px, transparent 1.8px) 7px 9px / 59px 59px;
+  transform: rotate(8deg) scale(.8);
+}
+
+.mk-currency-portal-core {
+  position: absolute;
+  z-index: 5;
+  left: var(--portal-x);
+  top: var(--portal-y);
+  width: var(--portal-w);
+  height: var(--portal-h);
+  border: 4px solid transparent;
+  border-radius: 21px;
+  background:
+    linear-gradient(112deg, rgba(8, 25, 70, .95), rgba(122, 73, 231, .92) 50%, rgba(255, 78, 196, .89) 75%, rgba(255, 176, 55, .9)) padding-box,
+    conic-gradient(from 0deg, #4ff1ff, #647dff, #aa67ff, #ff56d5, #ffb33f, #ffe270, #4ff1ff) border-box;
+  box-shadow:
+    0 0 16px rgba(72, 238, 255, .95),
+    0 0 34px rgba(140, 74, 255, .8),
+    0 0 62px rgba(255, 70, 205, .55),
+    0 0 90px rgba(255, 183, 56, .34),
+    inset 0 0 28px rgba(97, 240, 255, .25);
+  transform: translate(-50%, -50%) scale(.86);
+  will-change: transform, border-radius, filter, opacity;
+}
+
+.mk-currency-portal-core::before,
+.mk-currency-portal-core::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 2px solid rgba(88, 239, 255, .72);
+  border-radius: 14px;
+  box-shadow: 0 0 16px rgba(72, 232, 255, .58), inset 0 0 16px rgba(113, 68, 255, .25);
+}
+
+.mk-currency-portal-core::after {
+  inset: 16px;
+  border-color: rgba(255, 190, 68, .64);
+  box-shadow: 0 0 16px rgba(255, 174, 57, .48), inset 0 0 16px rgba(255, 68, 200, .2);
+  animation: mkPortalCoreSpin .65s ease-out forwards;
+}
+
+.mk-currency-portal-ring {
+  position: absolute;
+  z-index: 6;
+  left: var(--portal-x);
+  top: var(--portal-y);
+  width: var(--ring-size, 94px);
+  aspect-ratio: 1;
+  border: var(--ring-width, 2px) solid var(--ring-color, #56efff);
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 14px var(--ring-color, #56efff), inset 0 0 14px color-mix(in srgb, var(--ring-color, #56efff) 54%, transparent);
+  transform: translate(-50%, -50%) scale(.2);
+}
+
+.mk-currency-portal-beam {
+  position: absolute;
+  z-index: 7;
+  left: var(--portal-x);
+  top: var(--portal-y);
+  width: 74vmax;
+  height: var(--beam-width, 3px);
+  border-radius: 999px;
+  opacity: 0;
+  transform-origin: left center;
+  transform: rotate(var(--beam-angle, 0deg)) scaleX(.02);
+  background: linear-gradient(90deg, var(--beam-color, #54efff), color-mix(in srgb, var(--beam-color, #54efff) 48%, transparent) 26%, transparent 78%);
+  box-shadow: 0 0 8px var(--beam-color, #54efff), 0 0 18px color-mix(in srgb, var(--beam-color, #54efff) 65%, transparent);
+}
+
+.mk-currency-portal-particle {
+  position: absolute;
+  z-index: 8;
+  left: var(--portal-x);
+  top: var(--portal-y);
+  width: var(--particle-size, 4px);
+  height: var(--particle-size, 4px);
+  border-radius: var(--particle-radius, 50%);
+  opacity: 0;
+  background: var(--particle-color, #58efff);
+  box-shadow: 0 0 7px var(--particle-color, #58efff), 0 0 16px color-mix(in srgb, var(--particle-color, #58efff) 70%, transparent);
+  transform: translate(-50%, -50%) rotate(var(--particle-rotation, 0deg)) scale(.2);
+}
+
+.mk-currency-portal-grid {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  opacity: 0;
+  background-image:
+    linear-gradient(rgba(81, 229, 255, .11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156, 91, 255, .1) 1px, transparent 1px);
+  background-size: 58px 58px;
+  transform: perspective(620px) rotateX(66deg) scale(1.4) translateY(34%);
+  transform-origin: bottom center;
+  -webkit-mask-image: radial-gradient(circle at var(--portal-x) var(--portal-y), #000 10%, transparent 72%);
+  mask-image: radial-gradient(circle at var(--portal-x) var(--portal-y), #000 10%, transparent 72%);
+}
+
+.mk-currency-portal-flash {
+  position: absolute;
+  z-index: 10;
+  left: var(--portal-x);
+  top: var(--portal-y);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  opacity: 0;
+  background: #72f4ff;
+  box-shadow:
+    0 0 22px #5defff,
+    0 0 58px #8b65ff,
+    0 0 110px #ff5bd3,
+    0 0 170px #ffc34f;
+  transform: translate(-50%, -50%) scale(.2);
+}
+
+
+/* Animace se spouští až po aktivaci vrstvy, aby nezačaly skrytě. */
+.mk-currency-portal-transition.is-active::before {
+  animation: mkPortalBackdropIn .74s ease-out forwards;
+}
+
+.mk-currency-portal-transition.is-active::after {
+  animation: mkPortalStarField .82s cubic-bezier(.14, .72, .2, 1) forwards;
+}
+
+.mk-currency-portal-transition.is-active .mk-currency-portal-core {
+  animation: mkPortalCoreExpand .78s cubic-bezier(.12, .68, .12, 1) forwards;
+}
+
+.mk-currency-portal-transition.is-active .mk-currency-portal-ring {
+  animation: mkPortalRingExpand .76s cubic-bezier(.1, .7, .18, 1) var(--ring-delay, 0ms) forwards;
+}
+
+.mk-currency-portal-transition.is-active .mk-currency-portal-beam {
+  animation: mkPortalBeam .5s cubic-bezier(.12, .72, .16, 1) var(--beam-delay, 0ms) forwards;
+}
+
+.mk-currency-portal-transition.is-active .mk-currency-portal-particle {
+  animation: mkPortalParticle .7s cubic-bezier(.1, .7, .16, 1) var(--particle-delay, 0ms) forwards;
+}
+
+.mk-currency-portal-transition.is-active .mk-currency-portal-grid {
+  animation: mkPortalGridIn .76s ease-out .08s forwards;
+}
+
+.mk-currency-portal-transition.is-active .mk-currency-portal-flash {
+  animation: mkPortalFlash .6s cubic-bezier(.1, .72, .16, 1) forwards;
+}
+
+body.currency-transition-active {
+  overflow: hidden !important;
+}
+
+.ow-currency-hub.is-portal-launching {
+  animation: mkPortalButtonLaunch .64s cubic-bezier(.16, .84, .2, 1) both !important;
+}
+
+@keyframes mkPortalBackdropIn {
+  0%, 18% { opacity: 0; }
+  55% { opacity: .78; }
+  100% { opacity: 1; }
+}
+
+@keyframes mkPortalStarField {
+  0%, 12% { opacity: 0; transform: rotate(8deg) scale(.74); }
+  58% { opacity: .66; }
+  100% { opacity: .32; transform: rotate(11deg) scale(1.04) translate3d(18px, -14px, 0); }
+}
+
+@keyframes mkPortalCoreExpand {
+  0% { opacity: .2; transform: translate(-50%, -50%) scale(.78); border-radius: 21px; filter: brightness(1.15); }
+  16% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+  48% { border-radius: 34%; filter: brightness(1.55) saturate(1.45); }
+  100% { opacity: .1; transform: translate(-50%, -50%) scale(var(--portal-scale)); border-radius: 50%; filter: brightness(1.9) saturate(1.6); }
+}
+
+@keyframes mkPortalCoreSpin {
+  0% { transform: rotate(0deg) scale(.78); opacity: .35; }
+  55% { opacity: 1; }
+  100% { transform: rotate(225deg) scale(1.35); opacity: 0; }
+}
+
+@keyframes mkPortalRingExpand {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.16); }
+  12% { opacity: 1; }
+  72% { opacity: .82; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(var(--ring-scale, 13)); }
+}
+
+@keyframes mkPortalBeam {
+  0% { opacity: 0; transform: rotate(var(--beam-angle)) scaleX(.02); }
+  18% { opacity: 1; }
+  72% { opacity: .84; }
+  100% { opacity: 0; transform: rotate(var(--beam-angle)) scaleX(1); }
+}
+
+@keyframes mkPortalParticle {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--particle-rotation)) scale(.2); }
+  16% { opacity: 1; }
+  72% { opacity: .9; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--particle-x)), calc(-50% + var(--particle-y))) rotate(calc(var(--particle-rotation) + 260deg)) scale(var(--particle-scale, .85)); }
+}
+
+@keyframes mkPortalGridIn {
+  0%, 22% { opacity: 0; transform: perspective(620px) rotateX(69deg) scale(1.7) translateY(42%); }
+  100% { opacity: .72; transform: perspective(620px) rotateX(62deg) scale(1.15) translateY(25%); }
+}
+
+@keyframes mkPortalFlash {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+  16% { opacity: 1; }
+  55% { opacity: .95; transform: translate(-50%, -50%) scale(4.2); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(13); }
+}
+
+@keyframes mkPortalCurtainOut {
+  0% { opacity: 1; filter: brightness(1); }
+  45% { opacity: .96; filter: brightness(1.2); }
+  100% { opacity: 0; filter: brightness(1.45); }
+}
+
+@keyframes mkPortalButtonLaunch {
+  0% { transform: translateY(-3px) scale(1); filter: brightness(1.06) saturate(1.2); }
+  28% { transform: translateY(-5px) scale(1.055); filter: brightness(1.72) saturate(1.55); }
+  62% { transform: translateY(-2px) scale(.985); filter: brightness(1.32) saturate(1.4); }
+  100% { transform: translateY(0) scale(1); filter: brightness(1) saturate(1); }
+}
+
+@media (max-width: 1400px) {
+  .ow-currency-hub-wrap {
+    width: 184px !important;
+    flex-basis: 184px !important;
+  }
+  .ow-currency-hub.mk-main-currency-button {
+    width: 184px !important;
+    min-width: 184px !important;
+    max-width: 184px !important;
+    grid-template-columns: 129px 48px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-currency-portal-transition,
+  .mk-currency-portal-transition * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
