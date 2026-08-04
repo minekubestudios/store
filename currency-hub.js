@@ -7,6 +7,7 @@
 
 (function () {
   const STORE_EFFECTS = `
+    <span class="mk-currency-line-particles" aria-hidden="true"></span>
     <span class="store-button-fx mk-currency-store-fx" aria-hidden="true"></span>
     <span class="store-button-lightning mk-currency-store-lightning" aria-hidden="true">
       <svg class="store-lightning store-lightning-a" viewBox="0 0 210 84"><path d="M9 55 31 38 48 45 70 18 89 31 112 8"></path></svg>
@@ -23,6 +24,38 @@
   let portalBusy = false;
 
   const randomBetween = (min, max) => Math.random() * (max - min) + min;
+
+  function populateLineParticles(wrap, amount = 30) {
+    const layer = wrap?.querySelector(".mk-currency-line-particles");
+    if (!layer || layer.childElementCount) return;
+
+    for (let index = 0; index < amount; index += 1) {
+      const particle = document.createElement("i");
+      const progress = (index + .5) / amount;
+      const segment = Math.floor(progress * 4);
+      const local = (progress * 4) - segment;
+      let left = 0;
+      let top = 0;
+
+      if (segment === 0) { left = local * 100; top = 0; }
+      else if (segment === 1) { left = 100; top = local * 100; }
+      else if (segment === 2) { left = (1 - local) * 100; top = 100; }
+      else { left = 0; top = (1 - local) * 100; }
+
+      const color = fxPalette[index % fxPalette.length];
+      particle.style.setProperty("--line-x", `${left.toFixed(2)}%`);
+      particle.style.setProperty("--line-y", `${top.toFixed(2)}%`);
+      particle.style.setProperty("--line-size", `${randomBetween(1.7, 4.1).toFixed(1)}px`);
+      particle.style.setProperty("--line-color", color);
+      particle.style.setProperty("--line-delay", `${(-randomBetween(0, 5.5)).toFixed(2)}s`);
+      particle.style.setProperty("--line-idle-duration", `${randomBetween(3.8, 6.8).toFixed(2)}s`);
+      particle.style.setProperty("--line-hover-duration", `${randomBetween(1.35, 2.45).toFixed(2)}s`);
+      particle.style.setProperty("--line-drift-x", `${randomBetween(-7, 7).toFixed(1)}px`);
+      particle.style.setProperty("--line-drift-y", `${randomBetween(-7, 7).toFixed(1)}px`);
+      particle.style.setProperty("--line-peak", randomBetween(.38, .78).toFixed(2));
+      layer.appendChild(particle);
+    }
+  }
 
   function spawnStoreFx(hub, amount = 16, force = false) {
     const wrap = hub?.closest(".ow-currency-hub-wrap");
@@ -207,8 +240,9 @@
     const hub = target?.closest?.("#currencyHubButton") || document.querySelector("#currencyHubButton");
     if (!hub) return false;
 
-    /* Výběr měny se po kliknutí otevírá okamžitě. Fullscreen portál je nově
-       vyhrazený pouze pro finální nákupní / platební tlačítko. */
+    /* Původní pulz tlačítka „Stáhnout modpack“ se přehraje přímo z místa
+       kliknutí. Výběr měny se přitom otevírá okamžitě bez prodlevy. */
+    launchDownloadPulse(event, hub);
     openCurrencySelector();
     return true;
   }
@@ -267,6 +301,7 @@
     if (!wrap.querySelector(".mk-currency-store-fx")) {
       wrap.insertAdjacentHTML("afterbegin", STORE_EFFECTS);
     }
+    populateLineParticles(wrap);
 
     if (!reducedMotion.matches) {
       hub.addEventListener("pointermove", event => {
@@ -278,9 +313,9 @@
       });
 
       hub.addEventListener("pointerenter", () => {
-        spawnStoreFx(hub, 32);
+        spawnStoreFx(hub, 42);
         window.clearInterval(fxTimer);
-        fxTimer = window.setInterval(() => spawnStoreFx(hub, 9), 210);
+        fxTimer = window.setInterval(() => spawnStoreFx(hub, 12), 175);
       });
 
       hub.addEventListener("pointerleave", () => {
@@ -290,6 +325,11 @@
       });
 
     }
+
+    hub.addEventListener("click", event => {
+      if (event.target.closest(".mk-hub-plus")) return;
+      launchDownloadPulse(event, hub);
+    });
 
     const plus = hub.querySelector(".mk-hub-plus");
     if (plus) {

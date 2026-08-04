@@ -209,3 +209,84 @@
     display: none !important;
   }
 }
+
+
+/* ========================================================================== 
+   STEP 15 — jemné částice podél celého RGB rámu
+   V klidovém stavu jsou decentní; při hoveru jsou hustší, rychlejší a jasnější.
+   ========================================================================== */
+.mk-currency-line-particles {
+  position: absolute;
+  z-index: 2;
+  inset: -7px -8px;
+  border-radius: 24px;
+  overflow: visible;
+  pointer-events: none;
+  filter: saturate(1.25);
+}
+
+.mk-currency-line-particles i {
+  position: absolute;
+  left: var(--line-x);
+  top: var(--line-y);
+  width: var(--line-size, 3px);
+  height: var(--line-size, 3px);
+  border-radius: 50%;
+  background: var(--line-color, #69f7ff);
+  box-shadow:
+    0 0 5px var(--line-color, #69f7ff),
+    0 0 11px color-mix(in srgb, var(--line-color, #69f7ff) 72%, transparent);
+  opacity: .16;
+  transform: translate(-50%, -50%) scale(.62);
+  will-change: transform, opacity, filter;
+  animation: mkCurrencyLineParticleIdle var(--line-idle-duration, 5s) ease-in-out var(--line-delay, 0s) infinite;
+}
+
+.ow-currency-hub-wrap:hover .mk-currency-line-particles i,
+.ow-currency-hub-wrap:focus-within .mk-currency-line-particles i {
+  animation-name: mkCurrencyLineParticleHover;
+  animation-duration: var(--line-hover-duration, 1.8s);
+  opacity: .72;
+  filter: brightness(1.18) saturate(1.22);
+}
+
+@keyframes mkCurrencyLineParticleIdle {
+  0%, 100% {
+    opacity: .10;
+    transform: translate(-50%, -50%) translate(0, 0) scale(.48);
+  }
+  38% {
+    opacity: var(--line-peak, .55);
+    transform: translate(-50%, -50%) translate(calc(var(--line-drift-x) * .35), calc(var(--line-drift-y) * .35)) scale(.92);
+  }
+  68% {
+    opacity: .24;
+    transform: translate(-50%, -50%) translate(calc(var(--line-drift-x) * -.22), calc(var(--line-drift-y) * -.22)) scale(.68);
+  }
+}
+
+@keyframes mkCurrencyLineParticleHover {
+  0%, 100% {
+    opacity: .28;
+    transform: translate(-50%, -50%) translate(0, 0) scale(.66);
+  }
+  28% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translate(var(--line-drift-x), var(--line-drift-y)) scale(1.34);
+  }
+  55% {
+    opacity: .52;
+    transform: translate(-50%, -50%) translate(calc(var(--line-drift-x) * -.45), calc(var(--line-drift-y) * -.45)) scale(.82);
+  }
+  76% {
+    opacity: .92;
+    transform: translate(-50%, -50%) translate(calc(var(--line-drift-x) * .58), calc(var(--line-drift-y) * .58)) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-currency-line-particles i {
+    animation: none !important;
+    opacity: .22;
+  }
+}
