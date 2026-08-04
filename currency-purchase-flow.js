@@ -113,9 +113,28 @@
             </div>
           </div>
           <div class="currency-purchase-top-actions">
-            <button class="currency-purchase-currency" type="button" aria-label="Měna platby: česká koruna">
-              CZK ${ICONS.chevron}
-            </button>
+            <div class="currency-purchase-fx mk-fx" data-purchase-fx>
+              <button class="currency-purchase-currency mk-fx-toggle" type="button"
+                      data-purchase-fx-toggle aria-haspopup="listbox" aria-expanded="false"
+                      aria-controls="currencyPurchaseFxMenu" aria-label="Měna platby: česká koruna">
+                <span class="mk-fx-code" data-fx-current>CZK</span>${ICONS.chevron}
+              </button>
+              <div class="currency-purchase-fx-menu mk-fx-menu" id="currencyPurchaseFxMenu"
+                   role="listbox" aria-label="Vyber zobrazovanou měnu">
+                <button class="currency-purchase-fx-option mk-fx-option" type="button" role="option"
+                        data-purchase-fx-set="CZK" data-fx-set="CZK" aria-checked="true">
+                  <span class="mk-fx-option-code">CZK</span>
+                  <span class="mk-fx-option-name">Česká koruna</span>
+                  <svg class="mk-fx-check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg>
+                </button>
+                <button class="currency-purchase-fx-option mk-fx-option" type="button" role="option"
+                        data-purchase-fx-set="EUR" data-fx-set="EUR" aria-checked="false">
+                  <span class="mk-fx-option-code">EUR</span>
+                  <span class="mk-fx-option-name">Euro</span>
+                  <svg class="mk-fx-check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg>
+                </button>
+              </div>
+            </div>
             <button class="currency-purchase-close" type="button" data-currency-purchase-close aria-label="Zavřít objednávku">${ICONS.close}</button>
           </div>
         </header>
@@ -191,10 +210,57 @@
         </section>
       </div>`;
     document.body.appendChild(modal);
+    syncPurchaseCurrencyControl();
 
     modal.addEventListener("click", onModalClick);
     modal.addEventListener("change", onModalChange);
     return modal;
+  }
+
+  function purchaseFxApi() {
+    return window.MINEKUBE_FX || null;
+  }
+
+  function syncPurchaseCurrencyControl() {
+    const modal = document.querySelector("#currencyPurchaseModal");
+    const fx = purchaseFxApi();
+    if (!modal || !fx) return;
+
+    const current = fx.current || fx.base || "CZK";
+    const currentConfig = Array.isArray(fx.list) ? fx.list.find(item => item.code === current) : null;
+    modal.querySelectorAll("[data-fx-current]").forEach(node => { node.textContent = current; });
+    modal.querySelectorAll("[data-purchase-fx-set]").forEach(button => {
+      const active = button.dataset.purchaseFxSet === current;
+      button.setAttribute("aria-checked", String(active));
+      button.classList.toggle("is-selected", active);
+    });
+
+    const toggle = modal.querySelector("[data-purchase-fx-toggle]");
+    if (toggle) toggle.setAttribute("aria-label", `Měna zobrazení: ${currentConfig?.name || current}`);
+  }
+
+  function closePurchaseCurrencyMenu({ focus = false } = {}) {
+    const modal = document.querySelector("#currencyPurchaseModal");
+    const wrap = modal?.querySelector("[data-purchase-fx]");
+    const toggle = wrap?.querySelector("[data-purchase-fx-toggle]");
+    if (!wrap || !toggle) return;
+    wrap.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
+    if (focus) toggle.focus();
+  }
+
+  function togglePurchaseCurrencyMenu() {
+    const modal = ensureModal();
+    const wrap = modal.querySelector("[data-purchase-fx]");
+    const toggle = wrap?.querySelector("[data-purchase-fx-toggle]");
+    if (!wrap || !toggle) return;
+    const willOpen = !wrap.classList.contains("is-open");
+    wrap.classList.toggle("is-open", willOpen);
+    toggle.setAttribute("aria-expanded", String(willOpen));
+    if (willOpen) {
+      const selected = wrap.querySelector('[data-purchase-fx-set][aria-checked="true"]');
+      window.setTimeout(() => selected?.focus(), 30);
+    }
   }
 
   function selectedCardMarkup(product, { awaitingFlight = false } = {}) {
@@ -225,6 +291,7 @@
     const player = readPlayer();
 
     modal.dataset.currencyType = meta.type;
+    syncPurchaseCurrencyControl();
     modal.querySelector("[data-purchase-verb]").textContent = meta.verb;
     modal.querySelector("[data-purchase-currency-title]").textContent = meta.name;
 
@@ -326,6 +393,29 @@
   }
 
   function onModalClick(event) {
+    const fxToggle = event.target.closest("[data-purchase-fx-toggle]");
+    if (fxToggle) {
+      event.preventDefault();
+      event.stopPropagation();
+      togglePurchaseCurrencyMenu();
+      return;
+    }
+
+    const fxOption = event.target.closest("[data-purchase-fx-set]");
+    if (fxOption) {
+      event.preventDefault();
+      event.stopPropagation();
+      const fx = purchaseFxApi();
+      const code = fxOption.dataset.purchaseFxSet;
+      if (fx && code) fx.set(code);
+      syncPurchaseCurrencyControl();
+      renderPurchase();
+      closePurchaseCurrencyMenu({ focus: true });
+      return;
+    }
+
+    if (!event.target.closest("[data-purchase-fx]")) closePurchaseCurrencyMenu();
+
     if (event.target.closest("[data-currency-purchase-close]")) {
       closePurchase();
       return;
@@ -471,6 +561,7 @@
     if (!modal) return;
     state.renderToken += 1;
     clearTimeout(state.errorTimer);
+    closePurchaseCurrencyMenu();
     closeConfirmation();
     if (typeof window.mkCloseModal === "function") window.mkCloseModal(modal);
     else {
@@ -528,10 +619,37 @@
   window.mkOpenCurrencyPurchase = openCurrencyPurchase;
   window.mkCloseCurrencyPurchase = closePurchase;
 
+  purchaseFxApi()?.onChange?.(() => {
+    const modal = document.querySelector("#currencyPurchaseModal");
+    if (!modal) return;
+    syncPurchaseCurrencyControl();
+    if (state.product) renderPurchase();
+  });
+
   document.addEventListener("keydown", event => {
     const modal = document.querySelector("#currencyPurchaseModal.is-open");
-    if (!modal || event.key !== "Escape") return;
-    if (modal.querySelector("[data-purchase-confirm-layer].is-open")) closeConfirmation();
+    if (!modal) return;
+
+    const fxWrap = modal.querySelector("[data-purchase-fx].is-open");
+    if (fxWrap && ["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+      const options = [...fxWrap.querySelectorAll("[data-purchase-fx-set]")];
+      if (!options.length) return;
+      event.preventDefault();
+      const currentIndex = Math.max(0, options.indexOf(document.activeElement));
+      let nextIndex = currentIndex;
+      if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % options.length;
+      if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + options.length) % options.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = options.length - 1;
+      options[nextIndex].focus();
+      return;
+    }
+
+    if (event.key !== "Escape") return;
+    if (fxWrap) {
+      event.preventDefault();
+      closePurchaseCurrencyMenu({ focus: true });
+    } else if (modal.querySelector("[data-purchase-confirm-layer].is-open")) closeConfirmation();
     else closePurchase();
   });
 

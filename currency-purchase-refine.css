@@ -410,3 +410,120 @@
   .currency-purchase-window.is-quantity-updated .currency-order-summary .is-total dd,
   .currency-purchase-window.is-quantity-updated [data-purchase-total] { animation: none !important; }
 }
+
+/* ========================================================================
+   Oprava přepínače CZK / EUR v okně přímého nákupu
+   ======================================================================== */
+.currency-purchase-fx {
+  position: relative;
+  z-index: 120;
+  flex: 0 0 auto;
+}
+
+.currency-purchase-fx .currency-purchase-currency {
+  width: 150px;
+  min-width: 150px;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.currency-purchase-fx .currency-purchase-currency > span {
+  position: relative;
+  z-index: 2;
+}
+
+.currency-purchase-fx .currency-purchase-currency > svg {
+  position: relative;
+  z-index: 2;
+  transition: transform .22s cubic-bezier(.2,.82,.18,1), stroke .18s ease;
+}
+
+.currency-purchase-fx.is-open .currency-purchase-currency {
+  border-color: rgba(var(--purchase-accent-rgb), .58);
+  color: var(--purchase-accent);
+  background: #121721;
+  box-shadow: 0 0 24px rgba(var(--purchase-accent-rgb), .12), inset 0 0 0 1px rgba(var(--purchase-accent-rgb), .08);
+}
+
+.currency-purchase-fx.is-open .currency-purchase-currency > svg {
+  transform: rotate(180deg);
+  stroke: currentColor;
+}
+
+.currency-purchase-fx .currency-purchase-fx-menu {
+  top: calc(100% + 8px);
+  right: 0;
+  width: 176px;
+  min-width: 176px;
+  padding: 6px;
+  border-radius: 15px;
+  border-color: rgba(var(--purchase-accent-rgb), .2);
+  background: rgba(10, 13, 18, .985);
+  box-shadow: 0 20px 48px rgba(0,0,0,.56), 0 0 26px rgba(var(--purchase-accent-rgb), .08), inset 0 1px 0 rgba(255,255,255,.025);
+  backdrop-filter: blur(18px);
+  z-index: 500;
+}
+
+.currency-purchase-fx .currency-purchase-fx-option {
+  min-height: 42px;
+  border-radius: 10px;
+  color: #dce4ef;
+  background: transparent;
+}
+
+.currency-purchase-fx .currency-purchase-fx-option:hover,
+.currency-purchase-fx .currency-purchase-fx-option:focus-visible {
+  color: #f8fbff;
+  background: rgba(var(--purchase-accent-rgb), .09);
+}
+
+.currency-purchase-fx .currency-purchase-fx-option[aria-checked="true"] {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(var(--purchase-accent-rgb), .18), rgba(var(--purchase-accent-rgb), .06));
+  box-shadow: inset 0 0 0 1px rgba(var(--purchase-accent-rgb), .15);
+}
+
+.currency-purchase-fx .currency-purchase-fx-option .mk-fx-check {
+  color: var(--purchase-accent);
+}
+
+.currency-purchase-fx .mk-fx-option-name {
+  color: #8994a4;
+  opacity: 1;
+}
+
+@media (max-width: 1020px) {
+  .currency-purchase-fx .currency-purchase-currency {
+    width: 112px;
+    min-width: 112px;
+  }
+  .currency-purchase-fx .currency-purchase-fx-menu {
+    width: 154px;
+    min-width: 154px;
+  }
+}
+
+@media (max-width: 760px) {
+  .currency-purchase-fx .currency-purchase-currency {
+    width: 76px;
+    min-width: 76px;
+  }
+  .currency-purchase-fx .currency-purchase-fx-menu {
+    width: 144px;
+    min-width: 144px;
+    top: calc(100% + 6px);
+  }
+  .currency-purchase-fx .mk-fx-option-name { display: none; }
+}
+
+@media (max-width: 470px) {
+  .currency-purchase-fx .currency-purchase-currency {
+    width: 62px;
+    min-width: 62px;
+  }
+  .currency-purchase-fx .currency-purchase-fx-menu {
+    right: 0;
+    width: 126px;
+    min-width: 126px;
+  }
+}
