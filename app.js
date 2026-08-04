@@ -1170,6 +1170,10 @@ function renderCart() {
   const quantity = entries.reduce((sum, entry) => sum + entry.quantity, 0);
   cartCount.textContent = String(quantity);
   cartButton.setAttribute("aria-label", `Otevřít košík, ${quantity} položek`);
+  const headerCartCount = document.querySelector("#headerCartCount");
+  const headerCartToggle = document.querySelector("#themeToggle");
+  if (headerCartCount) headerCartCount.textContent = String(quantity);
+  if (headerCartToggle) headerCartToggle.setAttribute("aria-label", `Otevřít košík, ${quantity} položek`);
 
   cartItems.innerHTML = entries.map(({ product, quantity: amount }) => `
     <article class="cart-item" style="--cart-accent-rgb:${product.accentRgb}">
@@ -1836,15 +1840,11 @@ function initLoader() {
 }
 
 function initTheme() {
-  const root = document.documentElement;
-  const saved = safeStorageGet("minekube-store-theme", "dark");
-  if (saved === "light") root.dataset.theme = "light";
-  $("#themeToggle")?.addEventListener("click", () => {
-    const next = root.dataset.theme === "light" ? "dark" : "light";
-    if (next === "dark") delete root.dataset.theme;
-    else root.dataset.theme = "light";
-    safeStorageSet("minekube-store-theme", next);
-  });
+  // Tlačítko původního přepínače motivu nyní otevírá košík.
+  // Motiv zůstává trvale v původním tmavém Store režimu.
+  delete document.documentElement.dataset.theme;
+  const headerCartToggle = $("#themeToggle");
+  headerCartToggle?.addEventListener("click", openCart);
 }
 
 function initGameClientShell() {
@@ -2076,7 +2076,10 @@ function bindEvents() {
     }
   });
 
-  $("#currencyHubButton")?.addEventListener("click", openCurrencySelector);
+  $("#currencyHubButton")?.addEventListener("click", event => {
+    if (event.target.closest(".mk-hub-plus")) return;
+    window.setTimeout(openCurrencySelector, 460);
+  });
   $("#mobileCurrencyButton")?.addEventListener("click", () => {
     $("#mobileNav")?.classList.remove("open");
     $("#menuButton")?.classList.remove("open");

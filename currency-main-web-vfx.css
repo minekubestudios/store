@@ -1,0 +1,211 @@
+/* ========================================================================== 
+   Minekube Store — efekty z hlavního webu na plném původním designu hubu
+   Tato vrstva nemění strukturu tlačítka. Zachovává pravé plusko, rozměry,
+   velké RGB linky a zaoblený informační panel.
+   ========================================================================== */
+
+/* Staré experimentální vrstvy vypínáme, aby se s efekty z hlavního webu
+   nepřekrývaly. Vnitřní galaxie, rám, obsah a plusko zůstávají. */
+.ow-currency-hub .mk-main-lightning-field,
+.ow-currency-hub .mk-main-currency-fx,
+.ow-currency-hub .mk-main-click-pulse,
+.ow-currency-hub .mk-hub-sparks,
+.ow-currency-hub .mk-hub-wave,
+.ow-currency-hub .mk-hub-pulse,
+.ow-currency-hub .mk-hub-bolt {
+  display: none !important;
+}
+
+.ow-currency-hub-wrap {
+  isolation: isolate;
+  overflow: visible !important;
+}
+
+.ow-currency-hub-wrap > .ow-currency-hub {
+  position: relative;
+  z-index: 3 !important;
+}
+
+/* Pevně zachováme celý původní layout: ikona vlevo, měny uprostřed,
+   samostatné plusko vpravo. */
+.ow-currency-hub.mk-main-currency-button {
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) 38px !important;
+  grid-template-areas: "icon label plus" !important;
+  align-items: center !important;
+  gap: 8px !important;
+  border-radius: 18px !important;
+}
+
+.ow-currency-hub .mk-main-currency-icon { grid-area: icon !important; }
+.ow-currency-hub .mk-main-currency-label { grid-area: label !important; min-width: 0 !important; }
+.ow-currency-hub .mk-hub-plus {
+  grid-area: plus !important;
+  position: relative !important;
+  inset: auto !important;
+  justify-self: end !important;
+  align-self: center !important;
+  z-index: 8 !important;
+}
+
+/* Zaoblený tooltip včetně spodní tyrkysové linky. */
+.ow-currency-hub-wrap .ow-currency-tooltip {
+  border-radius: 22px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(67, 225, 255, .42) !important;
+  border-bottom: 2px solid #25f5ff !important;
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, .58),
+    0 0 29px rgba(104, 72, 255, .20),
+    inset 0 1px 0 rgba(255, 255, 255, .06) !important;
+}
+
+.ow-currency-hub-wrap .ow-currency-tooltip::before {
+  border-top-left-radius: 3px;
+}
+
+/* Dynamické částice, symboly a mini-blesky z tlačítka STORE. */
+.mk-currency-store-fx.store-button-fx {
+  position: absolute;
+  z-index: 0;
+  inset: -70px -78px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.store-fx-particle,
+.store-fx-icon,
+.store-fx-bolt {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  opacity: 0;
+  will-change: transform, opacity, filter;
+  animation: storeFxLaunch var(--fx-duration, 900ms) cubic-bezier(.12, .72, .18, 1) forwards;
+  animation-delay: var(--fx-delay, 0ms);
+}
+
+.store-fx-particle {
+  width: var(--fx-size, 4px);
+  height: var(--fx-size, 4px);
+  border-radius: 50%;
+  background: var(--fx-color, #70f7ff);
+  box-shadow: 0 0 7px var(--fx-color, #70f7ff), 0 0 14px var(--fx-color, #70f7ff);
+}
+
+.store-fx-icon {
+  color: var(--fx-color, #b5fbff);
+  font-size: var(--fx-size, 11px);
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 5px var(--fx-color, #70f7ff), 0 0 12px var(--fx-color, #70f7ff);
+}
+
+.store-fx-bolt {
+  width: 4px;
+  height: var(--fx-size, 19px);
+  background: var(--fx-color, #70f7ff);
+  clip-path: polygon(45% 0, 100% 0, 64% 40%, 100% 40%, 18% 100%, 38% 56%, 0 56%);
+  filter: drop-shadow(0 0 5px var(--fx-color, #70f7ff));
+}
+
+/* Tři SVG výboje z tlačítka STORE na hlavním webu. */
+.mk-currency-store-lightning.store-button-lightning {
+  position: absolute;
+  z-index: 1;
+  inset: -26px -34px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.mk-currency-store-lightning .store-lightning {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+
+.mk-currency-store-lightning .store-lightning path {
+  stroke-dasharray: 12 7;
+  stroke-dashoffset: 80;
+}
+
+.mk-currency-store-lightning .store-lightning-a {
+  stroke: #6ff8ff;
+  stroke-width: 2.1;
+  filter: drop-shadow(0 0 5px #51e7ff) drop-shadow(0 0 10px #5487ff);
+}
+
+.mk-currency-store-lightning .store-lightning-b {
+  stroke: #ff5ce4;
+  stroke-width: 2.2;
+  filter: drop-shadow(0 0 5px #ff3ad7) drop-shadow(0 0 10px #b137ff);
+}
+
+.mk-currency-store-lightning .store-lightning-c {
+  stroke: #ffd166;
+  stroke-width: 1.6;
+  filter: drop-shadow(0 0 5px #ff9d31);
+}
+
+.ow-currency-hub-wrap:hover .store-lightning-a {
+  animation: storeLightningA .92s steps(2, end) infinite;
+}
+
+.ow-currency-hub-wrap:hover .store-lightning-b {
+  animation: storeLightningB 1.13s steps(2, end) .12s infinite;
+}
+
+.ow-currency-hub-wrap:hover .store-lightning-c {
+  animation: storeLightningC .78s steps(2, end) .24s infinite;
+}
+
+@keyframes storeFxLaunch {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(0, 0) rotate(var(--fx-rotation, 0deg)) scale(.15);
+  }
+  16% { opacity: 1; }
+  72% { opacity: .92; }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(var(--fx-x, 0px), var(--fx-y, -70px)) rotate(calc(var(--fx-rotation, 0deg) + 220deg)) scale(var(--fx-scale, .75));
+  }
+}
+
+@keyframes storeLightningA {
+  0%, 18% { opacity: 0; stroke-dashoffset: 80; }
+  23%, 31% { opacity: 1; stroke-dashoffset: 28; }
+  36%, 100% { opacity: 0; stroke-dashoffset: -30; }
+}
+
+@keyframes storeLightningB {
+  0%, 28% { opacity: 0; stroke-dashoffset: -60; }
+  34%, 43% { opacity: .95; stroke-dashoffset: 0; }
+  49%, 100% { opacity: 0; stroke-dashoffset: 58; }
+}
+
+@keyframes storeLightningC {
+  0%, 42% { opacity: 0; stroke-dashoffset: 45; }
+  47%, 58% { opacity: .9; stroke-dashoffset: 0; }
+  64%, 100% { opacity: 0; stroke-dashoffset: -35; }
+}
+
+@media (max-width: 1400px) {
+  .ow-currency-hub.mk-main-currency-button {
+    grid-template-columns: 40px minmax(0, 1fr) 36px !important;
+    gap: 6px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-currency-store-fx,
+  .mk-currency-store-lightning {
+    display: none !important;
+  }
+}
