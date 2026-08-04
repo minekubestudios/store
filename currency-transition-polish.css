@@ -452,3 +452,76 @@ body.currency-transition-active {
     transition: none !important;
   }
 }
+
+
+/* ========================================================================== 
+   STEP 11 — portál pouze pro dokončení platby, přesně vycentrované plusko
+   a jemné klidové částice uvnitř rámu.
+   ========================================================================== */
+
+/* Plusko je matematicky centrované v pravé zóně i při hover animaci. */
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus svg {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  margin: 0 !important;
+  transform: translate(-50%, -50%) !important;
+  transform-origin: 50% 50% !important;
+}
+
+.ow-currency-hub.mk-main-currency-button:hover .mk-hub-plus svg,
+.ow-currency-hub.mk-main-currency-button:focus-visible .mk-hub-plus svg,
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus:hover svg,
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus:focus-visible svg {
+  transform: translate(-50%, -50%) rotate(90deg) scale(1.08) !important;
+}
+
+/* Jemná vrstva částic je viditelná i bez hoveru, ale zůstává pod obsahem
+   a pod výraznými obvodovými linkami. */
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-universe::after {
+  inset: -18% !important;
+  opacity: .34 !important;
+  background:
+    radial-gradient(circle at 8% 32%, rgba(69, 235, 255, .88) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 18% 78%, rgba(132, 105, 255, .70) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 31% 18%, rgba(255, 92, 215, .66) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 44% 66%, rgba(255, 197, 74, .72) 0 1.1px, transparent 2px),
+    radial-gradient(circle at 59% 28%, rgba(81, 238, 255, .68) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 72% 78%, rgba(172, 103, 255, .65) 0 1.25px, transparent 2.1px),
+    radial-gradient(circle at 86% 22%, rgba(255, 91, 205, .66) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 94% 66%, rgba(255, 198, 73, .72) 0 1.15px, transparent 2px),
+    repeating-linear-gradient(90deg, transparent 0 17px, rgba(82, 227, 255, .025) 17px 18px),
+    repeating-linear-gradient(0deg, transparent 0 13px, rgba(166, 92, 255, .022) 13px 14px) !important;
+  -webkit-mask-image: linear-gradient(90deg, transparent 1%, #000 11%, #000 89%, transparent 99%) !important;
+  mask-image: linear-gradient(90deg, transparent 1%, #000 11%, #000 89%, transparent 99%) !important;
+  animation: mkCurrencyIdleParticleLayer 7.5s ease-in-out infinite alternate !important;
+  transform: translate3d(0, 0, 0) scale(1.02);
+}
+
+@keyframes mkCurrencyIdleParticleLayer {
+  0%   { transform: translate3d(-3px, 2px, 0) scale(1.02); opacity: .24; filter: brightness(.94); }
+  48%  { transform: translate3d(2px, -2px, 0) scale(1.04); opacity: .40; filter: brightness(1.12); }
+  100% { transform: translate3d(4px, 1px, 0) scale(1.02); opacity: .29; filter: brightness(1.02); }
+}
+
+/* Platební varianta stejného portálu: vznikne z finálního nákupního tlačítka,
+   nerozhoduje o funkci platby a pouze překryje její vizuální přechod. */
+.mk-currency-portal-transition.is-payment-transition {
+  z-index: 5200;
+  pointer-events: none;
+}
+
+.mk-currency-portal-transition.is-payment-transition .mk-currency-portal-core {
+  box-shadow:
+    0 0 18px rgba(72, 238, 255, .98),
+    0 0 42px rgba(140, 74, 255, .86),
+    0 0 78px rgba(255, 70, 205, .60),
+    0 0 116px rgba(255, 183, 56, .40),
+    inset 0 0 32px rgba(97, 240, 255, .28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ow-currency-hub.mk-main-currency-button .mk-main-currency-universe::after {
+    animation: none !important;
+  }
+}

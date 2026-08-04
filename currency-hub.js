@@ -205,39 +205,58 @@
 
   function launchCurrencyPortal(event, target) {
     const hub = target?.closest?.("#currencyHubButton") || document.querySelector("#currencyHubButton");
-    if (!hub || portalBusy) return false;
+    if (!hub) return false;
 
-    if (reducedMotion.matches) {
-      openCurrencySelector();
-      return true;
-    }
+    /* Výběr měny se po kliknutí otevírá okamžitě. Fullscreen portál je nově
+       vyhrazený pouze pro finální nákupní / platební tlačítko. */
+    openCurrencySelector();
+    return true;
+  }
+
+  function launchCheckoutPortal(event, target) {
+    const trigger = target instanceof Element ? target : null;
+    if (!trigger || portalBusy || reducedMotion.matches) return false;
 
     portalBusy = true;
-    launchDownloadPulse(event, hub);
-    spawnStoreFx(hub, 42, true);
-    hub.classList.add("is-charged", "is-portal-launching");
-    hub.setAttribute("aria-busy", "true");
+    launchDownloadPulse(event, trigger);
 
-    const layer = createPortalLayer(hub);
+    const layer = createPortalLayer(trigger);
+    layer.classList.add("is-payment-transition");
     document.body.appendChild(layer);
-    document.body.classList.add("currency-transition-active");
+    document.body.classList.add("payment-transition-active");
 
-    // Dvě RAF zajistí, že prohlížeč nejprve vykreslí počáteční stav.
     requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.add("is-active")));
-
-    // Modal se připraví pod plátnem portálu a odhalí se až při jeho doznění.
-    window.setTimeout(openCurrencySelector, 430);
-    window.setTimeout(() => layer.classList.add("is-revealing"), 590);
+    window.setTimeout(() => layer.classList.add("is-revealing"), 680);
 
     window.setTimeout(() => {
       layer.remove();
-      hub.classList.remove("is-charged", "is-portal-launching");
-      hub.removeAttribute("aria-busy");
-      document.body.classList.remove("currency-transition-active");
+      document.body.classList.remove("payment-transition-active");
       portalBusy = false;
-    }, 980);
+    }, 1120);
 
     return true;
+  }
+
+  function findPaymentTrigger(event) {
+    const selector = [
+      "#minekubePayPalButton",
+      "[data-start-mock-payment]",
+      ".place-order-button",
+      "[data-complete-payment]",
+      "[data-confirm-purchase]",
+      "[data-purchase]"
+    ].join(",");
+
+    const path = typeof event.composedPath === "function" ? event.composedPath() : [event.target];
+    return path.find(node => node instanceof Element && node.matches?.(selector)) || null;
+  }
+
+  function bindCheckoutTransition() {
+    document.addEventListener("click", event => {
+      const trigger = findPaymentTrigger(event);
+      if (!trigger || trigger.matches(":disabled") || trigger.getAttribute("aria-disabled") === "true") return;
+      launchCheckoutPortal(event, trigger);
+    }, true);
   }
 
   function mount() {
@@ -270,7 +289,6 @@
         hub.style.setProperty("--hub-y", "50%");
       });
 
-      hub.addEventListener("pointerdown", event => launchDownloadPulse(event, hub));
     }
 
     const plus = hub.querySelector(".mk-hub-plus");
@@ -286,9 +304,12 @@
         if (event.key === "Enter" || event.key === " ") activate(event);
       });
     }
+
+    bindCheckoutTransition();
   }
 
   window.mkLaunchCurrencyPortal = launchCurrencyPortal;
+  window.mkLaunchCheckoutPortal = launchCheckoutPortal;
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", mount);
