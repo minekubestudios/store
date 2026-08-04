@@ -1737,3 +1737,217 @@
 @media (max-width: 1180px) {
   .ow-currency-hub-wrap { margin-right: 10px !important; }
 }
+
+/* ==========================================================================
+   STEP 14 — temnější živá galaxie uvnitř tlačítka měn
+   Pouze vizuální pozadí, částice a jemný pohyb ikon/textu.
+   ========================================================================== */
+
+/* Hlubší vesmírný základ s jemným zlatě-oranžovým akcentem vpravo. */
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-universe {
+  background:
+    radial-gradient(ellipse 78% 95% at 12% 42%, rgba(19, 212, 255, .48) 0%, rgba(19, 104, 218, .25) 31%, transparent 67%),
+    radial-gradient(ellipse 74% 94% at 55% 28%, rgba(134, 52, 255, .54) 0%, rgba(92, 25, 176, .28) 37%, transparent 70%),
+    radial-gradient(ellipse 72% 92% at 78% 70%, rgba(255, 45, 196, .42) 0%, rgba(166, 28, 137, .22) 35%, transparent 68%),
+    radial-gradient(ellipse 58% 82% at 98% 48%, rgba(255, 164, 41, .34) 0%, rgba(255, 101, 24, .16) 38%, transparent 72%),
+    radial-gradient(circle at var(--hub-x) var(--hub-y), rgba(72, 242, 255, .24), transparent 30%),
+    linear-gradient(112deg, #020719 0%, #06112d 22%, #101243 44%, #35165e 64%, #6f1a72 82%, #7b351f 100%) !important;
+  outline-color: rgba(61, 229, 255, .18) !important;
+  box-shadow:
+    inset 0 0 34px rgba(0, 0, 0, .78),
+    inset 0 0 15px rgba(62, 226, 255, .15),
+    inset -15px 0 24px rgba(255, 133, 32, .10),
+    inset 0 1px 0 rgba(74, 233, 255, .17) !important;
+  filter: saturate(1.22) contrast(1.08);
+}
+
+/* Jemná, živá galaktická mlhovina – méně pastelová, více kontrastní. */
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-nebula {
+  opacity: .72 !important;
+  filter: blur(14px) saturate(1.45) !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-nebula-a {
+  width: 118px;
+  height: 76px;
+  left: -33px;
+  top: -25px;
+  background: linear-gradient(115deg, #00d9ff, #285cff 52%, #742cff) !important;
+  animation: mkGalaxyNebulaDeepA 4.8s cubic-bezier(.45, 0, .25, 1) infinite alternate !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-nebula-b {
+  width: 112px;
+  height: 78px;
+  right: -29px;
+  bottom: -27px;
+  background: linear-gradient(125deg, #ff2fca, #b82cff 48%, #ff941f) !important;
+  animation: mkGalaxyNebulaDeepB 4.2s cubic-bezier(.45, 0, .25, 1) infinite alternate !important;
+}
+
+/* Hustší hvězdné pole bez bílé: cyan, fialová, růžová a malé zlaté jiskry. */
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-stars {
+  inset: 0 !important;
+  opacity: .96;
+  background:
+    radial-gradient(circle at 5% 18%, #24eaff 0 1px, transparent 1.7px),
+    radial-gradient(circle at 11% 69%, #856cff 0 1.1px, transparent 1.9px),
+    radial-gradient(circle at 17% 37%, #ff4bd2 0 .9px, transparent 1.7px),
+    radial-gradient(circle at 23% 84%, #35dcff 0 1px, transparent 1.8px),
+    radial-gradient(circle at 29% 12%, #ffc44c 0 .9px, transparent 1.7px),
+    radial-gradient(circle at 34% 58%, #6f67ff 0 1px, transparent 1.9px),
+    radial-gradient(circle at 40% 29%, #28e9ff 0 1.2px, transparent 2px),
+    radial-gradient(circle at 46% 76%, #ff53cb 0 .9px, transparent 1.7px),
+    radial-gradient(circle at 51% 9%, #9b61ff 0 .9px, transparent 1.7px),
+    radial-gradient(circle at 57% 47%, #3fe8ff 0 1px, transparent 1.8px),
+    radial-gradient(circle at 63% 86%, #ffb72e 0 1px, transparent 1.8px),
+    radial-gradient(circle at 68% 21%, #ff4dc9 0 1px, transparent 1.8px),
+    radial-gradient(circle at 74% 63%, #746aff 0 1.1px, transparent 1.9px),
+    radial-gradient(circle at 80% 10%, #31edff 0 .9px, transparent 1.7px),
+    radial-gradient(circle at 86% 79%, #ff8f27 0 1px, transparent 1.8px),
+    radial-gradient(circle at 91% 38%, #ff49c7 0 1.1px, transparent 1.9px),
+    radial-gradient(circle at 96% 65%, #ffd054 0 .9px, transparent 1.7px) !important;
+  mix-blend-mode: screen;
+  animation: mkGalaxyDenseTwinkle 1.65s ease-in-out infinite alternate !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-stars::before,
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-stars::after {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-stars::before {
+  background:
+    radial-gradient(circle at 7% 23%, #27eaff 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 14% 51%, #ff4dce 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 21% 78%, #7f68ff 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 31% 33%, #ffc142 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 39% 66%, #25e9ff 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 49% 18%, #9c5fff 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 58% 81%, #ff4bc9 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 67% 42%, #38e9ff 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 76% 71%, #ff9b2a 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 84% 27%, #8166ff 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 94% 54%, #ff4ac8 0 .8px, transparent 1.5px);
+  opacity: .75;
+  animation: mkGalaxyParticleDriftA 8.2s linear infinite;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-stars::after {
+  background:
+    radial-gradient(ellipse at 16% 48%, rgba(35, 229, 255, .34) 0 1px, transparent 2.4px),
+    radial-gradient(ellipse at 27% 19%, rgba(143, 88, 255, .42) 0 1px, transparent 2.3px),
+    radial-gradient(ellipse at 43% 82%, rgba(255, 64, 199, .38) 0 1px, transparent 2.4px),
+    radial-gradient(ellipse at 59% 34%, rgba(47, 235, 255, .36) 0 1px, transparent 2.4px),
+    radial-gradient(ellipse at 72% 70%, rgba(255, 159, 37, .36) 0 1px, transparent 2.4px),
+    radial-gradient(ellipse at 88% 26%, rgba(255, 68, 198, .34) 0 1px, transparent 2.4px);
+  opacity: .72;
+  filter: blur(.25px);
+  animation: mkGalaxyParticleDriftB 6.4s ease-in-out infinite alternate;
+}
+
+/* Hlubší barevný proud přes tlačítko, bez mléčně bílého odlesku. */
+.ow-currency-hub.mk-main-currency-button .mk-main-currency-scan {
+  width: 29% !important;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(35, 225, 255, .18),
+    rgba(104, 80, 255, .28),
+    rgba(255, 55, 199, .25),
+    rgba(255, 153, 35, .20),
+    transparent
+  ) !important;
+  filter: blur(.35px) saturate(1.35) !important;
+  opacity: .34 !important;
+}
+
+.ow-currency-hub.mk-main-currency-button:hover .mk-main-currency-scan,
+.ow-currency-hub.mk-main-currency-button:focus-visible .mk-main-currency-scan {
+  opacity: .76 !important;
+}
+
+/* Jemný život ikon a hodnot; bez změny rozložení či funkce. */
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-gem {
+  animation: mkCurrencyPrismAlive 2.7s ease-in-out infinite !important;
+  transform-origin: 50% 55%;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-coin {
+  animation: mkCurrencyCoinAlive 2.9s ease-in-out .18s infinite !important;
+  transform-origin: 50% 50%;
+}
+
+.ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy b {
+  animation: mkCurrencyValueAlive 3.1s ease-in-out infinite;
+}
+
+.ow-currency-hub.mk-main-currency-button .is-premium .ow-currency-hub-copy b {
+  animation-delay: .24s;
+}
+
+.ow-currency-hub.mk-main-currency-button:hover .ow-currency-hub-segment > .ow-currency-gem,
+.ow-currency-hub.mk-main-currency-button:focus-visible .ow-currency-hub-segment > .ow-currency-gem,
+.ow-currency-hub.mk-main-currency-button:hover .ow-currency-hub-segment > .ow-currency-coin,
+.ow-currency-hub.mk-main-currency-button:focus-visible .ow-currency-hub-segment > .ow-currency-coin {
+  animation-duration: 1.25s !important;
+}
+
+@keyframes mkGalaxyNebulaDeepA {
+  0%   { transform: translate3d(-7px, -3px, 0) scale(.92) rotate(-5deg); opacity: .56; }
+  55%  { transform: translate3d(7px, 5px, 0) scale(1.13) rotate(5deg); opacity: .82; }
+  100% { transform: translate3d(16px, -2px, 0) scale(1.02) rotate(1deg); opacity: .68; }
+}
+
+@keyframes mkGalaxyNebulaDeepB {
+  0%   { transform: translate3d(8px, 5px, 0) scale(.94) rotate(4deg); opacity: .58; }
+  50%  { transform: translate3d(-8px, -5px, 0) scale(1.14) rotate(-5deg); opacity: .84; }
+  100% { transform: translate3d(-15px, 3px, 0) scale(1.02) rotate(-1deg); opacity: .67; }
+}
+
+@keyframes mkGalaxyDenseTwinkle {
+  0%   { opacity: .62; filter: brightness(.88) saturate(1.08); }
+  48%  { opacity: 1; filter: brightness(1.35) saturate(1.42); }
+  100% { opacity: .78; filter: brightness(1.06) saturate(1.25); }
+}
+
+@keyframes mkGalaxyParticleDriftA {
+  0%   { transform: translate3d(-6px, 4px, 0) rotate(0deg); opacity: .48; }
+  50%  { opacity: .86; }
+  100% { transform: translate3d(13px, -9px, 0) rotate(3deg); opacity: .54; }
+}
+
+@keyframes mkGalaxyParticleDriftB {
+  0%   { transform: translate3d(7px, -5px, 0) scale(.92); opacity: .46; }
+  100% { transform: translate3d(-10px, 8px, 0) scale(1.12); opacity: .84; }
+}
+
+@keyframes mkCurrencyPrismAlive {
+  0%, 100% { translate: 0 0; scale: 1; filter: drop-shadow(0 0 5px rgba(48, 235, 255, .58)) saturate(1.12); }
+  48%      { translate: 0 -1px; scale: 1.055; filter: drop-shadow(0 0 8px rgba(43, 239, 255, .92)) drop-shadow(0 0 11px rgba(119, 76, 255, .58)) saturate(1.35); }
+}
+
+@keyframes mkCurrencyCoinAlive {
+  0%, 100% { translate: 0 0; scale: 1; filter: drop-shadow(0 0 5px rgba(255, 196, 48, .62)) saturate(1.12); }
+  52%      { translate: 0 1px; scale: 1.05; filter: drop-shadow(0 0 8px rgba(255, 193, 40, .95)) drop-shadow(0 0 11px rgba(255, 92, 36, .46)) saturate(1.38); }
+}
+
+@keyframes mkCurrencyValueAlive {
+  0%, 100% { translate: 0 0; filter: brightness(1); }
+  50%      { translate: 1px 0; filter: brightness(1.16); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ow-currency-hub.mk-main-currency-button .mk-main-currency-nebula,
+  .ow-currency-hub.mk-main-currency-button .mk-main-currency-stars,
+  .ow-currency-hub.mk-main-currency-button .mk-main-currency-stars::before,
+  .ow-currency-hub.mk-main-currency-button .mk-main-currency-stars::after,
+  .ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-gem,
+  .ow-currency-hub.mk-main-currency-button .ow-currency-hub-segment > .ow-currency-coin,
+  .ow-currency-hub.mk-main-currency-button .ow-currency-hub-copy b {
+    animation: none !important;
+  }
+}
