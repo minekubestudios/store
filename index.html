@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="product-card.css">
   <link rel="stylesheet" href="game-currency.css">
   <link rel="stylesheet" href="currency-hub.css">
-  <link rel="stylesheet" href="currency-main-button.css?v=9">
 </head>
 <body class="future-loading store-page" data-store-view="all">
   <div class="noise" aria-hidden="true"></div>
@@ -110,56 +109,17 @@
 
       <div class="header-actions store-header-actions">
         <div class="ow-currency-hub-wrap">
-          <button class="ow-currency-hub mk-main-currency-button" id="currencyHubButton" type="button" aria-label="Otevřít nákup herních měn" aria-haspopup="dialog">
-            <span class="mk-main-currency-fx" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-            <span class="mk-main-lightning-field" aria-hidden="true">
-              <svg class="mk-lightning-svg mk-lightning-left" viewBox="0 0 132 76" preserveAspectRatio="none">
-                <path class="mk-bolt-halo mk-bolt-cyan" data-bolt="left-a" pathLength="200" d="M130 37 L119 34 L113 41 L98 35 L91 45 L76 40 L68 44 L54 31 L47 39 L32 36 L24 44 L10 40 L2 43"></path>
-                <path class="mk-bolt-core mk-bolt-cyan" data-bolt="left-a" pathLength="200" d="M130 37 L119 34 L113 41 L98 35 L91 45 L76 40 L68 44 L54 31 L47 39 L32 36 L24 44 L10 40 L2 43"></path>
-                <path class="mk-bolt-halo mk-bolt-violet" data-bolt="left-b" pathLength="200" d="M128 50 L115 47 L106 53 L93 48 L84 57 L70 51 L60 55 L46 45 L37 52 L24 48 L14 54 L4 51"></path>
-                <path class="mk-bolt-core mk-bolt-violet" data-bolt="left-b" pathLength="200" d="M128 50 L115 47 L106 53 L93 48 L84 57 L70 51 L60 55 L46 45 L37 52 L24 48 L14 54 L4 51"></path>
-                <path class="mk-bolt-branch mk-bolt-cyan" data-bolt="left-branch" pathLength="100" d="M90 38 L82 24 L75 28 L68 14 L60 20"></path>
-              </svg>
-              <svg class="mk-lightning-svg mk-lightning-right" viewBox="0 0 132 76" preserveAspectRatio="none">
-                <path class="mk-bolt-halo mk-bolt-gold" data-bolt="right-a" pathLength="200" d="M2 43 L10 40 L24 44 L32 36 L47 39 L54 31 L68 44 L76 40 L91 45 L98 35 L113 41 L119 34 L130 37"></path>
-                <path class="mk-bolt-core mk-bolt-gold" data-bolt="right-a" pathLength="200" d="M2 43 L10 40 L24 44 L32 36 L47 39 L54 31 L68 44 L76 40 L91 45 L98 35 L113 41 L119 34 L130 37"></path>
-                <path class="mk-bolt-halo mk-bolt-pink" data-bolt="right-b" pathLength="200" d="M4 51 L14 54 L24 48 L37 52 L46 45 L60 55 L70 51 L84 57 L93 48 L106 53 L115 47 L128 50"></path>
-                <path class="mk-bolt-core mk-bolt-pink" data-bolt="right-b" pathLength="200" d="M4 51 L14 54 L24 48 L37 52 L46 45 L60 55 L70 51 L84 57 L93 48 L106 53 L115 47 L128 50"></path>
-                <path class="mk-bolt-branch mk-bolt-gold" data-bolt="right-branch" pathLength="100" d="M42 38 L50 24 L57 28 L64 14 L72 20"></path>
-              </svg>
-              <span class="mk-back-particles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <button class="ow-currency-hub" id="currencyHubButton" type="button" aria-label="Otevřít nákup herních měn" aria-haspopup="dialog">
+            <span class="ow-currency-hub-segment is-mythic">
+              <span class="ow-currency-gem" aria-hidden="true"></span>
+              <span class="ow-currency-hub-copy"><b>0</b><small>Mythic Prisms</small></span>
             </span>
-            <span class="mk-main-currency-universe" aria-hidden="true">
-              <span class="mk-main-currency-nebula mk-main-currency-nebula-a"></span>
-              <span class="mk-main-currency-nebula mk-main-currency-nebula-b"></span>
-              <span class="mk-main-currency-stars"></span>
-              <span class="mk-main-currency-scan"></span>
+            <i class="ow-currency-hub-divider" aria-hidden="true"></i>
+            <span class="ow-currency-hub-segment is-premium">
+              <span class="ow-currency-coin" aria-hidden="true">M</span>
+              <span class="ow-currency-hub-copy"><b>503</b><small>Premium Coins</small></span>
             </span>
-            <span class="mk-main-currency-icon" aria-hidden="true">
-              <span class="mk-main-icon-core"></span>
-              <span class="mk-main-icon-prism ow-currency-gem"></span>
-              <span class="mk-main-icon-coin ow-currency-coin"></span>
-            </span>
-            <span class="mk-main-currency-label">
-              <small><span>MINEKUBE</span><i aria-hidden="true"></i></small>
-              <span class="mk-main-balance-line">
-                <span class="ow-currency-hub-segment is-mythic">
-                  <span class="ow-currency-gem" aria-hidden="true"></span>
-                  <span class="ow-currency-hub-copy"><b>0</b><small>Mythic Prisms</small></span>
-                </span>
-                <i class="mk-main-balance-divider" aria-hidden="true"></i>
-                <span class="ow-currency-hub-segment is-premium">
-                  <span class="ow-currency-coin" aria-hidden="true"></span>
-                  <span class="ow-currency-hub-copy"><b>503</b><small>Premium Coins</small></span>
-                </span>
-              </span>
-            </span>
-            <span class="mk-hub-plus" role="button" tabindex="0" aria-label="Dobít herní měnu" title="Dobít herní měnu">
-              <span class="mk-main-plus-core" aria-hidden="true"></span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
-            </span>
-            <span class="mk-main-currency-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-            <span class="mk-main-click-pulse" aria-hidden="true"><i></i><i></i></span>
+            <svg class="ow-currency-hub-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
           </button>
           <div class="ow-currency-tooltip" role="tooltip" aria-hidden="true">
             <div class="ow-currency-tooltip-head"><span class="ow-currency-gem" aria-hidden="true"></span><strong>MYTHIC PRISMS</strong><b>0</b></div>
@@ -177,14 +137,11 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path><path d="M9 12h11"></path></svg>
           <span>Hlavní web</span>
         </a>
-        <button class="icon-button header-cart-toggle" id="themeToggle" type="button" aria-label="Otevřít košík, 0 položek" title="Otevřít košík">
-          <span class="header-cart-toggle-aura" aria-hidden="true"></span>
-          <svg class="header-cart-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"></path>
-            <circle cx="10" cy="20" r="1"></circle>
-            <circle cx="17" cy="20" r="1"></circle>
+        <button class="icon-button" id="themeToggle" type="button" aria-label="Přepnout motiv" title="Přepnout motiv">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
           </svg>
-          <b class="header-cart-toggle-count" id="headerCartCount">0</b>
         </button>
         <button class="store-cart-button" id="cartButton" type="button" aria-label="Otevřít košík" aria-expanded="false">
           <span class="cart-button-aura" aria-hidden="true"></span>
@@ -514,7 +471,7 @@
 
   <script src="store-config.js"></script>
   <script src="game-currency.js"></script>
-  <script src="currency-hub.js?v=9"></script>
+  <script src="currency-hub.js"></script>
   <script src="currency-switch.js"></script>
   <script src="profile-menu.js"></script>
   <script src="app.js"></script>

@@ -1,232 +1,243 @@
 "use strict";
 
 /*
- * Minekube Store — interakce hlavního tlačítka měn
- * Procedurální VFX vrstva inspirovaná STORE tlačítkem na hlavním webu.
- * Nemění nákupní logiku ani modály; pouze řídí blesky, částice a pulz.
+ * Minekube Store — hub herních měn
+ * Efekty jsou převzaté přímo z hlavního webu:
+ * - blesky a částice z tlačítka STORE,
+ * - klikací pulz z tlačítka Stáhnout modpack.
+ * Vzhled, rozložení a funkce samotného tlačítka zůstávají beze změny.
  */
 
 (function () {
-  const hub = document.querySelector("#currencyHubButton");
-  if (!hub) return;
+  const PLUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>';
 
-  const plus = hub.querySelector(".mk-hub-plus");
-  const particleLayer = hub.querySelector(".mk-back-particles");
-  const boltNodes = Array.from(hub.querySelectorAll("[data-bolt]"));
+  const STORE_EFFECTS = `
+    <span class="store-button-fx mk-currency-store-fx" aria-hidden="true"></span>
+    <span class="store-button-lightning mk-currency-store-lightning" aria-hidden="true">
+      <svg class="store-lightning store-lightning-a" viewBox="0 0 210 84"><path d="M9 55 31 38 48 45 70 18 89 31 112 8"></path></svg>
+      <svg class="store-lightning store-lightning-b" viewBox="0 0 210 84"><path d="M202 23 179 38 163 30 141 61 119 48 97 74"></path></svg>
+      <svg class="store-lightning store-lightning-c" viewBox="0 0 210 84"><path d="M17 18 40 28 54 14 76 35"></path></svg>
+    </span>`;
+
+  const LAYERS = `
+    <span class="mk-hub-universe" aria-hidden="true">
+      <span class="mk-hub-nebula mk-hub-nebula-a"></span>
+      <span class="mk-hub-nebula mk-hub-nebula-b"></span>
+      <span class="mk-hub-nebula mk-hub-nebula-c"></span>
+      <span class="mk-hub-nebula mk-hub-nebula-d"></span>
+      <span class="mk-hub-stars"></span>
+      <span class="mk-hub-scan"></span>
+    </span>
+    <span class="mk-hub-core mk-hub-core-mythic" aria-hidden="true"></span>
+    <span class="mk-hub-core mk-hub-core-premium" aria-hidden="true"></span>
+    <span class="mk-hub-orbits" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="mk-hub-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>`;
+
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-  let pulseTimer = 0;
-  let boltTimer = 0;
-  let particleTimer = 0;
-  let burstTimer = 0;
+  const finePointer = window.matchMedia("(pointer: fine)");
+  const fxPalette = ["#69f7ff", "#8f6cff", "#ff58df", "#ffd36e", "#78adff"];
+  const fxIcons = ["✦", "◇", "⬡", "+", "✧"];
+  let fxTimer = 0;
   let lastPulseAt = 0;
-  let vfxActive = false;
 
-  const palette = ["#22eaff", "#397cff", "#8b4cff", "#ff36c8", "#ffb52f", "#ffd04a"];
-  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-  const random = (min, max) => Math.random() * (max - min) + min;
+  const randomBetween = (min, max) => Math.random() * (max - min) + min;
 
-  const boltConfigs = {
-    "left-a": { side: "left", y: 38, amplitude: 14, segments: 7 },
-    "left-b": { side: "left", branch: true, y: 48, lengthMin: 54, lengthMax: 78, rise: -5 },
-    "right-a": { side: "right", y: 38, amplitude: 14, segments: 7 },
-    "right-b": { side: "right", branch: true, y: 48, lengthMin: 54, lengthMax: 78, rise: -5 },
-    "left-branch": { side: "left", branch: true, y: 30, lengthMin: 34, lengthMax: 52, rise: -18 },
-    "right-branch": { side: "right", branch: true, y: 30, lengthMin: 34, lengthMax: 52, rise: -18 }
-  };
-
-  function buildMainBolt(config, burst = false) {
-    const startX = config.side === "left" ? 130 : 2;
-    const endX = config.side === "left" ? 2 : 130;
-    const points = [];
-    const amplitude = config.amplitude * (burst ? 1.32 : 1);
-
-    let previousY = config.y + random(-2, 2);
-    let progress = 0;
-
-    for (let index = 0; index <= config.segments; index += 1) {
-      if (index === config.segments) progress = 1;
-      else if (index > 0) progress = Math.min(.94, progress + random(.09, .18));
-
-      const x = startX + (endX - startX) * progress;
-      const edgeFactor = Math.sin(progress * Math.PI);
-      const correction = (config.y - previousY) * random(.18, .42);
-      const impulse = index === 0 || index === config.segments
-        ? random(-1.2, 1.2)
-        : random(-amplitude, amplitude) * edgeFactor;
-      previousY = clamp(previousY + correction + impulse, config.y - amplitude * 1.2, config.y + amplitude * 1.2);
-      points.push(`${index === 0 ? "M" : "L"}${x.toFixed(1)} ${previousY.toFixed(1)}`);
-    }
-
-    return points.join(" ");
-  }
-
-  function buildBranchBolt(config, burst = false) {
-    const left = config.side === "left";
-    const originX = left ? random(67, 98) : random(34, 65);
-    const direction = left ? -1 : 1;
-    const branchLength = burst ? random((config.lengthMin || 34) * 1.2, (config.lengthMax || 52) * 1.25) : random(config.lengthMin || 30, config.lengthMax || 46);
-    const baseY = config.y + random(-7, 7);
-    const rise = config.rise || -10;
-    const points = [
-      [originX, baseY],
-      [originX + direction * branchLength * .22, clamp(baseY + rise * .35 + random(-8, 7), 4, 72)],
-      [originX + direction * branchLength * .47, clamp(baseY + rise * .12 + random(-9, 9), 4, 72)],
-      [originX + direction * branchLength * .73, clamp(baseY + rise * .72 + random(-7, 7), 4, 72)],
-      [originX + direction * branchLength, clamp(baseY + rise + random(-6, 6), 4, 72)]
-    ];
-
-    return points.map((point, index) => `${index === 0 ? "M" : "L"}${point[0].toFixed(1)} ${point[1].toFixed(1)}`).join(" ");
-  }
-
-  function renderBolts(burst = false) {
-    const paths = new Map();
-
-    boltNodes.forEach(node => {
-      const key = node.dataset.bolt;
-      if (!paths.has(key)) {
-        const config = boltConfigs[key];
-        if (!config) return;
-        paths.set(key, config.branch ? buildBranchBolt(config, burst) : buildMainBolt(config, burst));
-      }
-      node.setAttribute("d", paths.get(key));
-    });
-  }
-
-  function spawnParticles(amount = 8, burst = false) {
-    if (!particleLayer || reducedMotion.matches) return;
+  function spawnStoreFx(hub, amount = 16, force = false) {
+    const wrap = hub?.closest(".ow-currency-hub-wrap");
+    const fxLayer = wrap?.querySelector(".mk-currency-store-fx");
+    if (!fxLayer || (!force && !hub.matches(":hover"))) return;
 
     for (let index = 0; index < amount; index += 1) {
+      const roll = Math.random();
       const node = document.createElement("i");
-      const typeRoll = Math.random();
-      const side = Math.random() < .5 ? -1 : 1;
-      const vertical = random(-1, 1);
-      const distanceX = random(burst ? 72 : 42, burst ? 145 : 92) * side;
-      const distanceY = vertical * random(burst ? 35 : 18, burst ? 86 : 58);
-      const color = palette[Math.floor(Math.random() * palette.length)];
+      const angle = randomBetween(0, Math.PI * 2);
+      const distanceX = randomBetween(64, 138);
+      const distanceY = randomBetween(46, 104);
+      const color = fxPalette[Math.floor(Math.random() * fxPalette.length)];
+      const x = Math.cos(angle) * distanceX;
+      const y = Math.sin(angle) * distanceY;
 
-      node.className = "mk-vfx-particle";
-      if (typeRoll < .23) node.classList.add("is-spark");
-      else if (typeRoll < .5) node.classList.add("is-shard");
+      if (roll < .19) {
+        node.className = "store-fx-bolt";
+      } else if (roll < .44) {
+        node.className = "store-fx-icon";
+        node.textContent = fxIcons[Math.floor(Math.random() * fxIcons.length)];
+      } else {
+        node.className = "store-fx-particle";
+      }
 
-      node.style.left = `${random(28, 72).toFixed(1)}%`;
-      node.style.top = `${random(24, 76).toFixed(1)}%`;
-      node.style.setProperty("--fx-x", `${distanceX.toFixed(1)}px`);
-      node.style.setProperty("--fx-y", `${distanceY.toFixed(1)}px`);
-      node.style.setProperty("--fx-size", `${random(typeRoll < .23 ? 4 : 2.7, typeRoll < .23 ? 8 : 6.8).toFixed(1)}px`);
-      node.style.setProperty("--fx-duration", `${Math.round(random(burst ? 540 : 620, burst ? 880 : 1050))}ms`);
-      node.style.setProperty("--fx-delay", `${Math.round(random(0, burst ? 90 : 55))}ms`);
-      node.style.setProperty("--fx-rotation", `${Math.round(random(-220, 220))}deg`);
+      node.style.setProperty("--fx-x", `${x.toFixed(1)}px`);
+      node.style.setProperty("--fx-y", `${y.toFixed(1)}px`);
+      node.style.setProperty("--fx-size", `${randomBetween(3, roll < .44 ? 15 : 7.5).toFixed(1)}px`);
+      node.style.setProperty("--fx-duration", `${Math.round(randomBetween(720, 1260))}ms`);
+      node.style.setProperty("--fx-delay", `${Math.round(randomBetween(0, 100))}ms`);
+      node.style.setProperty("--fx-rotation", `${Math.round(randomBetween(-180, 180))}deg`);
+      node.style.setProperty("--fx-scale", randomBetween(.38, 1.08).toFixed(2));
       node.style.setProperty("--fx-color", color);
-      particleLayer.appendChild(node);
-
+      fxLayer.appendChild(node);
       node.addEventListener("animationend", () => node.remove(), { once: true });
-      window.setTimeout(() => node.remove(), 1300);
     }
   }
 
-  function startVfx() {
-    if (reducedMotion.matches || vfxActive) return;
-    vfxActive = true;
-    renderBolts();
-    spawnParticles(30);
-    window.clearInterval(boltTimer);
-    window.clearInterval(particleTimer);
-    boltTimer = window.setInterval(() => renderBolts(false), 105);
-    particleTimer = window.setInterval(() => spawnParticles(7), 125);
-  }
-
-  function stopVfx() {
-    vfxActive = false;
-    window.clearInterval(boltTimer);
-    window.clearInterval(particleTimer);
-    boltTimer = 0;
-    particleTimer = 0;
-  }
-
-  function lightningBurst() {
+  /* Přesný klikací pulz z tlačítka „Stáhnout modpack“ na hlavním webu. */
+  function launchDownloadPulse(event, target) {
     if (reducedMotion.matches) return;
-    spawnParticles(42, true);
-    window.clearInterval(burstTimer);
-    let frames = 0;
-    renderBolts(true);
-    burstTimer = window.setInterval(() => {
-      renderBolts(true);
-      frames += 1;
-      if (frames >= 8) {
-        window.clearInterval(burstTimer);
-        burstTimer = 0;
-      }
-    }, 52);
-  }
 
-  function pulse() {
     const now = performance.now();
     if (now - lastPulseAt < 180) return;
     lastPulseAt = now;
 
-    window.clearTimeout(pulseTimer);
-    hub.classList.remove("is-charged");
-    void hub.offsetWidth;
-    hub.classList.add("is-charged");
-    lightningBurst();
+    const rect = target.getBoundingClientRect();
+    const hasPointerPosition = event
+      && Number.isFinite(event.clientX)
+      && Number.isFinite(event.clientY)
+      && (event.clientX || event.clientY);
+    const x = hasPointerPosition ? event.clientX : rect.left + rect.width / 2;
+    const y = hasPointerPosition ? event.clientY : rect.top + rect.height / 2;
 
-    hub.querySelectorAll(".ow-currency-hub-segment").forEach((segment, index) => {
-      window.setTimeout(() => {
-        segment.classList.add("is-flash");
-        window.setTimeout(() => segment.classList.remove("is-flash"), 380);
-      }, index * 62);
-    });
+    const burst = document.createElement("span");
+    burst.className = "download-click-burst download-click-burst-classic-plus";
+    burst.style.left = `${x}px`;
+    burst.style.top = `${y}px`;
 
-    pulseTimer = window.setTimeout(() => hub.classList.remove("is-charged"), 980);
+    for (let index = 0; index < 3; index += 1) {
+      const ring = document.createElement("span");
+      ring.className = "download-burst-ring";
+      ring.style.setProperty("--ring-delay", `${index * 74}ms`);
+      ring.style.setProperty("--ring-scale", `${6.9 + index * 2.25}`);
+      burst.appendChild(ring);
+    }
+
+    const sparkCount = 28;
+    for (let index = 0; index < sparkCount; index += 1) {
+      const spark = document.createElement("i");
+      const angle = (360 / sparkCount) * index + (Math.random() * 10 - 5);
+      spark.style.setProperty("--spark-angle", `${angle}deg`);
+      spark.style.setProperty("--spark-distance", `${64 + Math.random() * 72}px`);
+      spark.style.setProperty("--spark-length", `${10 + Math.random() * 21}px`);
+      spark.style.setProperty("--spark-delay", `${Math.random() * 105}ms`);
+      spark.style.setProperty("--spark-width", `${1.7 + Math.random() * 2.2}px`);
+      burst.appendChild(spark);
+    }
+
+    const fragmentCount = 16;
+    for (let index = 0; index < fragmentCount; index += 1) {
+      const fragment = document.createElement("b");
+      const angle = (360 / fragmentCount) * index + (Math.random() * 20 - 10);
+      fragment.style.setProperty("--fragment-angle", `${angle}deg`);
+      fragment.style.setProperty("--fragment-distance", `${48 + Math.random() * 74}px`);
+      fragment.style.setProperty("--fragment-spin", `${180 + Math.random() * 500}deg`);
+      fragment.style.setProperty("--fragment-delay", `${25 + Math.random() * 115}ms`);
+      burst.appendChild(fragment);
+    }
+
+    const microParticleCount = 14;
+    for (let index = 0; index < microParticleCount; index += 1) {
+      const particle = document.createElement("u");
+      const angle = (360 / microParticleCount) * index + (Math.random() * 26 - 13);
+      particle.style.setProperty("--micro-angle", `${angle}deg`);
+      particle.style.setProperty("--micro-distance", `${38 + Math.random() * 64}px`);
+      particle.style.setProperty("--micro-delay", `${55 + Math.random() * 135}ms`);
+      particle.style.setProperty("--micro-size", `${2 + Math.random() * 2.6}px`);
+      burst.appendChild(particle);
+    }
+
+    document.body.appendChild(burst);
+    window.setTimeout(() => burst.remove(), 1240);
   }
 
   function openCurrencySelector() {
-    pulse();
-    window.setTimeout(() => {
-      if (typeof window.mkOpenCurrencyTopup === "function") {
-        window.mkOpenCurrencyTopup();
-        return;
-      }
-
-      const modal = document.querySelector("#currencySelectModal");
-      if (modal && typeof window.mkOpenModal === "function") window.mkOpenModal(modal);
-    }, 460);
+    const selector = document.querySelector("#currencySelectModal");
+    if (typeof window.mkOpenCurrencyTopup === "function") window.mkOpenCurrencyTopup();
+    else if (typeof window.mkOpenModal === "function" && selector) window.mkOpenModal(selector);
   }
 
-  renderBolts();
+  function buildPlus({ mobile = false } = {}) {
+    const button = document.createElement("span");
+    button.className = `mk-hub-plus${mobile ? " is-mobile" : ""}`;
+    button.setAttribute("role", "button");
+    button.setAttribute("tabindex", "0");
+    button.setAttribute("aria-label", "Dobít herní měnu");
+    button.setAttribute("title", "Dobít herní měnu");
+    button.innerHTML = PLUS;
 
-  if (!reducedMotion.matches) {
-    hub.addEventListener("pointermove", event => {
-      const rect = hub.getBoundingClientRect();
-      const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
-      const y = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height));
-      hub.style.setProperty("--hub-x", `${(x * 100).toFixed(2)}%`);
-      hub.style.setProperty("--hub-y", `${(y * 100).toFixed(2)}%`);
-    });
-
-    hub.addEventListener("pointerenter", startVfx);
-    hub.addEventListener("pointerleave", () => {
-      stopVfx();
-      hub.style.setProperty("--hub-x", "50%");
-      hub.style.setProperty("--hub-y", "50%");
-    });
-    hub.addEventListener("focusin", startVfx);
-    hub.addEventListener("focusout", stopVfx);
-  }
-
-  hub.addEventListener("pointerdown", pulse);
-
-  if (plus) {
     const activate = event => {
       event.preventDefault();
       event.stopPropagation();
-      openCurrencySelector();
+      const hub = button.closest(".ow-currency-hub") || button.closest("#mobileCurrencyButton") || button;
+      launchDownloadPulse(event, hub);
+      window.setTimeout(openCurrencySelector, 160);
     };
 
-    plus.addEventListener("click", activate);
-    plus.addEventListener("keydown", event => {
+    button.addEventListener("click", activate);
+    button.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") activate(event);
     });
+
+    return button;
+  }
+
+  function bindMainWebEffects(hub) {
+    if (reducedMotion.matches) return;
+
+    hub.addEventListener("pointermove", event => {
+      const rect = hub.getBoundingClientRect();
+      const x = Math.min(Math.max((event.clientX - rect.left) / rect.width, 0), 1);
+      const y = Math.min(Math.max((event.clientY - rect.top) / rect.height, 0), 1);
+      hub.style.setProperty("--hub-x", `${x * 100}%`);
+      hub.style.setProperty("--hub-y", `${y * 100}%`);
+      hub.style.setProperty("--hub-tilt-x", `${(y - .5) * -8}deg`);
+      hub.style.setProperty("--hub-tilt-y", `${(x - .5) * 10}deg`);
+    });
+
+    hub.addEventListener("pointerenter", () => {
+      spawnStoreFx(hub, 32);
+      window.clearInterval(fxTimer);
+      fxTimer = window.setInterval(() => spawnStoreFx(hub, 9), 210);
+    });
+
+    hub.addEventListener("pointerleave", () => {
+      window.clearInterval(fxTimer);
+      hub.style.setProperty("--hub-x", "50%");
+      hub.style.setProperty("--hub-y", "50%");
+      hub.style.setProperty("--hub-tilt-x", "0deg");
+      hub.style.setProperty("--hub-tilt-y", "0deg");
+    });
+
+    hub.addEventListener("pointerdown", event => launchDownloadPulse(event, hub));
+    hub.addEventListener("click", event => {
+      if (event.detail === 0) launchDownloadPulse(event, hub);
+    });
+  }
+
+  function mount() {
+    const hub = document.querySelector("#currencyHubButton");
+    const wrap = hub?.closest(".ow-currency-hub-wrap");
+
+    if (hub && !hub.querySelector(".mk-hub-universe")) {
+      hub.insertAdjacentHTML("afterbegin", LAYERS);
+    }
+
+    if (wrap && !wrap.querySelector(".mk-currency-store-fx")) {
+      wrap.insertAdjacentHTML("afterbegin", STORE_EFFECTS);
+    }
+
+    if (hub) bindMainWebEffects(hub);
+
+    const divider = hub?.querySelector(".ow-currency-hub-divider");
+    if (divider && !hub.querySelector(".mk-hub-plus")) {
+      divider.replaceWith(buildPlus());
+    }
+
+    const mobileBar = document.querySelector("#mobileCurrencyButton");
+    if (mobileBar && !mobileBar.querySelector(".mk-hub-plus")) {
+      mobileBar.appendChild(buildPlus({ mobile: true }));
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount);
+  } else {
+    mount();
   }
 })();
