@@ -1040,7 +1040,9 @@ function setCurrencyBilling(mode) {
 function renderCurrencyPacks(type) {
   const items = currencyProductSet(type);
   const premium = type === "premium";
-  const subscribed = state.currencyBilling === "subscription";
+  // Volba jednorázového nákupu / předplatného je nyní až v přímé objednávce.
+  state.currencyBilling = "onetime";
+  const subscribed = false;
   const currencyName = premium ? "Premium Coins" : "Mythic Prisms";
   const title = $("#currencyPacksTitle");
   const kicker = $("#currencyPacksKicker");
@@ -1959,7 +1961,7 @@ function bindEvents() {
       const product = getProduct(currencyPack.dataset.currencyPack);
       if (typeof window.mkOpenCurrencyPurchase === "function" && product) {
         window.mkOpenCurrencyPurchase(product, currencyPack, {
-          billing: state.currencyBilling,
+          billing: "onetime",
           currencyType: state.activeCurrencyType
         });
         return;

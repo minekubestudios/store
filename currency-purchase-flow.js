@@ -8,6 +8,7 @@
     payment: "paypal",
     consents: { terms: false, privacy: false },
     quickPurchase: false,
+    quantity: 1,
     sourceCard: null,
     busy: false,
     renderToken: 0,
@@ -36,8 +37,17 @@
     }).format(Number(value) || 0);
   }
 
-  function amountLabel(product = state.product) {
-    return new Intl.NumberFormat("cs-CZ").format(Number(product?.currencyAmount) || 0);
+  function quantityValue() {
+    return Math.max(1, Math.min(99, Number(state.quantity) || 1));
+  }
+
+  function amountLabel(product = state.product, quantity = quantityValue()) {
+    const amount = (Number(product?.currencyAmount) || 0) * Math.max(1, Number(quantity) || 1);
+    return new Intl.NumberFormat("cs-CZ").format(amount);
+  }
+
+  function totalPrice(product = state.product, quantity = quantityValue()) {
+    return (Number(product?.price) || 0) * Math.max(1, Number(quantity) || 1);
   }
 
   function readPlayer() {
@@ -83,9 +93,23 @@
         <header class="currency-purchase-topbar">
           <div class="currency-purchase-brand">
             <span class="currency-purchase-wallet">${ICONS.wallet}</span>
-            <div>
+            <div class="currency-purchase-brand-content">
               <small>PŘÍMÝ NÁKUP HERNÍ MĚNY</small>
               <h2 id="currencyPurchaseTitle"><span data-purchase-verb>Dobít</span> <b data-purchase-currency-title>Premium Coins</b></h2>
+              <div class="currency-purchase-inline-controls">
+                <div class="currency-purchase-billing" role="group" aria-label="Typ nákupu">
+                  <button type="button" data-purchase-billing="onetime" aria-pressed="true">Jednorázově</button>
+                  <button type="button" data-purchase-billing="subscription" aria-pressed="false">Měsíčně</button>
+                </div>
+                <div class="currency-purchase-quantity" aria-label="Počet balíčků">
+                  <span>Počet balíčků</span>
+                  <div>
+                    <button type="button" data-purchase-quantity="-1" aria-label="Odebrat jeden balíček">−</button>
+                    <b data-purchase-quantity-value>1</b>
+                    <button type="button" data-purchase-quantity="1" aria-label="Přidat jeden balíček">+</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="currency-purchase-top-actions">
@@ -97,10 +121,6 @@
         </header>
 
         <div class="currency-purchase-scroll" data-purchase-scroll>
-          <div class="currency-purchase-billing" role="group" aria-label="Typ nákupu">
-            <button type="button" data-purchase-billing="onetime" aria-pressed="true">Jednorázové dobití</button>
-            <button type="button" data-purchase-billing="subscription" aria-pressed="false">Měsíční předplatné</button>
-          </div>
 
           <section class="currency-purchase-section currency-payment-section">
             <h3><span>1.</span> Vyber platební metodu</h3>
@@ -131,11 +151,6 @@
         </div>
 
         <footer class="currency-purchase-footer">
-          <div class="currency-billing-alert">
-            ${ICONS.info}
-            <span><strong>Fakturační údaje</strong><small>Doplníš bezpečně až v platební bráně.</small></span>
-            <button type="button" data-purchase-billing-info>Více informací</button>
-          </div>
           <div class="currency-purchase-footer-row">
             <div class="currency-purchase-consents">
               <label><input type="checkbox" data-purchase-consent="terms"><span>${ICONS.check}</span> Souhlasím s <b>obchodními podmínkami</b></label>
@@ -197,8 +212,8 @@
         <div class="currency-selected-copy">
           <small>${subscribed ? "MĚSÍČNÍ PŘEDPLATNÉ" : "JEDNORÁZOVÉ DOBITÍ"}</small>
           <h4>${amountLabel(product)} ${meta.name}</h4>
-          <p>${subscribed ? "Balíček se připíše každých 30 dní. Předplatné lze později zrušit." : "Herní měna bude po úspěšné platbě připravena k připsání na účet."}</p>
-          <strong>${formatMoney(product?.price)}${subscribed ? " / měsíc" : ""}</strong>
+          <p>${quantityValue() > 1 ? `${quantityValue()}× vybraný balíček. ` : ""}${subscribed ? "Balíček se připíše každých 30 dní. Předplatné lze později zrušit." : "Herní měna bude po úspěšné platbě připravena k připsání na účet."}</p>
+          <strong>${formatMoney(totalPrice(product))}${subscribed ? " / měsíc" : ""}</strong>
         </div>
       </article>`;
   }
@@ -225,6 +240,15 @@
       button.setAttribute("aria-pressed", String(active));
     });
 
+    const quantity = quantityValue();
+    modal.querySelectorAll("[data-purchase-quantity-value]").forEach(node => { node.textContent = String(quantity); });
+    modal.querySelectorAll("[data-purchase-quantity]").forEach(button => {
+      const delta = Number(button.dataset.purchaseQuantity) || 0;
+      const disabled = (delta < 0 && quantity <= 1) || (delta > 0 && quantity >= 99);
+      button.disabled = disabled;
+      button.setAttribute("aria-disabled", String(disabled));
+    });
+
     const slot = modal.querySelector("[data-purchase-product-slot]");
     if (slot) slot.innerHTML = selectedCardMarkup(state.product, { awaitingFlight });
 
@@ -235,16 +259,17 @@
         <h4>${state.options.billing === "subscription" ? "Pravidelné dobíjení" : "Okamžité dobití"}</h4>
         <dl>
           <div><dt>Herní měna</dt><dd>${meta.icon}${meta.name}</dd></div>
-          <div><dt>Množství</dt><dd>${amountLabel()}</dd></div>
+          <div><dt>Počet balíčků</dt><dd>${quantity}×</dd></div>
+          <div><dt>Množství měny</dt><dd>${amountLabel()}</dd></div>
           <div><dt>Typ nákupu</dt><dd>${state.options.billing === "subscription" ? "Každých 30 dní" : "Jednorázově"}</dd></div>
           <div><dt>Příjemce</dt><dd class="${player ? "" : "is-warning"}">${player || "Minecraft účet není nastavený"}</dd></div>
-          <div class="is-total"><dt>Celkem</dt><dd>${formatMoney(state.product.price)}${state.options.billing === "subscription" ? " / měsíc" : ""}</dd></div>
+          <div class="is-total"><dt>Celkem</dt><dd>${formatMoney(totalPrice())}${state.options.billing === "subscription" ? " / měsíc" : ""}</dd></div>
         </dl>
         <div class="currency-order-security">${ICONS.shield}<span><strong>Bezpečný postup</strong><small>API, webhooky a PayPal propojení zůstávají v tomto designovém kroku beze změny.</small></span></div>`;
     }
 
     const total = modal.querySelector("[data-purchase-total]");
-    if (total) total.textContent = `${formatMoney(state.product.price)}${state.options.billing === "subscription" ? " / měsíc" : ""}`;
+    if (total) total.textContent = `${formatMoney(totalPrice())}${state.options.billing === "subscription" ? " / měsíc" : ""}`;
     updateAction();
   }
 
@@ -287,7 +312,7 @@
     const layer = modal.querySelector("[data-purchase-confirm-layer]");
     const copy = modal.querySelector("[data-purchase-confirm-copy]");
     if (copy) {
-      copy.innerHTML = `Opravdu chceš ${state.options.billing === "subscription" ? "předplatit" : "zakoupit"} balíček <strong>${amountLabel()} ${meta.name}</strong> za <strong>${formatMoney(state.product.price)}${state.options.billing === "subscription" ? " měsíčně" : ""}</strong>?`;
+      copy.innerHTML = `Opravdu chceš ${state.options.billing === "subscription" ? "předplatit" : "zakoupit"} <strong>${quantityValue()}× balíček</strong> v celkové hodnotě <strong>${amountLabel()} ${meta.name}</strong> za <strong>${formatMoney(totalPrice())}${state.options.billing === "subscription" ? " měsíčně" : ""}</strong>?`;
     }
     layer?.classList.add("is-open");
     layer?.setAttribute("aria-hidden", "false");
@@ -320,6 +345,19 @@
       return;
     }
 
+    const quantityButton = event.target.closest("[data-purchase-quantity]");
+    if (quantityButton && !quantityButton.disabled) {
+      const delta = Number(quantityButton.dataset.purchaseQuantity) || 0;
+      state.quantity = Math.max(1, Math.min(99, quantityValue() + delta));
+      const windowNode = ensureModal().querySelector("[data-purchase-window]");
+      windowNode?.classList.remove("is-quantity-updated");
+      void windowNode?.offsetWidth;
+      windowNode?.classList.add("is-quantity-updated");
+      renderPurchase();
+      window.setTimeout(() => windowNode?.classList.remove("is-quantity-updated"), 420);
+      return;
+    }
+
     if (event.target.closest("[data-currency-purchase-back]")) {
       const modal = ensureModal();
       if (typeof window.mkCloseModal === "function") window.mkCloseModal(modal, { restoreFocus: false });
@@ -329,11 +367,6 @@
         if (typeof window.mkOpenModal === "function") window.mkOpenModal(packs);
         else packs.classList.add("is-open");
       }
-      return;
-    }
-
-    if (event.target.closest("[data-purchase-billing-info]")) {
-      window.mkToast?.("Fakturační údaje", "Fakturační údaje se doplní až v zabezpečené platební bráně.");
       return;
     }
 
@@ -455,6 +488,7 @@
     state.busy = true;
     state.product = product;
     state.sourceCard = sourceCard || null;
+    state.quantity = 1;
     state.options = { billing: options.billing === "subscription" ? "subscription" : "onetime" };
     resetInteractiveState();
 

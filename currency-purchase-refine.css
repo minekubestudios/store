@@ -1,0 +1,412 @@
+/* Minekube Store — direct currency purchase refinement
+   Scope is intentionally limited to the new direct-purchase modal. */
+
+.currency-purchase-shell {
+  --purchase-accent: #ffc52d;
+  --purchase-accent-2: #ff9f16;
+  --purchase-accent-rgb: 255, 197, 45;
+  --purchase-ink: #171006;
+  --purchase-panel: #0d1016;
+  --purchase-panel-2: #12161e;
+  --purchase-panel-3: #171c25;
+  --purchase-border: rgba(255, 255, 255, .09);
+}
+
+.currency-purchase-shell[data-currency-type="mythic"] {
+  --purchase-accent: #31eaff;
+  --purchase-accent-2: #8c5cff;
+  --purchase-accent-rgb: 49, 234, 255;
+  --purchase-ink: #031419;
+}
+
+/* Entire checkout stays consistently dark. */
+.currency-purchase-window {
+  border-color: rgba(var(--purchase-accent-rgb), .22);
+  background:
+    radial-gradient(circle at 13% -5%, rgba(var(--purchase-accent-rgb), .08), transparent 28%),
+    linear-gradient(180deg, #10131a 0%, #080b10 100%);
+  box-shadow:
+    0 42px 130px rgba(0, 0, 0, .72),
+    0 0 55px rgba(var(--purchase-accent-rgb), .07),
+    inset 0 0 0 1px rgba(255,255,255,.018);
+}
+
+.currency-purchase-topbar {
+  min-height: 136px;
+  padding: 20px 28px;
+  align-items: center;
+  background:
+    linear-gradient(90deg, rgba(var(--purchase-accent-rgb), .055), transparent 35%),
+    #0e1117;
+}
+
+.currency-purchase-brand {
+  flex: 1 1 auto;
+  align-items: flex-start;
+}
+
+.currency-purchase-brand-content {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.currency-purchase-wallet {
+  margin-top: 2px;
+  color: var(--purchase-accent);
+  background: rgba(var(--purchase-accent-rgb), .09);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--purchase-accent-rgb), .22),
+    0 0 28px rgba(var(--purchase-accent-rgb), .11);
+}
+
+.currency-purchase-brand h2 b,
+.currency-purchase-shell[data-currency-type="mythic"] .currency-purchase-brand h2 b {
+  color: var(--purchase-accent);
+  text-shadow: 0 0 22px rgba(var(--purchase-accent-rgb), .14);
+}
+
+/* Purchase mode and quantity now live inside “Přímý nákup”. */
+.currency-purchase-inline-controls {
+  width: min(640px, 100%);
+  margin-top: 13px;
+  display: grid;
+  grid-template-columns: minmax(270px, 1fr) minmax(190px, .62fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.currency-purchase-billing {
+  margin: 0;
+  padding: 4px;
+  border-color: rgba(var(--purchase-accent-rgb), .17);
+  border-radius: 14px;
+  background: #090c11;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.018);
+}
+
+.currency-purchase-billing button {
+  position: relative;
+  min-height: 38px;
+  border-radius: 10px;
+  overflow: hidden;
+  color: #7f8997;
+  transition: color .2s ease, background .2s ease, box-shadow .25s ease, transform .18s ease;
+}
+
+.currency-purchase-billing button:hover {
+  color: #e7edf5;
+  background: rgba(255,255,255,.035);
+  transform: translateY(-1px);
+}
+
+.currency-purchase-billing button.is-selected {
+  color: var(--purchase-accent);
+  background: linear-gradient(135deg, rgba(var(--purchase-accent-rgb), .14), rgba(var(--purchase-accent-rgb), .055));
+  box-shadow: inset 0 0 0 1px rgba(var(--purchase-accent-rgb), .28), 0 8px 18px rgba(0,0,0,.25);
+  animation: mkPurchaseSelect .34s cubic-bezier(.2,.82,.18,1);
+}
+
+.currency-purchase-quantity {
+  min-width: 0;
+  padding: 5px 6px 5px 13px;
+  border: 1px solid rgba(var(--purchase-accent-rgb), .17);
+  border-radius: 14px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+  color: #8d98a8;
+  background: #090c11;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.018);
+}
+
+.currency-purchase-quantity > span {
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.currency-purchase-quantity > div {
+  height: 34px;
+  padding: 3px;
+  border-radius: 11px;
+  display: grid;
+  grid-template-columns: 30px 34px 30px;
+  align-items: center;
+  color: #f7f9fd;
+  background: #11151c;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.055);
+}
+
+.currency-purchase-quantity b {
+  text-align: center;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.currency-purchase-quantity button {
+  width: 30px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: var(--purchase-accent);
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  transition: transform .16s ease, color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.currency-purchase-quantity button:hover:not(:disabled) {
+  color: var(--purchase-ink);
+  background: var(--purchase-accent);
+  box-shadow: 0 0 18px rgba(var(--purchase-accent-rgb), .24);
+  transform: scale(1.08);
+}
+
+.currency-purchase-quantity button:active:not(:disabled) { transform: scale(.9); }
+.currency-purchase-quantity button:disabled { opacity: .28; cursor: default; }
+
+.currency-purchase-top-actions { flex: 0 0 auto; align-self: flex-start; }
+.currency-purchase-currency,
+.currency-purchase-close {
+  border-color: rgba(var(--purchase-accent-rgb), .17);
+  color: #dce4ef;
+  background: #0a0d12;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+}
+.currency-purchase-currency:hover,
+.currency-purchase-close:hover {
+  border-color: rgba(var(--purchase-accent-rgb), .48);
+  color: var(--purchase-accent);
+  background: #121721;
+  box-shadow: 0 0 22px rgba(var(--purchase-accent-rgb), .11);
+}
+.currency-purchase-close:hover { transform: rotate(5deg) scale(1.05); }
+
+.currency-purchase-scroll { background: rgba(3,5,9,.18); }
+.currency-purchase-section > h3,
+.currency-purchase-section-head h3 { color: #939dac; }
+.currency-purchase-section h3 span { color: var(--purchase-accent); }
+.currency-change-pack:hover { color: var(--purchase-accent); }
+
+/* Payment methods: dark cards and currency-specific highlight. */
+.currency-payment-method {
+  border-color: var(--purchase-border);
+  color: #f1f4f9;
+  background: linear-gradient(145deg, #171b22, #101319);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 12px 30px rgba(0,0,0,.18);
+}
+.currency-payment-method:hover {
+  background: linear-gradient(145deg, #1d222b, #13171e);
+  border-color: rgba(var(--purchase-accent-rgb), .38);
+  box-shadow: 0 16px 34px rgba(0,0,0,.28), 0 0 22px rgba(var(--purchase-accent-rgb), .07);
+}
+.currency-payment-method.is-selected {
+  border-color: rgba(var(--purchase-accent-rgb), .72);
+  background: linear-gradient(145deg, rgba(var(--purchase-accent-rgb), .12), #12161d 58%);
+  box-shadow: 0 16px 38px rgba(0,0,0,.3), inset 0 0 0 1px rgba(var(--purchase-accent-rgb), .13), 0 0 24px rgba(var(--purchase-accent-rgb), .08);
+  animation: mkPurchaseSelect .34s cubic-bezier(.2,.82,.18,1);
+}
+.currency-payment-logo.is-card,
+.currency-payment-logo.is-paypal {
+  color: var(--purchase-accent);
+  background: #090c11;
+  box-shadow: inset 0 0 0 1px rgba(var(--purchase-accent-rgb), .18);
+}
+.currency-payment-method small { color: #8f99a7; }
+.currency-payment-check { border-color: rgba(255,255,255,.16); background: #090c11; }
+.currency-payment-method.is-selected .currency-payment-check {
+  color: var(--purchase-ink);
+  border-color: var(--purchase-accent);
+  background: var(--purchase-accent);
+  box-shadow: 0 0 18px rgba(var(--purchase-accent-rgb), .34);
+}
+
+.currency-selected-pack {
+  border-color: rgba(var(--purchase-accent-rgb), .62);
+  box-shadow: 0 22px 55px rgba(0,0,0,.34), 0 0 34px rgba(var(--purchase-accent-rgb), .07);
+}
+.currency-selected-copy > small,
+.currency-selected-pack.is-mythic .currency-selected-copy > small { color: var(--purchase-accent); }
+.currency-selected-pack.is-mythic { border-color: rgba(var(--purchase-accent-rgb), .65); }
+.currency-selected-bonus,
+.currency-selected-pack.is-mythic .currency-selected-bonus {
+  color: var(--purchase-ink);
+  background: var(--purchase-accent);
+}
+
+.currency-order-summary {
+  border-color: rgba(var(--purchase-accent-rgb), .11);
+  background: linear-gradient(160deg, #151920, #0d1015);
+}
+.currency-order-label { color: var(--purchase-accent); }
+.currency-order-summary dd.is-warning { color: #ffb83e; }
+.currency-order-security {
+  color: #929dac;
+  background: rgba(var(--purchase-accent-rgb), .055);
+  box-shadow: inset 0 0 0 1px rgba(var(--purchase-accent-rgb), .08);
+}
+.currency-order-security > svg { stroke: var(--purchase-accent); }
+
+/* Billing callout was intentionally removed. */
+.currency-billing-alert { display: none !important; }
+.currency-purchase-footer {
+  padding: 18px 28px 21px;
+  background: linear-gradient(180deg, #0e1116, #090c10);
+  box-shadow: 0 -16px 38px rgba(0,0,0,.28);
+}
+.currency-purchase-footer-row { margin-top: 0; }
+
+.currency-purchase-consents label > span { background: #090c11; }
+.currency-purchase-consents input:checked + span {
+  color: var(--purchase-ink);
+  border-color: var(--purchase-accent);
+  background: var(--purchase-accent);
+  box-shadow: 0 0 0 2px rgba(var(--purchase-accent-rgb), .11), 0 0 18px rgba(var(--purchase-accent-rgb), .15);
+}
+
+.currency-purchase-submit {
+  color: var(--purchase-ink);
+  background: linear-gradient(135deg, var(--purchase-accent), var(--purchase-accent-2));
+  box-shadow: 0 14px 34px rgba(var(--purchase-accent-rgb), .16), inset 0 1px 0 rgba(255,255,255,.26);
+}
+.currency-purchase-submit.is-ready:hover {
+  box-shadow: 0 19px 46px rgba(var(--purchase-accent-rgb), .25), 0 0 28px rgba(var(--purchase-accent-rgb), .14), inset 0 1px 0 rgba(255,255,255,.28);
+}
+.currency-purchase-submit-icon { background: rgba(0,0,0,.13); }
+
+/* Confirmation and validation are dark too. */
+.currency-purchase-validation {
+  border: 1px solid rgba(var(--purchase-accent-rgb), .22);
+  color: #e8eef7;
+  background: #11161e;
+  box-shadow: 0 18px 52px rgba(0,0,0,.5), 0 0 26px rgba(var(--purchase-accent-rgb), .08);
+}
+.currency-purchase-validation svg { stroke: var(--purchase-accent); }
+
+.currency-confirm-card {
+  border-color: rgba(var(--purchase-accent-rgb), .24);
+  color: #edf3fa;
+  background: linear-gradient(160deg, #151a22, #0a0d12);
+  box-shadow: 0 35px 100px rgba(0,0,0,.62), 0 0 34px rgba(var(--purchase-accent-rgb), .07);
+}
+.currency-confirm-card > header > span {
+  color: var(--purchase-accent);
+  background: rgba(var(--purchase-accent-rgb), .08);
+  box-shadow: inset 0 0 0 1px rgba(var(--purchase-accent-rgb), .13);
+}
+.currency-confirm-card header small { color: #7d8899; }
+.currency-confirm-card header h3 { color: #f4f7fb; }
+.currency-confirm-card > p { color: #9ba5b4; }
+.currency-confirm-card > p strong { color: var(--purchase-accent); }
+.currency-quick-purchase { color: #dce4ef; background: #0d1117; box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); }
+.currency-quick-purchase small { color: #7f8a9a; }
+.currency-quick-purchase i { background: #2a303a; }
+.currency-quick-purchase i::after { background: #8792a2; }
+.currency-quick-purchase input:checked + i { background: var(--purchase-accent); }
+.currency-quick-purchase input:checked + i::after { background: var(--purchase-ink); }
+.currency-confirm-card > footer { border-top-color: rgba(255,255,255,.07); }
+.currency-confirm-card > footer button:first-child { border-color: rgba(255,255,255,.09); color: #a2acba; background: #0b0e13; }
+.currency-confirm-card > footer button:last-child { color: var(--purchase-ink); background: linear-gradient(135deg, var(--purchase-accent), var(--purchase-accent-2)); box-shadow: 0 12px 28px rgba(var(--purchase-accent-rgb), .17); }
+
+/* Every interactive button gets a deliberate micro-animation. */
+.currency-purchase-window button,
+.currency-confirm-card button {
+  -webkit-tap-highlight-color: transparent;
+}
+.currency-purchase-window button:not(:disabled):active,
+.currency-confirm-card button:not(:disabled):active { transform: scale(.965); }
+.currency-purchase-currency,
+.currency-purchase-close,
+.currency-payment-method,
+.currency-change-pack,
+.currency-purchase-submit,
+.currency-confirm-card button {
+  position: relative;
+  overflow: hidden;
+}
+.currency-purchase-currency::after,
+.currency-purchase-close::after,
+.currency-payment-method::after,
+.currency-purchase-submit::after,
+.currency-confirm-card button::after {
+  content: "";
+  position: absolute;
+  top: -80%;
+  left: -42%;
+  width: 34%;
+  height: 260%;
+  pointer-events: none;
+  opacity: 0;
+  transform: rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
+}
+.currency-purchase-currency:hover::after,
+.currency-purchase-close:hover::after,
+.currency-payment-method:hover::after,
+.currency-purchase-submit:hover::after,
+.currency-confirm-card button:hover::after {
+  opacity: 1;
+  animation: mkPurchaseSheen .58s ease forwards;
+}
+
+.currency-purchase-window.is-quantity-updated .currency-selected-pack,
+.currency-purchase-window.is-quantity-updated .currency-order-summary .is-total dd,
+.currency-purchase-window.is-quantity-updated [data-purchase-total] {
+  animation: mkQuantityUpdate .38s cubic-bezier(.2,.82,.18,1);
+}
+
+@keyframes mkPurchaseSelect {
+  0% { transform: scale(.97); filter: brightness(.9); }
+  65% { transform: scale(1.015); filter: brightness(1.13); }
+  100% { transform: scale(1); filter: none; }
+}
+@keyframes mkPurchaseSheen {
+  from { transform: translateX(0) rotate(18deg); }
+  to { transform: translateX(520%) rotate(18deg); }
+}
+@keyframes mkQuantityUpdate {
+  0% { transform: scale(.975); filter: brightness(.9); }
+  55% { transform: scale(1.025); filter: brightness(1.22) saturate(1.1); }
+  100% { transform: scale(1); filter: none; }
+}
+
+@media (max-width: 1020px) {
+  .currency-purchase-topbar { align-items: flex-start; }
+  .currency-purchase-inline-controls { grid-template-columns: minmax(250px, 1fr) minmax(180px, .62fr); }
+  .currency-purchase-top-actions { flex-direction: column-reverse; align-items: flex-end; }
+  .currency-purchase-currency { min-width: 112px; height: 42px; }
+}
+
+@media (max-width: 760px) {
+  .currency-purchase-topbar { min-height: 0; padding: 16px; align-items: flex-start; gap: 10px; }
+  .currency-purchase-brand { gap: 10px; }
+  .currency-purchase-inline-controls { grid-template-columns: 1fr; gap: 7px; margin-top: 10px; }
+  .currency-purchase-quantity { min-height: 44px; }
+  .currency-purchase-top-actions { gap: 7px; }
+  .currency-purchase-currency { display: flex; min-width: 76px; height: 39px; padding: 0 10px; border-radius: 11px; font-size: 10px; }
+  .currency-purchase-close { width: 39px; height: 39px; border-radius: 11px; }
+  .currency-purchase-brand h2 { font-size: clamp(20px, 6.5vw, 27px); }
+  .currency-purchase-brand small { display: block; font-size: 7px; }
+}
+
+@media (max-width: 470px) {
+  .currency-purchase-wallet { display: none; }
+  .currency-purchase-top-actions { position: absolute; top: 12px; right: 12px; flex-direction: row; }
+  .currency-purchase-brand-content { padding-right: 95px; }
+  .currency-purchase-currency { min-width: 62px; }
+  .currency-purchase-currency svg { display: none; }
+  .currency-purchase-inline-controls { width: calc(100vw - 44px); }
+  .currency-purchase-quantity { grid-template-columns: minmax(0,1fr) auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .currency-purchase-billing button.is-selected,
+  .currency-payment-method.is-selected,
+  .currency-purchase-window.is-quantity-updated .currency-selected-pack,
+  .currency-purchase-window.is-quantity-updated .currency-order-summary .is-total dd,
+  .currency-purchase-window.is-quantity-updated [data-purchase-total] { animation: none !important; }
+}
