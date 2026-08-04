@@ -580,3 +580,29 @@ body.currency-transition-active {
 .ow-currency-hub.mk-main-currency-button .mk-hub-plus:focus-visible svg {
   transform: translate(-50%, -50%) rotate(90deg) scale(1.08) !important;
 }
+
+/* ========================================================================== 
+   STEP 13 — jemně zesílené neonové linky tlačítka měn.
+   Pouze tloušťka rámů; rozměry, zarovnání, animace a funkce zůstávají stejné.
+   ========================================================================== */
+.ow-currency-hub.mk-main-currency-button::before {
+  inset: -4px !important;
+  padding: 4px !important;
+  border-radius: 21px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus {
+  border-width: 1.5px !important;
+}
+
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus::before,
+.ow-currency-hub.mk-main-currency-button .mk-hub-plus::after {
+  border-width: 1.5px !important;
+}
+
+.mk-main-currency-corners i:nth-child(1),
+.mk-main-currency-corners i:nth-child(2),
+.mk-main-currency-corners i:nth-child(3),
+.mk-main-currency-corners i:nth-child(4) {
+  border-width: 2.5px !important;
+}
