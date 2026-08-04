@@ -1053,7 +1053,7 @@ function renderCurrencyPacks(type) {
   kicker.textContent = premium ? "PRÉMIOVÁ MĚNA" : "MYTHIC MĚNA";
   description.textContent = subscribed
     ? `Balíček ${currencyName} se ti připíše každý měsíc automaticky. Zrušíš kdykoli.`
-    : `Vyber přesný balíček ${currencyName}. Kliknutím jej přidáš do košíku.`;
+    : `Vyber přesný balíček ${currencyName}. Kliknutím otevřeš samostatnou objednávku.`;
   renderCurrencyBillingTabs();
   balance.innerHTML = premium
     ? '<i class="ow-currency-coin">M</i><strong>503</strong><small>PREMIUM COINS</small>'
@@ -1062,7 +1062,7 @@ function renderCurrencyPacks(type) {
     footerCopy.textContent = subscribed
       ? "Předplatné se obnovuje každých 30 dní, zrušit ho můžeš ve svém profilu."
       : premium
-        ? "Po výběru se balíček automaticky přidá do košíku a košík se otevře."
+        ? "Po výběru se balíček plynule přesune do samostatné objednávky."
         : "80 Mythic Prisms lze získat dokončením Premium Battle Passu.";
   }
   currencyPacksGrid.innerHTML = items.map((product, index) => createCurrencyPackCard(product, index, type)).join("");
@@ -1954,7 +1954,18 @@ function bindEvents() {
 
     const currencyPack = event.target.closest("[data-currency-pack]");
     if (currencyPack) {
-      // Zapamatujeme si, jestli šlo o jednorázový nákup nebo předplatné.
+      // Nový přímý nákupní tok pro herní měnu. Původní košík, API a PayPal
+      // zůstávají nedotčené a mohou být později bezpečně znovu napojené.
+      const product = getProduct(currencyPack.dataset.currencyPack);
+      if (typeof window.mkOpenCurrencyPurchase === "function" && product) {
+        window.mkOpenCurrencyPurchase(product, currencyPack, {
+          billing: state.currencyBilling,
+          currencyType: state.activeCurrencyType
+        });
+        return;
+      }
+
+      // Bezpečný fallback pro případ, že se nový designový modul nenačte.
       state.billing.set(currencyPack.dataset.currencyPack, state.currencyBilling);
       safeStorageSet("minekube-store-billing", [...state.billing]);
       addToCart(currencyPack.dataset.currencyPack);

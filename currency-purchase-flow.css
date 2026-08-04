@@ -1,0 +1,490 @@
+/* ==========================================================================
+   Minekube Store — přímý nákup herní měny bez košíku
+   Vizuální vrstva. Původní API, PayPal a webhooky zůstávají nedotčené.
+   ========================================================================== */
+
+/* Košík je z viditelného Store odstraněný. Původní technické prvky zůstávají
+   skryté jako bezpečný fallback, aby se při designových úpravách nerozbila
+   existující checkout/API logika. */
+.currency-direct-purchase-enabled #themeToggle,
+.currency-direct-purchase-enabled #cartButton,
+.currency-direct-purchase-enabled #cartDrawer,
+.currency-direct-purchase-enabled .store-cart-button,
+.currency-direct-purchase-enabled .header-cart-toggle,
+.currency-direct-purchase-enabled [data-add-product],
+.currency-direct-purchase-enabled .add-to-cart-button {
+  display: none !important;
+}
+
+.currency-direct-purchase-enabled .store-header-actions {
+  gap: 12px;
+}
+
+.currency-purchase-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 6200 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  background: #050711;
+}
+
+.currency-purchase-shell.is-open {
+  display: grid !important;
+}
+
+.currency-purchase-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(30, 228, 255, .15), transparent 31rem),
+    radial-gradient(circle at 82% 18%, rgba(255, 173, 32, .13), transparent 30rem),
+    radial-gradient(circle at 60% 80%, rgba(212, 48, 255, .12), transparent 34rem),
+    linear-gradient(145deg, #061024 0%, #070918 44%, #10091c 100%);
+}
+
+.currency-purchase-shell[data-currency-type="mythic"] .currency-purchase-backdrop {
+  background:
+    radial-gradient(circle at 16% 20%, rgba(28, 238, 255, .18), transparent 31rem),
+    radial-gradient(circle at 83% 23%, rgba(139, 62, 255, .22), transparent 33rem),
+    radial-gradient(circle at 56% 86%, rgba(255, 64, 177, .13), transparent 34rem),
+    linear-gradient(145deg, #04101e 0%, #080817 42%, #130924 100%);
+}
+
+.currency-purchase-backdrop::before,
+.currency-purchase-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+}
+
+.currency-purchase-backdrop::before {
+  opacity: .28;
+  background-image:
+    linear-gradient(rgba(60, 112, 176, .12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(60, 112, 176, .1) 1px, transparent 1px);
+  background-size: 76px 76px;
+  transform: perspective(720px) rotateX(63deg) scale(1.45) translateY(24%);
+  transform-origin: bottom;
+}
+
+.currency-purchase-backdrop::after {
+  background:
+    radial-gradient(circle at 20% 38%, rgba(255,255,255,.65) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 47% 18%, rgba(43,240,255,.8) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 73% 34%, rgba(255,178,40,.78) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 88% 72%, rgba(255,77,180,.75) 0 1px, transparent 1.8px);
+  background-size: 118px 118px, 146px 146px, 174px 174px, 206px 206px;
+  animation: currencyPurchaseStars 16s linear infinite;
+}
+
+.currency-purchase-backdrop > i {
+  position: absolute;
+  width: 42vw;
+  height: 42vw;
+  border: 1px solid rgba(90, 135, 205, .08);
+  transform: rotate(45deg);
+}
+.currency-purchase-backdrop > i:nth-child(1) { left: -25vw; top: -26vw; }
+.currency-purchase-backdrop > i:nth-child(2) { right: -25vw; top: -28vw; }
+.currency-purchase-backdrop > i:nth-child(3) { left: 13vw; bottom: -35vw; }
+.currency-purchase-backdrop > i:nth-child(4) { right: 9vw; bottom: -37vw; }
+.currency-purchase-backdrop > span {
+  position: absolute;
+  width: 42vw;
+  height: 5px;
+  border-radius: 999px;
+  filter: blur(1px);
+  opacity: .28;
+  transform: rotate(-18deg);
+  background: linear-gradient(90deg, transparent, #27f4ff, #a151ff, transparent);
+  box-shadow: 0 0 26px rgba(39,244,255,.5);
+  animation: currencyPurchaseComet 6s ease-in-out infinite;
+}
+.currency-purchase-backdrop > span:nth-of-type(1) { left: -12%; top: 24%; }
+.currency-purchase-backdrop > span:nth-of-type(2) { right: -15%; bottom: 22%; animation-delay: -2.8s; background: linear-gradient(90deg, transparent, #ffad20, #ff4bb0, transparent); }
+
+.currency-purchase-stage {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 100dvh;
+  padding: 40px clamp(22px, 5vw, 88px) 42px;
+  display: flex;
+  flex-direction: column;
+}
+
+.currency-purchase-close {
+  position: absolute;
+  top: 24px;
+  right: 30px;
+  z-index: 4;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: #e7efff;
+  background: rgba(7, 12, 28, .72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 12px 30px rgba(0,0,0,.28);
+  cursor: pointer;
+  transition: transform .22s ease, border-color .22s ease, color .22s ease, background .22s ease;
+}
+.currency-purchase-close:hover { transform: rotate(4deg) scale(1.05); border-color: rgba(43,240,255,.5); color: #2bf0ff; background: rgba(12,22,48,.9); }
+.currency-purchase-close svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+.currency-purchase-header {
+  width: min(1380px, 100%);
+  margin: 0 auto 24px;
+  text-align: center;
+}
+.currency-purchase-kicker,
+.currency-order-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #2af1ff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.currency-purchase-kicker i,
+.currency-order-label i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 15px currentColor;
+}
+.currency-purchase-header h2 {
+  margin: 8px 0 5px;
+  color: #f8fbff;
+  font-size: clamp(36px, 4vw, 64px);
+  line-height: .98;
+  letter-spacing: -.045em;
+  text-transform: uppercase;
+}
+.currency-purchase-header h2 span { color: #ffb225; }
+.currency-purchase-shell[data-currency-type="mythic"] .currency-purchase-header h2 span { color: #39efff; }
+.currency-purchase-header > p { margin: 0 auto; max-width: 720px; color: #9eabc4; font-size: 13px; line-height: 1.55; }
+
+.currency-purchase-progress {
+  width: min(480px, 100%);
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+.currency-purchase-progress > i { height: 2px; background: linear-gradient(90deg, rgba(48,240,255,.55), rgba(255,177,35,.22)); }
+.currency-purchase-progress span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #6e7b95;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  transition: color .25s ease;
+}
+.currency-purchase-progress span b {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: #7b879f;
+  background: rgba(8,15,32,.78);
+  transition: inherit;
+}
+.currency-purchase-progress span.is-active { color: #f8fbff; }
+.currency-purchase-progress span.is-active b { color: #05101e; border-color: transparent; background: linear-gradient(135deg,#2af1ff,#6bbcff); box-shadow: 0 0 20px rgba(42,241,255,.28); }
+.currency-purchase-progress span.is-complete b { color: #08111f; background: #ffb225; border-color: transparent; }
+
+.currency-purchase-content {
+  width: min(1420px, 100%);
+  margin: auto;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .16s ease, transform .16s ease;
+}
+.currency-purchase-content.is-changing { opacity: 0; transform: translateY(12px); }
+.currency-purchase-content.is-visible { opacity: 1; transform: none; }
+
+.currency-purchase-summary,
+.currency-purchase-payment {
+  display: grid;
+  grid-template-columns: minmax(340px, .88fr) minmax(430px, 1.12fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: center;
+}
+
+.currency-purchase-product-slot {
+  min-height: 520px;
+  display: grid;
+  place-items: center;
+  perspective: 1100px;
+}
+
+.currency-selected-pack {
+  width: min(430px, 100%);
+  min-height: 520px;
+  border: 3px solid rgba(43, 240, 255, .68);
+  border-radius: 24px;
+  overflow: hidden;
+  color: #11131b;
+  background: #f7fbff;
+  box-shadow: 0 32px 80px rgba(0,0,0,.42), 0 0 48px rgba(43,240,255,.12);
+  transform: translateY(18px) rotateX(4deg) scale(.96);
+  opacity: 0;
+  transition: transform .52s cubic-bezier(.18,.82,.2,1), opacity .35s ease, box-shadow .35s ease;
+}
+.currency-selected-pack.is-mythic { border-color: rgba(49,240,255,.78); background: #060718; color: #eef7ff; box-shadow: 0 32px 85px rgba(0,0,0,.48), 0 0 56px rgba(107,69,255,.18); }
+.currency-selected-pack.is-arrived,
+.currency-selected-pack:not(.is-awaiting-flight) { transform: none; opacity: 1; }
+.currency-selected-pack.is-awaiting-flight { opacity: 0; }
+
+.currency-selected-visual {
+  position: relative;
+  min-height: 345px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 72%, rgba(255,204,88,.5), transparent 42%),
+    linear-gradient(180deg,#e9f8ff 0%,#f7fbff 58%,#f4ead6 100%);
+}
+.currency-selected-pack.is-mythic .currency-selected-visual {
+  background:
+    radial-gradient(circle at 50% 72%, rgba(124,50,255,.82), transparent 42%),
+    radial-gradient(circle at 50% 30%, rgba(39,240,255,.18), transparent 34%),
+    linear-gradient(180deg,#020414,#080b24 62%,#252b54 100%);
+}
+.currency-selected-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: .38;
+  background-image:
+    linear-gradient(135deg, rgba(255,255,255,.68) 0 7%, transparent 7% 48%, rgba(255,255,255,.3) 48% 55%, transparent 55%),
+    linear-gradient(90deg, transparent 0 14%, rgba(134,182,204,.12) 14% 15%, transparent 15% 85%, rgba(134,182,204,.12) 85% 86%, transparent 86%);
+  background-size: 118px 118px, 100% 100%;
+}
+.currency-selected-pack.is-mythic .currency-selected-pattern {
+  opacity: .22;
+  background-image:
+    linear-gradient(60deg, transparent 44%, rgba(119,78,255,.5) 45% 53%, transparent 54%),
+    linear-gradient(-60deg, transparent 44%, rgba(39,242,255,.3) 45% 53%, transparent 54%);
+  background-size: 84px 84px;
+}
+.currency-selected-glow {
+  position: absolute;
+  left: 12%; right: 12%; bottom: -20%; height: 78%;
+  border-radius: 50%;
+  filter: blur(20px);
+  background: radial-gradient(circle, rgba(255,190,54,.65), rgba(255,222,145,.22) 40%, transparent 70%);
+}
+.currency-selected-pack.is-mythic .currency-selected-glow { background: radial-gradient(circle, rgba(113,48,255,.9), rgba(39,240,255,.24) 40%, transparent 72%); }
+.currency-selected-emblem {
+  position: relative;
+  z-index: 2;
+  width: 150px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 20px 24px rgba(0,0,0,.3));
+  animation: currencySelectedFloat 3.2s ease-in-out infinite;
+}
+.currency-selected-emblem .ow-currency-gem,
+.currency-selected-emblem .ow-currency-coin { width: 132px; height: 132px; }
+.currency-selected-amount {
+  position: absolute;
+  left: 24px;
+  bottom: 20px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  color: #12131b;
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 10px 30px rgba(0,0,0,.14);
+}
+.currency-selected-pack.is-mythic .currency-selected-amount { color: #ecfbff; background: rgba(3,7,24,.78); border: 1px solid rgba(44,239,255,.24); }
+.currency-selected-amount i { width: 28px; height: 28px; }
+.currency-selected-amount strong { font-size: 26px; font-style: italic; }
+.currency-selected-bonus {
+  position: absolute;
+  right: 0;
+  top: 24px;
+  z-index: 3;
+  padding: 8px 16px;
+  color: #fff;
+  background: linear-gradient(90deg,#ff7720,#ffad20);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.currency-selected-pack.is-mythic .currency-selected-bonus { background: linear-gradient(90deg,#6c49ff,#24bfff); }
+.currency-selected-copy { padding: 24px 26px 28px; }
+.currency-selected-copy > small { color: #ff7d1a; font-size: 9px; font-weight: 950; letter-spacing: .14em; }
+.currency-selected-pack.is-mythic .currency-selected-copy > small { color: #36efff; }
+.currency-selected-copy h3 { margin: 7px 0 8px; font-size: 31px; line-height: 1; letter-spacing: -.035em; text-transform: uppercase; }
+.currency-selected-copy p { min-height: 42px; margin: 0 0 14px; color: #596073; font-size: 12px; line-height: 1.5; }
+.currency-selected-pack.is-mythic .currency-selected-copy p { color: #9cabc8; }
+.currency-selected-copy > strong { font-size: 24px; }
+
+.currency-purchase-order-panel,
+.currency-payment-panel {
+  padding: clamp(28px, 3.4vw, 50px);
+  border: 1px solid rgba(104, 135, 194, .24);
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(9,18,39,.92), rgba(8,10,25,.94));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055), 0 28px 70px rgba(0,0,0,.36);
+  backdrop-filter: blur(18px);
+}
+.currency-purchase-order-panel h3,
+.currency-payment-panel h3 { margin: 12px 0 8px; color: #f8fbff; font-size: clamp(30px,3vw,48px); line-height: 1.02; letter-spacing: -.04em; text-transform: uppercase; }
+.currency-purchase-order-panel > p,
+.currency-payment-panel > p { margin: 0 0 24px; color: #98a6c0; font-size: 13px; line-height: 1.55; }
+.currency-purchase-order-panel dl { margin: 0 0 24px; display: grid; gap: 1px; overflow: hidden; border: 1px solid rgba(93,123,181,.2); border-radius: 17px; background: rgba(255,255,255,.035); }
+.currency-purchase-order-panel dl > div { min-height: 57px; padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid rgba(93,123,181,.15); }
+.currency-purchase-order-panel dl > div:last-child { border-bottom: 0; }
+.currency-purchase-order-panel dt { color: #7887a4; font-size: 10px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.currency-purchase-order-panel dd { margin: 0; display: inline-flex; align-items: center; gap: 8px; color: #edf4ff; font-size: 13px; font-weight: 850; }
+.currency-purchase-order-panel dd i { width: 24px; height: 24px; }
+.currency-purchase-order-panel dl > div.is-total { min-height: 70px; background: linear-gradient(90deg, rgba(42,240,255,.06), rgba(255,176,35,.06)); }
+.currency-purchase-order-panel dl > div.is-total dd { color: #ffb225; font-size: 23px; }
+.currency-purchase-shell[data-currency-type="mythic"] .currency-purchase-order-panel dl > div.is-total dd { color: #35efff; }
+
+.currency-purchase-primary {
+  position: relative;
+  width: 100%;
+  min-height: 68px;
+  padding: 10px 18px 10px 22px;
+  border: 0;
+  border-radius: 17px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  color: #07101c;
+  background: linear-gradient(110deg,#ff8a18,#ffc438 56%,#ffdb6d);
+  box-shadow: 0 17px 36px rgba(255,145,22,.2), inset 0 1px 0 rgba(255,255,255,.55);
+  cursor: pointer;
+  transition: transform .22s ease, filter .22s ease, box-shadow .22s ease;
+}
+.currency-purchase-shell[data-currency-type="mythic"] .currency-purchase-primary { background: linear-gradient(110deg,#26efff,#6a7aff 54%,#da4dff); box-shadow: 0 17px 38px rgba(40,236,255,.18), inset 0 1px 0 rgba(255,255,255,.5); }
+.currency-purchase-primary::before { content:""; position:absolute; inset:0; transform:translateX(-115%); background:linear-gradient(110deg,transparent 18%,rgba(255,255,255,.68) 46%,transparent 72%); transition:transform .55s cubic-bezier(.2,.8,.2,1); }
+.currency-purchase-primary:hover { transform: translateY(-3px); filter: brightness(1.07) saturate(1.08); box-shadow: 0 22px 46px rgba(255,145,22,.27), inset 0 1px 0 rgba(255,255,255,.62); }
+.currency-purchase-primary:hover::before { transform: translateX(115%); }
+.currency-purchase-primary > span { position:relative; z-index:1; display:grid; text-align:left; }
+.currency-purchase-primary small { font-size:8px; font-weight:950; letter-spacing:.13em; }
+.currency-purchase-primary strong { margin-top:3px; font-size:15px; text-transform:uppercase; }
+.currency-purchase-primary svg { position:relative; z-index:1; width:25px; height:25px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; transition:transform .22s ease; }
+.currency-purchase-primary:hover svg { transform:translateX(4px); }
+.currency-purchase-primary.is-confirmed { animation: currencyPurchaseConfirm .72s ease; }
+.currency-purchase-note { display:block; margin-top:12px; color:#6f7d98; font-size:9px; line-height:1.45; text-align:center; }
+
+.currency-purchase-payment { grid-template-columns: minmax(300px,.72fr) minmax(500px,1.28fr); }
+.currency-payment-summary { display:grid; gap:18px; }
+.currency-payment-summary > button { justify-self:start; border:0; display:inline-flex; align-items:center; gap:8px; color:#9eabc2; background:transparent; cursor:pointer; font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; transition:color .2s ease, transform .2s ease; }
+.currency-payment-summary > button:hover { color:#2cf0ff; transform:translateX(-3px); }
+.currency-payment-summary > button svg { width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
+.currency-payment-mini-card { min-height:180px; padding:24px; border:2px solid rgba(255,174,34,.48); border-radius:24px; display:grid; grid-template-columns:78px 1fr; align-items:center; gap:18px; color:#f7fbff; background:linear-gradient(145deg,rgba(44,24,12,.86),rgba(13,12,25,.94)); box-shadow:0 24px 56px rgba(0,0,0,.35),0 0 36px rgba(255,177,35,.08); }
+.currency-payment-mini-card.is-mythic { border-color:rgba(44,240,255,.55); background:linear-gradient(145deg,rgba(7,35,55,.88),rgba(15,8,38,.95)); box-shadow:0 24px 56px rgba(0,0,0,.38),0 0 38px rgba(44,240,255,.1); }
+.currency-payment-mini-card > span { width:76px;height:76px;display:grid;place-items:center; }
+.currency-payment-mini-card > span i { width:68px;height:68px; }
+.currency-payment-mini-card > div { min-width:0;display:grid; }
+.currency-payment-mini-card small { color:#ffb225;font-size:9px;font-weight:950;letter-spacing:.12em; }
+.currency-payment-mini-card.is-mythic small { color:#31efff; }
+.currency-payment-mini-card strong { margin-top:4px;font-size:38px;line-height:1; }
+.currency-payment-mini-card > b { grid-column:1/3;padding-top:16px;border-top:1px solid rgba(255,255,255,.09);color:#f8fbff;font-size:25px; }
+.currency-payment-security { padding:18px;border:1px solid rgba(83,116,175,.2);border-radius:18px;display:grid;grid-template-columns:38px 1fr;gap:12px;color:#a5b1c8;background:rgba(8,15,32,.72); }
+.currency-payment-security > i { width:34px;height:38px;position:relative;border:2px solid #2befff;border-radius:12px 12px 15px 15px;clip-path:polygon(50% 0,100% 18%,100% 64%,50% 100%,0 64%,0 18%);box-shadow:0 0 18px rgba(43,239,255,.16); }
+.currency-payment-security > div { display:grid;align-content:center; }
+.currency-payment-security strong { color:#edf5ff;font-size:11px; }
+.currency-payment-security span { margin-top:3px;font-size:9px;line-height:1.45; }
+
+.currency-payment-methods { display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px; }
+.currency-payment-method { position:relative;min-height:178px;padding:22px;border:1px solid rgba(89,120,180,.22);border-radius:20px;display:grid;grid-template-columns:58px 1fr;gap:14px;text-align:left;color:#eef5ff;background:linear-gradient(145deg,rgba(13,23,47,.9),rgba(8,12,29,.95));cursor:pointer;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease; }
+.currency-payment-method:hover { transform:translateY(-4px);border-color:rgba(48,239,255,.42);box-shadow:0 20px 45px rgba(0,0,0,.28),0 0 28px rgba(48,239,255,.08); }
+.currency-payment-method.is-selected { border-color:#2ef0ff;background:linear-gradient(145deg,rgba(18,43,68,.95),rgba(12,13,35,.98));box-shadow:0 20px 48px rgba(0,0,0,.32),0 0 34px rgba(46,240,255,.15),inset 0 0 0 1px rgba(46,240,255,.18); }
+.currency-payment-method-icon { width:56px;height:56px;border-radius:16px;display:grid;place-items:center;color:#06101e;background:linear-gradient(135deg,#47efff,#8fc4ff);box-shadow:0 10px 25px rgba(49,236,255,.15); }
+.currency-payment-method-icon.is-paypal { color:#fff;background:linear-gradient(135deg,#0d61ca,#1cb5ea); }
+.currency-payment-method-icon svg { width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
+.currency-payment-method-icon.is-paypal svg { fill:currentColor;stroke:none; }
+.currency-payment-method > span:nth-child(2) { display:grid;align-content:start; }
+.currency-payment-method small { color:#8390a8;font-size:8px;font-weight:950;letter-spacing:.12em; }
+.currency-payment-method strong { margin-top:6px;font-size:24px; }
+.currency-payment-method p { margin:7px 0 0;color:#8f9db7;font-size:10px;line-height:1.45; }
+.currency-payment-check { position:absolute;right:16px;top:16px;width:22px;height:22px;border:2px solid rgba(255,255,255,.18);border-radius:50%;transition:border-color .2s ease,background .2s ease,box-shadow .2s ease; }
+.currency-payment-method.is-selected .currency-payment-check { border-color:#2ff0ff;background:#2ff0ff;box-shadow:0 0 18px rgba(47,240,255,.42); }
+.currency-payment-method.is-selected .currency-payment-check::after { content:"";position:absolute;left:6px;top:3px;width:6px;height:10px;border-right:2px solid #07101d;border-bottom:2px solid #07101d;transform:rotate(45deg); }
+.currency-payment-finish { margin-top:2px; }
+
+.currency-purchase-flight-card {
+  min-height: 0 !important;
+  border: 3px solid #28edf5 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  background: #fff !important;
+  box-shadow: 0 25px 70px rgba(0,0,0,.48), 0 0 36px rgba(40,237,245,.22) !important;
+  opacity: 1 !important;
+}
+.currency-purchase-flight-card .currency-pack-art { min-height: 66% !important; }
+.currency-purchase-flight-card .currency-pack-copy { min-height: 34% !important; }
+
+@keyframes currencyPurchaseStars { to { background-position:118px 118px,-146px 146px,174px -174px,-206px 206px; } }
+@keyframes currencyPurchaseComet { 0%,100%{transform:translateX(-18%) rotate(-18deg);opacity:.08}45%{opacity:.42}70%{transform:translateX(110%) rotate(-18deg);opacity:0} }
+@keyframes currencySelectedFloat { 0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)} }
+@keyframes currencyPurchaseConfirm { 0%{transform:scale(1)}35%{transform:scale(.985);filter:brightness(1.25)}65%{box-shadow:0 0 0 12px rgba(43,240,255,.12),0 0 60px rgba(43,240,255,.4)}100%{transform:scale(1)} }
+
+@media (max-width: 1020px) {
+  .currency-purchase-summary,
+  .currency-purchase-payment { grid-template-columns:1fr; }
+  .currency-purchase-product-slot { min-height:430px; }
+  .currency-selected-pack { min-height:430px; width:min(560px,100%); display:grid;grid-template-columns:1.05fr .95fr; }
+  .currency-selected-visual { min-height:430px; }
+  .currency-selected-copy { display:grid;align-content:center; }
+  .currency-purchase-payment { max-width:760px;margin-inline:auto; }
+}
+
+@media (max-width: 700px) {
+  .currency-purchase-stage { padding:70px 14px 24px; }
+  .currency-purchase-close { top:12px;right:12px;width:43px;height:43px;border-radius:12px; }
+  .currency-purchase-header { margin-bottom:18px; }
+  .currency-purchase-header h2 { font-size:34px; }
+  .currency-purchase-header > p { font-size:11px; }
+  .currency-purchase-progress { max-width:330px; }
+  .currency-purchase-summary,
+  .currency-purchase-payment { gap:18px; }
+  .currency-purchase-product-slot { min-height:0; }
+  .currency-selected-pack { min-height:0; grid-template-columns:1fr; }
+  .currency-selected-visual { min-height:250px; }
+  .currency-selected-emblem { width:104px;height:104px; }
+  .currency-selected-emblem .ow-currency-gem,
+  .currency-selected-emblem .ow-currency-coin { width:92px;height:92px; }
+  .currency-selected-copy { padding:19px; }
+  .currency-selected-copy h3 { font-size:24px; }
+  .currency-purchase-order-panel,
+  .currency-payment-panel { padding:22px 17px;border-radius:20px; }
+  .currency-purchase-order-panel h3,
+  .currency-payment-panel h3 { font-size:29px; }
+  .currency-payment-methods { grid-template-columns:1fr; }
+  .currency-payment-method { min-height:140px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .currency-purchase-backdrop::after,
+  .currency-purchase-backdrop > span,
+  .currency-selected-emblem { animation:none !important; }
+}

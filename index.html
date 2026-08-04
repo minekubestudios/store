@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="cs" class="currency-direct-purchase-enabled">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="currency-main-button.css?v=14">
   <link rel="stylesheet" href="currency-main-web-vfx.css?v=13">
   <link rel="stylesheet" href="currency-transition-polish.css?v=4">
+  <link rel="stylesheet" href="currency-purchase-flow.css?v=1">
 </head>
 <body class="future-loading store-page" data-store-view="all">
   <div class="noise" aria-hidden="true"></div>
@@ -378,7 +379,7 @@
         </div>
         <div class="store-steps">
           <article><span class="step-number">01</span><div class="step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg></div><h3>Zadej Minecraft nick</h3><p>Nastav přesné jméno účtu, na který se má objednávka doručit.</p><span class="step-line"></span></article>
-          <article><span class="step-number">02</span><div class="step-icon"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></div><h3>Vyber produkty</h3><p>Přidej do košíku rank, klíče, MineCoins nebo zvýhodněný balíček.</p><span class="step-line"></span></article>
+          <article><span class="step-number">02</span><div class="step-icon"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></div><h3>Vyber produkty</h3><p>Vyber si balíček herní měny a otevři jeho samostatnou objednávku.</p><span class="step-line"></span></article>
           <article><span class="step-number">03</span><div class="step-icon"><svg viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 4.4-2.7 7.8-7 10-4.3-2.2-7-5.6-7-10V6l7-3Z"></path><path d="m8.5 12 2.2 2.2 4.8-5"></path></svg></div><h3>Dokonči objednávku</h3><p>Po připojení platebního systému se nákup automaticky doručí ve hře.</p></article>
         </div>
       </div>
@@ -493,12 +494,12 @@
       <button class="currency-screen-close" type="button" data-close-modal aria-label="Zavřít nabídku balíčků"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
       <header class="currency-packs-header">
         <button class="currency-back-button" type="button" data-currency-back><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg><span>Zpět na výběr měny</span></button>
-        <div><span class="currency-screen-kicker" id="currencyPacksKicker">MYTHIC NABÍDKA</span><h2 id="currencyPacksTitle">Vyber balíček</h2><p id="currencyPacksDescription">Kliknutím na balíček jej okamžitě přidáš do košíku.</p></div>
+        <div><span class="currency-screen-kicker" id="currencyPacksKicker">MYTHIC NABÍDKA</span><h2 id="currencyPacksTitle">Vyber balíček</h2><p id="currencyPacksDescription">Kliknutím na balíček otevřeš plynulý průvodce objednávkou.</p></div>
         <div class="currency-packs-balance" id="currencyPacksBalance"></div>
       </header>
       <div class="mk-currency-billing" id="currencyBillingTabs" role="group" aria-label="Způsob nákupu měny"></div>
       <div class="currency-packs-grid" id="currencyPacksGrid"></div>
-      <footer class="currency-packs-footer"><span>Po výběru se balíček přidá do košíku a košík se automaticky otevře.</span><button class="currency-screen-cancel" type="button" data-close-modal>Zrušit</button></footer>
+      <footer class="currency-packs-footer"><span>Po výběru se balíček plynule přesune do samostatné objednávky.</span><button class="currency-screen-cancel" type="button" data-close-modal>Zrušit</button></footer>
     </div>
   </div>
 
@@ -514,5 +515,6 @@
   <script src="currency-switch.js"></script>
   <script src="profile-menu.js"></script>
   <script src="app.js?v=12"></script>
+  <script src="currency-purchase-flow.js?v=1"></script>
 </body>
 </html>
