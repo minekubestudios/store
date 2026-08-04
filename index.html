@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="product-card.css">
   <link rel="stylesheet" href="game-currency.css">
   <link rel="stylesheet" href="currency-hub.css">
-  <link rel="stylesheet" href="currency-main-button.css?v=3">
+  <link rel="stylesheet" href="currency-main-button.css?v=9">
 </head>
 <body class="future-loading store-page" data-store-view="all">
   <div class="noise" aria-hidden="true"></div>
@@ -113,15 +113,21 @@
           <button class="ow-currency-hub mk-main-currency-button" id="currencyHubButton" type="button" aria-label="Otevřít nákup herních měn" aria-haspopup="dialog">
             <span class="mk-main-currency-fx" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
             <span class="mk-main-lightning-field" aria-hidden="true">
-              <svg class="mk-lightning-svg mk-lightning-left" viewBox="0 0 104 68" preserveAspectRatio="none">
-                <path pathLength="100" d="M102 34 L86 29 L77 39 L65 22 L54 46 L42 31 L31 38 L19 20 L3 34"></path>
-                <path pathLength="100" d="M97 46 L82 43 L73 54 L62 39 L51 57 L39 46 L26 54 L13 43"></path>
+              <svg class="mk-lightning-svg mk-lightning-left" viewBox="0 0 132 76" preserveAspectRatio="none">
+                <path class="mk-bolt-halo mk-bolt-cyan" data-bolt="left-a" pathLength="200" d="M130 37 L119 34 L113 41 L98 35 L91 45 L76 40 L68 44 L54 31 L47 39 L32 36 L24 44 L10 40 L2 43"></path>
+                <path class="mk-bolt-core mk-bolt-cyan" data-bolt="left-a" pathLength="200" d="M130 37 L119 34 L113 41 L98 35 L91 45 L76 40 L68 44 L54 31 L47 39 L32 36 L24 44 L10 40 L2 43"></path>
+                <path class="mk-bolt-halo mk-bolt-violet" data-bolt="left-b" pathLength="200" d="M128 50 L115 47 L106 53 L93 48 L84 57 L70 51 L60 55 L46 45 L37 52 L24 48 L14 54 L4 51"></path>
+                <path class="mk-bolt-core mk-bolt-violet" data-bolt="left-b" pathLength="200" d="M128 50 L115 47 L106 53 L93 48 L84 57 L70 51 L60 55 L46 45 L37 52 L24 48 L14 54 L4 51"></path>
+                <path class="mk-bolt-branch mk-bolt-cyan" data-bolt="left-branch" pathLength="100" d="M90 38 L82 24 L75 28 L68 14 L60 20"></path>
               </svg>
-              <svg class="mk-lightning-svg mk-lightning-right" viewBox="0 0 104 68" preserveAspectRatio="none">
-                <path pathLength="100" d="M2 34 L18 29 L27 39 L39 22 L50 46 L62 31 L73 38 L85 20 L101 34"></path>
-                <path pathLength="100" d="M7 46 L22 43 L31 54 L42 39 L53 57 L65 46 L78 54 L91 43"></path>
+              <svg class="mk-lightning-svg mk-lightning-right" viewBox="0 0 132 76" preserveAspectRatio="none">
+                <path class="mk-bolt-halo mk-bolt-gold" data-bolt="right-a" pathLength="200" d="M2 43 L10 40 L24 44 L32 36 L47 39 L54 31 L68 44 L76 40 L91 45 L98 35 L113 41 L119 34 L130 37"></path>
+                <path class="mk-bolt-core mk-bolt-gold" data-bolt="right-a" pathLength="200" d="M2 43 L10 40 L24 44 L32 36 L47 39 L54 31 L68 44 L76 40 L91 45 L98 35 L113 41 L119 34 L130 37"></path>
+                <path class="mk-bolt-halo mk-bolt-pink" data-bolt="right-b" pathLength="200" d="M4 51 L14 54 L24 48 L37 52 L46 45 L60 55 L70 51 L84 57 L93 48 L106 53 L115 47 L128 50"></path>
+                <path class="mk-bolt-core mk-bolt-pink" data-bolt="right-b" pathLength="200" d="M4 51 L14 54 L24 48 L37 52 L46 45 L60 55 L70 51 L84 57 L93 48 L106 53 L115 47 L128 50"></path>
+                <path class="mk-bolt-branch mk-bolt-gold" data-bolt="right-branch" pathLength="100" d="M42 38 L50 24 L57 28 L64 14 L72 20"></path>
               </svg>
-              <span class="mk-back-particles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              <span class="mk-back-particles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
             </span>
             <span class="mk-main-currency-universe" aria-hidden="true">
               <span class="mk-main-currency-nebula mk-main-currency-nebula-a"></span>
@@ -508,7 +514,7 @@
 
   <script src="store-config.js"></script>
   <script src="game-currency.js"></script>
-  <script src="currency-hub.js"></script>
+  <script src="currency-hub.js?v=9"></script>
   <script src="currency-switch.js"></script>
   <script src="profile-menu.js"></script>
   <script src="app.js"></script>
