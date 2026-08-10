@@ -816,6 +816,12 @@ function isMythicProduct(product) {
   return product?.currencyType === "mythic" || ["elite-30", "legendary-key", "particle-pack", "pet-pack", "mvp-30"].includes(product?.id);
 }
 
+function storeAccentForProduct(product) {
+  return isMythicProduct(product)
+    ? { hex: "#22b8ff", rgb: "34,184,255", theme: "mythic" }
+    : { hex: "#ffc21c", rgb: "255,194,28", theme: "gold" };
+}
+
 function productVisualLabel(product) {
   if (product.category === "ranks") return "RANK";
   if (product.category === "keys") return "KLÍČ";
@@ -842,8 +848,9 @@ function effectivePrice(product) {
 function createProductCard(product, index) {
   const inCart = state.cart.has(product.id);
   const mythic = isMythicProduct(product);
+  const accent = storeAccentForProduct(product);
    return `
-    <article class="store-product-card ${mythic ? "is-mythic-product" : ""} is-entering" data-product-id="${product.id}" data-product-category="${product.category}" style="--product-accent:${product.accent};--product-accent-rgb:${product.accentRgb};--delay:${Math.min(index * 45, 360)}ms" tabindex="0" role="button" aria-label="Zobrazit detail produktu ${product.name}">
+    <article class="store-product-card ${mythic ? "is-mythic-product" : ""} is-entering" data-product-id="${product.id}" data-product-category="${product.category}" style="--product-accent:${accent.hex};--product-accent-rgb:${accent.rgb};--delay:${Math.min(index * 45, 360)}ms" tabindex="0" role="button" aria-label="Zobrazit detail produktu ${product.name}">
       <div class="product-visual">
         <div class="product-card-topline">
           <span class="product-badge"><i></i>${product.badge}</span>
@@ -1312,14 +1319,16 @@ function closeAllPanels() {
 function openProductDetail(id) {
   const product = getProduct(id);
   if (!product) return;
+  const accent = storeAccentForProduct(product);
+  productModal.dataset.productTheme = accent.theme;
   const content = $("#productModalContent");
   content.innerHTML = `
-    <div class="product-modal-layout" style="--modal-accent-rgb:${product.accentRgb}">
-      <div class="product-modal-visual" style="--modal-accent-rgb:${product.accentRgb}">
+    <div class="product-modal-layout" style="--modal-accent-rgb:${accent.rgb}">
+      <div class="product-modal-visual" style="--modal-accent-rgb:${accent.rgb}">
         <div class="product-modal-emblem">${svgIcon(product.icon)}<strong>${product.code.split(" // ")[0]}</strong></div>
         <small>PRODUKT MINEKUBE // ${product.code}</small>
       </div>
-      <div class="product-modal-copy" style="--modal-accent-rgb:${product.accentRgb}">
+      <div class="product-modal-copy" style="--modal-accent-rgb:${accent.rgb}">
         <span class="modal-kicker"><i></i>${product.categoryLabel}</span>
         <h2 id="productModalTitle">${product.name}</h2>
         <p>${product.description}</p>
@@ -1343,14 +1352,16 @@ let pendingGamePurchaseProductId = null;
 function openPurchaseConfirmation(id) {
   const product = getProduct(id);
   if (!product || !purchaseConfirmModal) return;
+  const accent = storeAccentForProduct(product);
   pendingGamePurchaseProductId = product.id;
+  purchaseConfirmModal.dataset.productTheme = accent.theme;
 
   const copy = $("#purchaseConfirmCopy");
   if (copy) {
     copy.innerHTML = `Opravdu chceš zakoupit <strong>${product.name}</strong> za <span class="purchase-confirm-price">${gamePrice(product, { size: "is-small" })}</span>?`;
   }
 
-  purchaseConfirmModal.style.setProperty("--confirm-accent-rgb", product.accentRgb || "255, 184, 32");
+  purchaseConfirmModal.style.setProperty("--confirm-accent-rgb", accent.rgb);
   openModal(purchaseConfirmModal);
 }
 
