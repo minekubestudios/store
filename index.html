@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="currency-transition-polish.css?v=4">
   <link rel="stylesheet" href="currency-purchase-flow.css?v=2">
   <link rel="stylesheet" href="currency-purchase-refine.css?v=4">
+  <link rel="stylesheet" href="product-direct-purchase.css?v=1">
 </head>
 <body class="future-loading store-page" data-store-view="all">
   <div class="noise" aria-hidden="true"></div>
@@ -451,6 +452,23 @@
     </div>
   </div>
 
+  <div class="store-modal-shell purchase-confirm-shell" id="purchaseConfirmModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="purchaseConfirmTitle">
+    <div class="store-modal purchase-confirm-card">
+      <div class="purchase-confirm-head">
+        <span class="purchase-confirm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h13a2 2 0 0 1 2 2v10H4a2 2 0 0 1-2-2V6h2Z"></path><path d="M4 6V4h11v2M15 11h6v4h-6a2 2 0 0 1 0-4Z"></path></svg></span>
+        <div><small>POSLEDNÍ KROK</small><h2 id="purchaseConfirmTitle">POTVRDIT NÁKUP?</h2></div>
+      </div>
+      <p class="purchase-confirm-copy" id="purchaseConfirmCopy"></p>
+      <div class="purchase-confirm-actions">
+        <button class="purchase-confirm-cancel" type="button" data-close-modal>JEŠTĚ NE</button>
+        <button class="purchase-confirm-submit" type="button" data-confirm-game-purchase>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h13a2 2 0 0 1 2 2v10H4a2 2 0 0 1-2-2V6h2Z"></path><path d="M4 6V4h11v2M15 11h6v4h-6a2 2 0 0 1 0-4Z"></path></svg>
+          <span>POTVRDIT NÁKUP</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="store-modal-shell" id="playerModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="playerModalTitle">
     <div class="store-modal player-modal-card">
       <button class="store-modal-close" type="button" data-close-modal aria-label="Zavřít nastavení hráče"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
@@ -519,7 +537,7 @@
   <script src="currency-hub.js?v=16"></script>
   <script src="currency-switch.js"></script>
   <script src="profile-menu.js"></script>
-  <script src="app.js?v=12"></script>
+  <script src="app.js?v=13"></script>
   <script src="currency-purchase-flow.js?v=4"></script>
 </body>
 </html>

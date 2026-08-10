@@ -1,0 +1,286 @@
+/* Minekube Store — přímé tlačítko ZAKOUPIT v detailu produktu + potvrzení nákupu.
+   Záměrně neobsahuje žádnou logiku rychlého nákupu ani zásahy do API/webhooků. */
+
+.modal-buy-row {
+  grid-template-columns: minmax(0, 1fr) minmax(185px, .92fr);
+  gap: 18px;
+}
+
+.modal-purchase-button {
+  position: relative;
+  isolation: isolate;
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: 22px 1fr 18px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 193, 37, .72);
+  border-radius: 15px;
+  color: #1b0d00;
+  cursor: pointer;
+  font: 1000 11px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: .065em;
+  background:
+    linear-gradient(135deg, #fff18b 0%, #ffc72e 37%, #ffab18 72%, #ffca3d 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -7px 17px rgba(139,65,0,.12),
+    0 12px 28px rgba(77,29,0,.30),
+    0 0 0 3px rgba(255,177,20,.08),
+    0 0 28px rgba(255,166,13,.12);
+  transition: transform .24s cubic-bezier(.2,.8,.2,1), box-shadow .24s ease, filter .24s ease, border-color .24s ease;
+}
+
+.modal-purchase-button::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  border: 1px solid rgba(86,37,0,.16);
+  border-radius: 11px;
+  pointer-events: none;
+}
+
+.modal-purchase-button::after {
+  content: "";
+  position: absolute;
+  inset: -40% -22%;
+  z-index: -1;
+  opacity: .0;
+  background: linear-gradient(105deg, transparent 34%, rgba(255,255,255,.75) 49%, transparent 63%);
+  transform: translateX(-74%) skewX(-12deg);
+  transition: opacity .2s ease;
+}
+
+.modal-purchase-shine {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  opacity: .42;
+  background:
+    radial-gradient(circle at 18% 30%, rgba(255,255,255,.46), transparent 18%),
+    radial-gradient(circle at 88% 85%, rgba(255,96,0,.25), transparent 29%);
+  pointer-events: none;
+}
+
+.modal-purchase-button svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .28s cubic-bezier(.2,.8,.2,1);
+}
+.modal-purchase-button span { text-align: center; }
+.modal-purchase-button i {
+  font-style: normal;
+  font-size: 17px;
+  transition: transform .28s cubic-bezier(.2,.8,.2,1);
+}
+.modal-purchase-button:hover {
+  transform: translateY(-3px) scale(1.015);
+  border-color: rgba(255,222,113,.96);
+  filter: saturate(1.08) brightness(1.03);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.84),
+    inset 0 -7px 17px rgba(139,65,0,.10),
+    0 17px 34px rgba(90,34,0,.34),
+    0 0 0 4px rgba(255,177,20,.10),
+    0 0 38px rgba(255,166,13,.24);
+}
+.modal-purchase-button:hover::after {
+  opacity: .62;
+  animation: mkPurchaseSheen .72s cubic-bezier(.2,.7,.2,1) both;
+}
+.modal-purchase-button:hover svg { transform: translateX(2px) rotate(-4deg) scale(1.08); }
+.modal-purchase-button:hover i { transform: translateX(4px); }
+.modal-purchase-button:active { transform: translateY(0) scale(.975); }
+
+@keyframes mkPurchaseSheen {
+  from { transform: translateX(-74%) skewX(-12deg); }
+  to { transform: translateX(74%) skewX(-12deg); }
+}
+
+/* Potvrzovací okno */
+.purchase-confirm-shell {
+  z-index: 2520;
+  --confirm-accent-rgb: 255, 185, 31;
+}
+.purchase-confirm-card {
+  width: min(510px, 100%);
+  overflow: hidden;
+  border: 1px solid rgba(255,187,26,.34);
+  border-radius: 27px;
+  background:
+    radial-gradient(circle at 86% 4%, rgba(255,174,19,.08), transparent 17rem),
+    radial-gradient(circle at 10% 92%, rgba(var(--confirm-accent-rgb),.075), transparent 18rem),
+    linear-gradient(145deg, rgba(19,18,20,.995), rgba(8,10,13,.995));
+  box-shadow:
+    0 38px 95px rgba(0,0,0,.70),
+    0 0 0 1px rgba(255,199,55,.05),
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 0 46px rgba(255,166,9,.07);
+}
+.purchase-confirm-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .11;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, #000, transparent 72%);
+}
+.purchase-confirm-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 28px 28px 0;
+}
+.purchase-confirm-icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,188,25,.22);
+  border-radius: 15px;
+  color: #ffc62d;
+  background: linear-gradient(145deg, rgba(255,190,27,.12), rgba(255,124,0,.04));
+  box-shadow: inset 0 0 22px rgba(255,183,20,.04), 0 0 24px rgba(255,169,15,.05);
+}
+.purchase-confirm-icon svg {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.purchase-confirm-head small {
+  display: block;
+  color: #817b82;
+  font: 900 7px/1 system-ui, sans-serif;
+  letter-spacing: .15em;
+}
+.purchase-confirm-head h2 {
+  margin: 7px 0 0;
+  color: #f9f6f3;
+  font-size: clamp(24px, 5vw, 29px);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+.purchase-confirm-copy {
+  position: relative;
+  z-index: 1;
+  margin: 22px 28px 0;
+  color: #a8a2aa;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.purchase-confirm-copy strong { color: #f3eff0; font-weight: 900; }
+.purchase-confirm-price {
+  display: inline-flex;
+  vertical-align: middle;
+  color: #ffc52d;
+  font-weight: 950;
+}
+.purchase-confirm-price .mk-price { font-size: 1em; }
+.purchase-confirm-price .mk-price-icon { width: 17px; height: 17px; }
+.purchase-confirm-price .mk-price.is-mythic { color: #44e7ff; }
+
+.purchase-confirm-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 27px;
+  padding: 20px 28px 24px;
+  border-top: 1px solid rgba(255,255,255,.055);
+  background: rgba(255,255,255,.012);
+}
+.purchase-confirm-actions button {
+  min-height: 48px;
+  border-radius: 13px;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  transition: transform .22s cubic-bezier(.2,.8,.2,1), border-color .22s ease, background .22s ease, box-shadow .22s ease;
+}
+.purchase-confirm-cancel {
+  min-width: 105px;
+  border: 1px solid rgba(255,255,255,.09);
+  color: #a49da5;
+  background: rgba(255,255,255,.02);
+}
+.purchase-confirm-cancel:hover {
+  color: #efe9ed;
+  border-color: rgba(255,255,255,.17);
+  background: rgba(255,255,255,.045);
+  transform: translateY(-2px);
+}
+.purchase-confirm-submit {
+  position: relative;
+  min-width: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  overflow: hidden;
+  border: 1px solid #ffb500;
+  color: #1c0d00;
+  background: linear-gradient(135deg, #ffe275, #ffb31b 60%, #ff9f0d);
+  box-shadow: 0 0 0 3px rgba(255,177,0,.08), 0 11px 26px rgba(100,42,0,.32), inset 0 1px 0 rgba(255,255,255,.65);
+}
+.purchase-confirm-submit::after {
+  content: "";
+  position: absolute;
+  top: -45%; bottom: -45%; left: -28%; width: 30%;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent);
+  transform: skewX(-15deg);
+}
+.purchase-confirm-submit svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.purchase-confirm-submit:hover {
+  transform: translateY(-2px) scale(1.012);
+  box-shadow: 0 0 0 4px rgba(255,177,0,.10), 0 15px 31px rgba(100,42,0,.38), 0 0 26px rgba(255,177,0,.15), inset 0 1px 0 rgba(255,255,255,.75);
+}
+.purchase-confirm-submit:hover::after { opacity: .62; animation: mkConfirmSheen .65s ease-out both; }
+.purchase-confirm-submit:active { transform: translateY(0) scale(.975); }
+@keyframes mkConfirmSheen { from { left: -28%; } to { left: 108%; } }
+
+@media (max-width: 620px) {
+  .modal-buy-row { grid-template-columns: 1fr; }
+  .purchase-confirm-head { padding: 24px 22px 0; }
+  .purchase-confirm-copy { margin: 19px 22px 0; }
+  .purchase-confirm-actions { padding: 18px 22px 22px; }
+  .purchase-confirm-actions button { flex: 1 1 0; min-width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-purchase-button,
+  .modal-purchase-button::after,
+  .modal-purchase-button svg,
+  .modal-purchase-button i,
+  .purchase-confirm-actions button,
+  .purchase-confirm-submit::after { animation: none !important; transition-duration: .01ms !important; }
+}

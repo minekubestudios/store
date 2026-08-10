@@ -652,6 +652,7 @@ const couponInput = $("#couponInput");
 const couponMessage = $("#couponMessage");
 const playerModal = $("#playerModal");
 const productModal = $("#productModal");
+const purchaseConfirmModal = $("#purchaseConfirmModal");
 const checkoutModal = $("#checkoutModal");
 const currencySelectModal = $("#currencySelectModal");
 const currencyPacksModal = $("#currencyPacksModal");
@@ -1326,11 +1327,38 @@ function openProductDetail(id) {
         <div class="modal-feature-box"><strong>CO PRODUKT OBSAHUJE</strong><ul>${product.features.map(feature => `<li>${svgIcon("check")}<span>${feature}</span></li>`).join("")}</ul></div>
         <div class="modal-buy-row">
           <div class="modal-price"><small>CENA PRODUKTU</small><span>${gamePrice(product, { size: "is-large" })}${product.oldPrice ? gamePriceOld(product, product.oldPrice) : ""}</span></div>
-          <button class="modal-add-button" type="button" data-add-product="${product.id}">${svgIcon("cart")}<span>Přidat do košíku</span></button>
+          <button class="modal-purchase-button" type="button" data-purchase-product="${product.id}">
+            <span class="modal-purchase-shine" aria-hidden="true"></span>
+            ${svgIcon("wallet")}<span>ZAKOUPIT</span><i aria-hidden="true">→</i>
+          </button>
         </div>
       </div>
     </div>`;
   openModal(productModal);
+}
+
+
+let pendingGamePurchaseProductId = null;
+
+function openPurchaseConfirmation(id) {
+  const product = getProduct(id);
+  if (!product || !purchaseConfirmModal) return;
+  pendingGamePurchaseProductId = product.id;
+
+  const copy = $("#purchaseConfirmCopy");
+  if (copy) {
+    copy.innerHTML = `Opravdu chceš zakoupit <strong>${product.name}</strong> za <span class="purchase-confirm-price">${gamePrice(product, { size: "is-small" })}</span>?`;
+  }
+
+  purchaseConfirmModal.style.setProperty("--confirm-accent-rgb", product.accentRgb || "255, 184, 32");
+  openModal(purchaseConfirmModal);
+}
+
+function finishPurchaseConfirmation() {
+  if (!pendingGamePurchaseProductId) return;
+  pendingGamePurchaseProductId = null;
+  closeModal(purchaseConfirmModal, { restoreFocus: false });
+  closeModal(productModal);
 }
 
 function openPlayerEditor() {
@@ -1973,6 +2001,17 @@ function bindEvents() {
       addToCart(currencyPack.dataset.currencyPack);
       closeModal(currencyPacksModal, { restoreFocus: false });
       setTimeout(openCart, 120);
+      return;
+    }
+
+    const purchaseButton = event.target.closest("[data-purchase-product]");
+    if (purchaseButton) {
+      openPurchaseConfirmation(purchaseButton.dataset.purchaseProduct);
+      return;
+    }
+
+    if (event.target.closest("[data-confirm-game-purchase]")) {
+      finishPurchaseConfirmation();
       return;
     }
 
